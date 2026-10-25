@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ringtda"
+version = "0.1.0"
+description = "Topological ring detection for market manipulation"
+# pyflagser only ships prebuilt wheels for Python <= 3.12
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "pandas>=2.0",
+    "networkx>=3.1",       # simple_cycles(length_bound=...) needs >= 3.1
+    "scikit-learn>=1.3",
+    "matplotlib>=3.7",
+    "pyflagser>=0.4.7",
+]
+
+[project.optional-dependencies]
+# gudhi is needed from Phase 2 onwards (persistence landscapes, undirected ablation)
+tda = ["gudhi>=3.9"]
+dev = ["pytest>=7", "jupyterlab", "ipykernel", "pyvis"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

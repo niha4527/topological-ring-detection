@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+
+# data stays out of git (large); keep only small samples
+data/*
+!data/sample/
+results/*
+!results/.gitkeep
+
+.env
+.vscode/
+.idea/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
