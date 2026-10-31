@@ -11,7 +11,7 @@ One windowed, directed transaction graph feeds a seven-stage pipeline. Each stag
 ```
  transactions (t, sender, receiver, amount)
         |
- [1 data]      synthetic.py [done]   ibm_aml.py [todo]   nft_trades.py [todo]
+ [1 data]      synthetic.py [done]   ibm_aml.py [done]   nft_trades.py [todo]
         |
  [2 graph]     windows.py -> weights.py -> baseline features (B) [todo]
         |         sliding windows    s_rec, s_bal, s_reg -> rank-normalize -> w = 1 - mean
@@ -28,7 +28,7 @@ One windowed, directed transaction graph feeds a seven-stage pipeline. Each stag
  [6 threshold] threshold/ascent.py [done: online gradient ascent + comparators]
         |       bandit_sim.py (discounted UCB, sliding-window Thompson) [todo]
         |
- [7 eval]      eval/labels.py [done]   splits.py metrics.py ablations.py [todo]
+ [7 eval]      eval/labels.py [done]   splits.py [done]   metrics.py ablations.py [todo]
 
  [4 motif]     pump-and-dump track, optional stretch [todo]
 ```
@@ -48,7 +48,7 @@ Rules that shape the design (from `CLAUDE.md`):
 5. **Persist.** `neighborhood` extracts the ring plus its 1-hop neighbourhood. `directed_flag_persistence` returns `{dim: array of (birth, death)}` for H0 and H1.
 6. **Featurize.** `features.window_candidates` returns one table row per candidate plus the per-edge score arrays `Z`.
 7. **Model.** Feature rows go to the classifier, clusterer, regressor. Ring birth or the classifier score goes to the threshold policy.
-8. **Evaluate.** Temporal split with a gap, bootstrap CIs, per-scenario and per-feature-set reports.
+8. **Evaluate.** Grouped CV (groups = shared edges merged with attempt id), pooled out-of-fold PR-AUC with grouped bootstrap CIs, HI<->LI transfer, per-scenario and per-feature-set reports.
 
 ## 3. Module reference
 
@@ -57,7 +57,8 @@ Rules that shape the design (from `CLAUDE.md`):
 |---|---|---|
 | `synthetic.py` | `SyntheticConfig` and `generate(cfg)`. Heavy-tailed background plus planted structures. Positives: isolated, dense-neighbourhood and chorded wash rings. Topology-sensitive negatives: transitive decoys, shortcut-filled pseudo-rings. Hard negatives: arbitrage loops, market makers, hot wallets. Knobs: `hard_negatives`, `wash_decoy_frac`, `mm_regularity`, jitter. | done |
 | `toy.py` | Hand-built graphs for gate tests: cyclic triangle, transitive triangle, reciprocal pair, shortcut-filled triangle, square. | done |
-| `ibm_aml.py` | AMLworld loader, patterns-file parser. | todo |
+| `ibm_aml.py` | AMLworld loader (`load_ibm`, `load_ibm_files`): joins laundering attempts to transactions on (timestamp, banks, accounts, amount paid) with deterministic handling of duplicate keys, attaches attempt id and pattern type, drops and counts self-loops, accounts keyed by (bank, account), time in days; `iter_ibm_windows` (5-day windows, 1-day stride) feeds the existing aggregation. Settings in `configs/ibm.yaml`. | done |
+| `ibm_table.py` (package root) | `ibm_candidate_tables`: candidates, ring labels and first-seen day per (window, `tau_quantile`), reusing `aggregate_pairs`, `edge_weights` and `candidate_rings`. No features yet. | done |
 | `nft_trades.py` | Dune / BigQuery export loader. | todo |
 
 ### 3.2 `graph/`
@@ -87,8 +88,8 @@ Missing: B and D feature code (D currently lives only in `window_candidates`).
 ### 3.5 `eval/`
 | File | Role | Status |
 |---|---|---|
-| `labels.py` | §3.7 ring-labeling rule. `edge_backing`, `label_ring`, `label_candidates`. A ring is positive if at least X% (default 80) of its edges are backed by one planted structure, background if none, else ambiguous (`y = NaN`). Same rule is meant for IBM AML attempts. | done |
-| `splits.py` | Temporal split with a one-window gap; grouped CV by ring identity. | todo |
+| `labels.py` | §3.7 ring-labeling rule. `edge_backing`, `label_ring`, `label_candidates` (synthetic: positive if at least X% (default 80) of a ring's edges are backed by one planted structure, background if none, else ambiguous, `y = NaN`) and `label_candidates_ibm` (attempts of any pattern type; laundering rows in no attempt make a ring ambiguous). | done |
+| `splits.py` | `assign_groups` (union-find over shared edges merged with attempt id; strict variant by shared account), `stratified_group_cv` (k=5, fallback 3, repeats), `transfer_split`, `time_ordered_split`. The time-ordered scheme is **unusable** (HI-Small test side 0 candidates, LI-Small 1: rings recur, so almost every window mixes early and late groups) and is not used for evaluation; the code and tests are kept. | done |
 | `metrics.py` | Precision, recall, F1, PR-AUC, ARI, purity, RMSE, MAE, Spearman, bootstrap CIs. | todo |
 | `ablations.py` | Feature-set, filtration, complex, vectorization and sensitivity runners. | todo |
 
@@ -124,13 +125,15 @@ Pump-and-dump features: accumulation concentration, exit synchrony, price trajec
 
 ## 5. Verified behaviours (engineering gates)
 
-95 tests pass (`pytest`, about 1.4 s). They cover:
+147 tests pass (`pytest`, a few seconds). They cover:
 - cyclic triangle gives one infinite H1 bar; transitive triangle gives none; shortcut-filled triangle dies at the fill weight; reciprocal pair gives an H1 class; `flagser` and `reference` agree (`test_directed_triangles.py`);
 - score and weight formulas and edge cases (`test_weights.py`);
 - candidate enumeration and dedup (`test_candidates.py`);
 - planted wash-ring edges land in the lowest-weight decile and every planted ring is a candidate (`test_planted_rings.py`);
 - generator scenarios (`test_synthetic_scenarios.py`);
 - ring-labeling rule (`test_labels.py`);
+- T features and the T table (`test_vectorize.py`, `test_t_table.py`), including the exact ring-survival test;
+- IBM loader, window iterator and ring labels on toy fixtures (`test_ibm_aml.py`); groups, grouped CV, time-ordered and transfer splits (`test_splits.py`);
 - gradient correctness, simplex projection, GD vs SciPy (`test_gd.py`).
 
 ## 6. Results provenance
@@ -156,11 +159,10 @@ Headline report numbers (synthetic only): learned weights raise test average pre
 
 ## 8. Remaining build order
 
-1. Phase 2 is done except the undirected ablation. Next: D and B feature code, then the IBM AML pattern-behaviour audit (Phase 3 start).
-2. `eval/splits.py`, `metrics.py`, bootstrap CIs; `models/classify.py`; run B / B+D / B+D+T / T on synthetic, per scenario, with and without hard negatives, on the `full` config.
-3. Phase 3: IBM AML loader, patterns-file inspection, pattern-behaviour audit, ring labels, same classifiers.
-4. Phase 4: `cluster.py` and `regress.py`.
-5. Phase 5: NFT loader and label-provenance audit.
-6. Phase 6: bandit policies and drift benchmark in `threshold/`.
-7. Phase 7: pump-and-dump track if time allows; write-up (`paper/paper_content.md` is the content pack).
-8. Sensitivity sweeps: window length, stride, `tau_s`, `max_len`, infinite-bar cap, X.
+1. D and B feature code for IBM and synthetic windows (ring birth stays in D); a combined B / D / T feature table.
+2. IBM AML pattern-behaviour audit of `s_rec`, `s_bal`, `s_reg` per pattern type; AML-specific weight variant if needed.
+3. Classification harness: `eval/metrics.py` (PR-AUC, grouped bootstrap CIs), `models/classify.py`; B / B+D / B+D+T / T on grouped CV, per scenario and with/without hard negatives, plus HI<->LI transfer. Evidence is thin by construction (10-16 positive groups): report group counts and prevalence, do not tune to narrow CIs.
+4. Sensitivity sweeps: `tau_quantile`, `max_len`, infinite-bar cap, label threshold X, window length.
+5. Write-up (`paper/paper_content.md` is the content pack).
+
+Future work (not planned for this iteration): Phase 4 clustering and severity regression (`cluster.py`, `regress.py`), Phase 5 NFT loader and label-provenance audit, Phase 6 bandit policies and drift benchmark (`threshold/bandit_sim.py`), the pump-and-dump track, and the undirected-complex ablation.

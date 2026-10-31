@@ -56,3 +56,26 @@ filled: 6 inside only, 4 outside only, 1 both, 6 combined). `dense_internal_chor
 surviving (rest filled by outside accounts, kept as realistic). Report dense rows under both settings;
 a planted positive with `T_local_ring_inf = 0` keeps its positive label. The `report` config uses the
 default.
+
+## Phase 3 design decisions (IBM AML)
+- Windows 5 days, stride 1 day. Primary evaluation = grouped CV: groups = union-find over candidates
+  sharing any edge, merged with attempt id (stricter variant: shared account, as a sensitivity check);
+  all scaling/hyperparameter/threshold choices inside training folds; stratified group k-fold, 5
+  repeats, pooled out-of-fold PR-AUC with grouped bootstrap CIs, prevalence and group counts reported.
+  Only 10-16 positive groups per dataset (58 of 60 folds have < 5): the effective sample size is the group
+  count, not the positive-candidate count; report wide CIs as they are and do not tune to rescue them.
+- Time-ordered check: tried as specified (train groups first seen days 0-5, test day >= 7, mixed windows
+  dropped) and unusable: HI-Small test side has 0 candidates, LI-Small 1, because rings recur and almost
+  every window mixes early and late groups. Dropped as an evaluation scheme and reported as unusable;
+  `eval/splits.time_ordered_split` and its tests are kept; no post-hoc variant.
+- Out-of-sample check = HI<->LI transfer, labelled transfer, not time-leak-free (only 3 of 705,907 LI
+  accounts are shared with HI: essentially, not perfectly, disjoint). The earlier split (test windows
+  from day 12) had no test positives and was dropped.
+- Labeling stays per §3.7 (any single-attempt >= 80% ring is positive); report positive counts by pattern
+  type and a cycle-only secondary subset (usable on HI-Small only: LI-Small has 3 cycle positives); do
+  not change the rule based on counts.
+- `Amount Paid` as is (currency limitation). Self-loops dropped (11.6% of HI-Small; logged; s_bal uses
+  inter-account flow only). Laundering rows in no attempt (1,968 of 5,177) make a candidate `ambiguous`;
+  report ambiguous excluded and counted positive. Keep `data/ibm_aml/ibm.zip`.
+- IBM `tau_quantile` sweep about 0.02-0.15. Recall caps at `max_len` 6: 11 of 15 complete cycle
+  attempts in the day 0-5 window (12 at `max_len` 8); 8-9 recovered.

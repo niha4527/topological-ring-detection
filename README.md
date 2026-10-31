@@ -38,7 +38,8 @@ Expected: the cyclic triangle has one H1 bar `[0.1, inf]`; the transitive triang
 
 ```
 src/ringtda/
-  data/        synthetic.py (planted rings, topology-sensitive and hard negatives), toy.py (hand-built test graphs)
+  data/        synthetic.py (planted rings, topology-sensitive and hard negatives), toy.py (hand-built test graphs),
+               ibm_aml.py (IBM AML loader, attempt join, 5-day windows)
   graph/       windows.py (sliding windows, per-pair aggregation), weights.py (s_rec, s_bal, s_reg -> weight)
   topology/    candidates.py (SCC + cycle enumeration), persistence.py (directed flag persistence),
                vectorize.py (infinite-bar cap, landscapes, scalar summaries; local and window T features)
@@ -46,7 +47,7 @@ src/ringtda/
   features.py  candidate table used by the optimization report (legacy topo_* columns) and t_feature_table
 configs/       topology.yaml (landscape settings, cap rule, local graph)
   models/      gd.py (gradient descent, alpha learner)    threshold/  ascent.py (threshold policies)
-  eval/        labels.py (§3.7 ring-labeling rule)       motif/      later phases
+  eval/        labels.py (§3.7 ring-labeling rule, synthetic and IBM), splits.py (groups, grouped CV, transfer)       motif/      later phases
 experiments/   gd_report.py — optimization report; `--config report` reproduces the report's numbers
 tests/         engineering gates: directed-triangle behaviour, weights, candidates, planted rings,
                generator scenarios (test_synthetic_scenarios.py)
@@ -75,6 +76,8 @@ results/       figures and metrics (git-ignored). results/report/ (+ the origina
 - [x] Candidate labels from planted ground truth (§3.7 rule, `eval/labels.py`)
 - [x] Phase 2 topology features: local + window-level persistence, infinite-bar cap, landscapes and scalar
       summaries (`topology/vectorize.py`, `configs/topology.yaml`), T feature table (`features.t_feature_table`)
+- [x] IBM AML loader, ring labels (§3.7), groups and fold assignments; split counts in
+      `experiments/ibm_split_report.py` (counts only, no features or models yet)
 - [ ] Phase 3 start: D and B feature code, IBM AML pattern-behavior audit; then models, evaluation
 
 ## Decisions and deviations from the proposal
@@ -112,3 +115,55 @@ results/       figures and metrics (git-ignored). results/report/ (+ the origina
   the remaining filling is by outside accounts, which is kept as realistic (§3.4). Phase 3 stratified
   results report dense rows under BOTH settings. A planted positive with `T_local_ring_inf = 0` keeps
   its positive label: the column is a feature, not a label.
+
+## Phase 3 design decisions (IBM AML, HI-Small; LI-Small replicates with the same rules)
+
+1. **Windows and evaluation scheme.** 5-day windows, 1-day stride (cycle attempts last up to 96 h, so a
+   shorter window cuts them). The primary result is grouped cross-validation; HI<->LI transfer is the
+   out-of-sample check. The time-ordered check was tried and dropped (below). The original idea (train windows ending by day 8, 4-day gap,
+   test windows from day 12) was dropped: every laundering attempt in HI-Small starts on days 0-11 (cycle
+   attempts on days 0-9) and laundering rows are nearly gone after day 13, so such test windows contain no
+   positives (LI-Small is the same, attempts on days 0-10).
+   - **Groups.** One fold unit per group, assigned once across all windows: union-find over candidates
+     that share any edge, merged with the attempt id of every candidate labelled with an attempt (so a
+     near-duplicate ring, which dedup does not remove, and a ring seen in several overlapping windows stay
+     together). A stricter variant groups by shared account; it is reported as a sensitivity check.
+   - **No leakage from tuning.** All scaling, hyperparameter and threshold choices happen inside the
+     training folds only (nested where a choice is tuned).
+   - **Primary estimate.** Stratified group k-fold, 5 repeats; pooled out-of-fold PR-AUC with grouped
+     bootstrap CIs (resampling groups); prevalence is always reported next to PR-AUC, with the group counts.
+     Measured: only 10-16 positive groups per dataset (HI-Small 13-16, LI-Small 10 across
+     `tau_quantile` 0.02-0.10), and 58 of 60 folds have fewer than 5 positive groups. The effective sample
+     size is the number of positive groups, not the number of positive candidates (e.g. 131 positive
+     candidates from 43 attempts fall into 14 groups at `tau_quantile` 0.05). Expect wide CIs; they are
+     reported as they are, and nothing is tuned to narrow them.
+   - **Time-ordered check: tried as specified, unusable, dropped.** Train = groups first seen on days
+     0-5, test = groups first seen on day >= 7, windows holding both sides dropped. HI-Small leaves 0 test
+     candidates and LI-Small 1 (HI-Small: 7 of 13 windows dropped, 6 kept hold no test-side candidate),
+     because rings recur: almost every window mixes early-first-seen and late-first-seen groups. It is not
+     an evaluation scheme here and is reported as unusable. `eval/splits.time_ordered_split` and its tests
+     stay in the code. No post-hoc variant (for example dropping individual candidates) is used.
+   - **HI <-> LI transfer** (train on one, test on the other) is the out-of-sample check, labelled as
+     transfer, not as a time-leak-free test. Checked: the two datasets share 3 of 705,907 LI accounts (HI has 515,088), so
+     they are essentially, not perfectly, account-disjoint; both come from the same generator and cover
+     the same dates.
+   - **Positive counts.** Reported by pattern type, plus a cycle-only secondary subset (labels from
+     CYCLE attempts only). The subset is usable on HI-Small only (35-41 cycle positives in 11-14 groups);
+     LI-Small has 3-4 cycle positives (3 groups). The §3.7 labeling rule is not changed on the basis of these counts: any ring
+     with >= 80% of its edges from a single attempt is positive, whatever the attempt type.
+2. **Currencies.** `Amount Paid` is used as is, in its own currency (15 currencies, no exchange rates in
+   the data; 72,158 rows have received != paid). Volume ratios (s_rec, s_bal) mix currencies. Limitation.
+3. **Self-loops.** Rows with source == destination are dropped (591,212 of 5,078,345 in HI-Small, 11.6%);
+   the count is logged by the loader. Effect: node in/out totals (hence s_bal) use inter-account flow only.
+4. **Unattributed laundering rows.** 1,968 of the 5,177 laundering rows are in no attempt of the patterns
+   file. A candidate whose laundering-flagged edges rest only on those rows is `ambiguous`. Results are
+   reported with ambiguous excluded and with ambiguous counted positive (v3 §3.7).
+5. `data/ibm_aml/ibm.zip` (8 GB) is kept. Only the `HI-Small_*` and `LI-Small_*` files are extracted;
+   `data/` is git-ignored.
+
+Measurements behind these (HI-Small, window = days 0-5, 2.2 M transactions after dropping self-loops):
+aggregate + weights + graph 5.7 s, candidate enumeration <= 0.8 s, `t_feature_table` (q = 0.05,
+`max_len` 6) 11.5 s for 1,113 candidates. 54 CYCLE attempts in total, all simple rings; 34 have <= 6
+accounts. In that window 15 attempts are complete, 11 of them with <= 6 accounts (the recall cap at
+`max_len` 6) and 12 with <= 8 (cap at 8). Recovered as candidates: 8 for `tau_quantile` 0.02-0.10 and 9
+at 0.15, identical at `max_len` 6 and 8. IBM `tau_quantile` sweep range: about 0.02 to 0.15.
