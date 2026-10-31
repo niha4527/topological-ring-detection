@@ -1,0 +1,43 @@
+source,variant,feature_set,model,comparison,diff,ci_low,ci_high,share_boot_positive
+hn-off_chords-default,window_max,B+D+T,logreg,B+D+T minus B+D,0.017527948700099216,0.0019203247215213413,0.05746408159346194,0.986
+hn-off_chords-default,window_max,B+D+T,rf,B+D+T minus B+D,0.037522257183735586,0.0100195007501731,0.0954924521094227,1.0
+hn-off_chords-default,window_max,B+D+T,svm,B+D+T minus B+D,0.07703330663611185,0.018589837481712772,0.17477505112544817,0.996
+hn-off_chords-default,window_max,B+D+T_local,logreg,B+D+T_local minus B+D,0.022271129348520602,0.005718366844638323,0.06424741131393603,0.998
+hn-off_chords-default,window_max,B+D+T_local,rf,B+D+T_local minus B+D,0.03822135150936268,0.010196575833044084,0.09658112150910483,1.0
+hn-off_chords-default,window_max,B+D+T_local,svm,B+D+T_local minus B+D,0.09439188636311979,0.032320789154412506,0.1943672130750201,1.0
+hn-off_chords-default,fixed_1.0,B+D+T,logreg,B+D+T minus B+D,0.010537524030258316,-0.010673914573457672,0.06013780317492754,0.847
+hn-off_chords-default,fixed_1.0,B+D+T,logreg,B+D+T under this cap minus B+D+T under window_max,-0.0069904246698409,-0.021662235780473212,0.0060353722052774415,0.299
+hn-off_chords-default,fixed_1.0,B+D+T,rf,B+D+T minus B+D,0.03764932313288216,0.010120800421779253,0.09586404392548742,1.0
+hn-off_chords-default,fixed_1.0,B+D+T,rf,B+D+T under this cap minus B+D+T under window_max,0.00012706594914657643,-0.00014929439117405128,0.0004840180735485865,0.831
+hn-off_chords-default,fixed_1.0,B+D+T,svm,B+D+T minus B+D,0.07510066526906001,0.019406434271366513,0.1695113963906892,0.998
+hn-off_chords-default,fixed_1.0,B+D+T,svm,B+D+T under this cap minus B+D+T under window_max,-0.001932641367051846,-0.01291294361024492,0.00520454899444728,0.346
+hn-off_chords-default,fixed_1.0,B+D+T_local,logreg,B+D+T_local minus B+D,0.022873770843485075,0.0061284386686706474,0.06536687221919053,0.998
+hn-off_chords-default,fixed_1.0,B+D+T_local,logreg,B+D+T_local under this cap minus B+D+T_local under window_max,0.0006026414949644732,-0.0007993067657805623,0.0022573252897414788,0.789
+hn-off_chords-default,fixed_1.0,B+D+T_local,rf,B+D+T_local minus B+D,0.03846656871034648,0.010124458649345889,0.09703897095513517,1.0
+hn-off_chords-default,fixed_1.0,B+D+T_local,rf,B+D+T_local under this cap minus B+D+T_local under window_max,0.00024521720098380495,-0.00017958817326825226,0.0011321704742319719,0.705
+hn-off_chords-default,fixed_1.0,B+D+T_local,svm,B+D+T_local minus B+D,0.09439806224814684,0.032666987367685515,0.1945975587769877,1.0
+hn-off_chords-default,fixed_1.0,B+D+T_local,svm,B+D+T_local under this cap minus B+D+T_local under window_max,6.1758850270488e-06,-0.0009853566643622691,0.0010304779972801794,0.572
+hn-off_chords-default,max_x1.1,B+D+T,logreg,B+D+T minus B+D,0.014236404795687108,-0.0014780888869561051,0.055410184572714974,0.955
+hn-off_chords-default,max_x1.1,B+D+T,logreg,B+D+T under this cap minus B+D+T under window_max,-0.0032915439044121086,-0.005175842651161868,-0.0002877716703469956,0.001
+hn-off_chords-default,max_x1.1,B+D+T,rf,B+D+T minus B+D,0.03732754772518665,0.010115075977671611,0.09456098620921283,1.0
+hn-off_chords-default,max_x1.1,B+D+T,rf,B+D+T under this cap minus B+D+T under window_max,-0.00019470945854893618,-0.0011101030798177168,0.0002403804419191884,0.346
+hn-off_chords-default,max_x1.1,B+D+T,svm,B+D+T minus B+D,0.07608969373064567,0.017220843957675484,0.17576313694914675,0.995
+hn-off_chords-default,max_x1.1,B+D+T,svm,B+D+T under this cap minus B+D+T under window_max,-0.0009436129054661846,-0.0033356516850872597,0.0028262457651735042,0.323
+hn-off_chords-default,max_x1.1,B+D+T_local,logreg,B+D+T_local minus B+D,0.01823485919390555,-0.002510320952475653,0.061172690935867094,0.948
+hn-off_chords-default,max_x1.1,B+D+T_local,logreg,B+D+T_local under this cap minus B+D+T_local under window_max,-0.0040362701546150515,-0.010482193558044597,0.00013661095843352223,0.133
+hn-off_chords-default,max_x1.1,B+D+T_local,rf,B+D+T_local minus B+D,0.0384817567798188,0.01016072365433479,0.09681803710257841,1.0
+hn-off_chords-default,max_x1.1,B+D+T_local,rf,B+D+T_local under this cap minus B+D+T_local under window_max,0.00026040527045612105,-5.1075791833321556e-05,0.0010720789795590512,0.631
+hn-off_chords-default,max_x1.1,B+D+T_local,svm,B+D+T_local minus B+D,0.0917643166910439,0.029536644082018875,0.1948153564921631,0.999
+hn-off_chords-default,max_x1.1,B+D+T_local,svm,B+D+T_local under this cap minus B+D+T_local under window_max,-0.002627569672075891,-0.006467801601840614,0.0004976834056173743,0.097
+hn-off_chords-default,ring_local_max,B+D+T,logreg,B+D+T minus B+D,0.016513800427318315,0.000554038789174592,0.05230131658452927,0.978
+hn-off_chords-default,ring_local_max,B+D+T,logreg,B+D+T under this cap minus B+D+T under window_max,-0.0010141482727809015,-0.020514208647257025,0.010447152830917211,0.467
+hn-off_chords-default,ring_local_max,B+D+T,rf,B+D+T minus B+D,0.023512552041115686,0.004228572842957239,0.06364342325211592,0.999
+hn-off_chords-default,ring_local_max,B+D+T,rf,B+D+T under this cap minus B+D+T under window_max,-0.0140097051426199,-0.037570056124378734,-0.0012651954128251853,0.0
+hn-off_chords-default,ring_local_max,B+D+T,svm,B+D+T minus B+D,0.04753804830902475,-0.0004604225200472309,0.12476311726945338,0.973
+hn-off_chords-default,ring_local_max,B+D+T,svm,B+D+T under this cap minus B+D+T under window_max,-0.029495258327087104,-0.08200027842133166,0.002726977763963593,0.045
+hn-off_chords-default,ring_local_max,B+D+T_local,logreg,B+D+T_local minus B+D,0.021248477693968426,0.004331359988727966,0.05971649462637325,0.997
+hn-off_chords-default,ring_local_max,B+D+T_local,logreg,B+D+T_local under this cap minus B+D+T_local under window_max,-0.0010226516545521758,-0.0142805408557418,0.008056248628549532,0.464
+hn-off_chords-default,ring_local_max,B+D+T_local,rf,B+D+T_local minus B+D,0.029331805464065108,0.006528539902974556,0.0732175338944315,1.0
+hn-off_chords-default,ring_local_max,B+D+T_local,rf,B+D+T_local under this cap minus B+D+T_local under window_max,-0.00888954604529757,-0.025761686314462472,-0.0006937702591254187,0.0
+hn-off_chords-default,ring_local_max,B+D+T_local,svm,B+D+T_local minus B+D,0.07756929172336946,0.025699496997163215,0.15587742116476971,1.0
+hn-off_chords-default,ring_local_max,B+D+T_local,svm,B+D+T_local under this cap minus B+D+T_local under window_max,-0.016822594639750332,-0.05137487817556752,0.005002221215669916,0.074

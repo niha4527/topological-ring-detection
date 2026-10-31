@@ -545,6 +545,182 @@ if sy is not None:
     md.append(f"Planted wash rings per window (per condition, per seed): " + ", ".join(f"{s} {int(sy[(sy.scenario == s) & (sy.seed == 0) & (sy.hard_negatives == False) & (sy.dense_internal_chords == True) & (sy.tau_quantile == taus[0])].shape[0])}" for s in ["isolated", "dense", "chorded"]) + " (seed 0).\n")
     src(SY)
 
+# ====================================================================== 6A-6D. phases finished after the first pack
+HIR, HIP = CL / "HI_tau0.05" / "results.csv", CL / "HI_tau0.05" / "paired_differences.csv"
+LIR, LIP = CL / "LI_tau0.05" / "results.csv", CL / "LI_tau0.05" / "paired_differences.csv"
+P6 = Path("results/phase6_bandit")
+SEV = Path("results/phase4_severity")
+CAP = P3 / "cap_sensitivity"
+CLU = Path("results/phase4_cluster")
+sec("6A. Phase 6: bandit threshold policies in the drift benchmark (synthetic)")
+b_cfg = yml(P6 / "config_used.yaml")
+if b_cfg:
+    bc = b_cfg["config"]
+    md.append(f"Stream = the optimization report's drift stream (wash timing jitter {bc['stream']['jitter'][0]} -> {bc['stream']['jitter'][1]}, amount noise {bc['stream']['amount_noise'][0]} -> {bc['stream']['amount_noise'][1]} over {bc['stream']['n_windows']} windows; "
+              f"stream seed 0 is the report's stream, {b_cfg['n_seeds']} seeds, window seeds offset by {bc['stream']['seed_offset']} per seed). K = {bc['arms']['K']} arms (thresholds {bc['arms']['lo']}..{bc['arms']['hi']}); reward TP - lambda*FP; "
+              f"lambdas {bc['reward']['lambdas']} (primary {bc['reward']['primary_lambda']}); lags d {bc['lags']} (primary {bc['primary_lag']}); warm start {bc['warmup']} windows; discounted UCB gamma {bc['ducb']['gamma']}, c {bc['ducb']['c']}; "
+              f"sliding-window Thompson window {bc['sw_ts']['window']} (Beta-Bernoulli on the normalised reward); re-tune every M in {bc['retune_every']} (primary {bc['primary_retune_every']}); ascent eta {bc['ascent']['eta']}, T {bc['ascent']['T']}. "
+              f"Hyperparameters were fixed in `configs/bandit.yaml` before the run. Runtime {b_cfg['runtime_seconds']:.0f} s. Config stored in `{P6 / 'config_used.yaml'}`.\n")
+    md.append("Share of oracle = cumulative reward from window 5 / hindsight-oracle cumulative reward (401-point grid). Mean +- std over seeds. Bandits see only the played arm's reward; comparators see whole labelled windows. "
+              "Lag convention: labels of window s usable at t >= s + d; bandits cannot use a reward before the arm is played, so their effective lag is max(d, 1); at d = 0 the re-tuned and ascent comparators use the window's own labels (not like-for-like).\n")
+    SM = P6 / "summary.csv"
+    POLS = ["fixed", "retune_M2", "retune_M5", "retune_M10", "ascent", "ducb", "swts", "oracle_arms", "oracle"]
+    for lam in bc["reward"]["lambdas"]:
+        for kind, mc, sc_, fm in (("share of oracle", "share_mean", "share_std", "{:.3f}"), ("cumulative reward", "cum_mean", "cum_std", "{:.1f}")):
+            if kind == "cumulative reward" and lam != bc["reward"]["primary_lambda"]:
+                continue
+            rows = [[p] + [get(SM, {"lambda": lam, "lag": d, "policy": p}, mc, fm, "6A") + " +- " + get(SM, {"lambda": lam, "lag": d, "policy": p}, sc_, fm, "6A") for d in bc["lags"]] for p in POLS]
+            md.append(f"{kind}, lambda = {lam}:\n")
+            md.append(mdtable(["policy"] + [f"d={d}" for d in bc["lags"]], rows))
+    BV = P6 / "bandit_vs_comparators.csv"
+    md.append("Bandit minus comparator, share of oracle, paired per seed (primary comparison: bandit vs re-tuned with the same lag, M = " + str(bc["primary_retune_every"]) + "; negative = the bandit loses). lambda = " + str(bc["reward"]["primary_lambda"]) + ":\n")
+    rows = []
+    for d in bc["lags"]:
+        for bnd in ("ducb", "swts"):
+            for cmp_ in (f"retune_M{bc['primary_retune_every']}", "ascent"):
+                k = {"lambda": bc["reward"]["primary_lambda"], "lag": d, "bandit": bnd, "comparator": cmp_}
+                rows.append([d, bnd, cmp_, get(BV, k, "diff_share_mean", "{:+.3f}", "6A") + " +- " + get(BV, k, "diff_share_std", "{:.3f}", "6A"), get(BV, k, "seeds_bandit_better", "{:.0f}", "6A") + "/" + get(BV, k, "n_seeds", "{:.0f}", "6A")])
+    md.append(mdtable(["d", "bandit", "comparator", "mean difference +- std", "seeds with the bandit better"], rows))
+    md.append("**Sensitivity (exploratory, lambda " + str(bc["reward"]["primary_lambda"]) + f", d {bc['primary_lag']}).** The pre-set values (gamma {bc['ducb']['gamma']}, window {bc['sw_ts']['window']}) are the headline; the rows below were NOT used to choose them and gamma 0.95 is NOT adopted:\n")
+    rows = [[p, get(SM, {"lambda": bc["reward"]["primary_lambda"], "lag": bc["primary_lag"], "policy": p}, "share_mean", "{:.3f}", "6A") + " +- " + get(SM, {"lambda": bc["reward"]["primary_lambda"], "lag": bc["primary_lag"], "policy": p}, "share_std", "{:.3f}", "6A")]
+            for p in [f"sens_ducb_gamma{g}" for g in bc["sensitivity"]["gamma"]] + [f"sens_swts_window{w}" for w in bc["sensitivity"]["window"]]]
+    md.append(mdtable(["setting", "share of oracle"], rows))
+    RS = P6 / "results.csv"
+    gd0 = json.load(open(RES / "gd_metrics.json"))["problem_C"]["cumulative_reward_after_warmup"] if gd else {}
+    k0 = {"seed": 0, "lambda": 1.0, "lag": 2}
+    md.append("Seed-0 reproduction of the report's online-ascent result (lambda 1, d 2, cumulative reward from window 5):\n")
+    md.append(mdtable(["policy", "this run (seed 0)", "`results/gd_metrics.json`"], [[a, get(RS, k0 | {"policy": p}, "cum_reward", "{:.1f}", "6A"), gd0.get(a, "n/a")] for a, p in (("fixed", "fixed"), ("retune", "retune_M5"), ("ascent", "ascent"), ("oracle", "oracle"))]))
+    src(SM, BV, RS, extra="Stream cache `results/phase6_bandit/cache/stream_seed<k>.pkl`.")
+    st = P6 / "cache" / "stream_seed0.pkl"
+    if st.exists():
+        from ringtda.threshold.bandit_sim import arm_grid, reward_matrix  # read-only use of the stored stream
+
+        Rm = reward_matrix(pd.read_pickle(st)["windows"], arm_grid(bc["arms"]["K"], bc["arms"]["lo"], bc["arms"]["hi"]), 1.0)[bc["warmup"]:]
+        md.append(f"**Arm-9 cost (stream seed 0, lambda 1, windows {bc['warmup']}-{bc['stream']['n_windows'] - 1}).** Mean raw reward per window of arms 0-8 (thresholds {bc['arms']['lo']}..0.85): {Rm[:, :-1].mean():.2f}; of the last arm (threshold {bc['arms']['hi']}, flags almost every candidate): "
+                  f"mean {Rm[:, -1].mean():.1f}, worst {Rm[:, -1].min():.0f}. The policies see rewards clipped to +-{bc['reward']['scale']:.0f}, so one exploratory play of that arm costs about as much as the whole oracle total ({float(np.sum(csv(RS)[(csv(RS).seed == 0) & (csv(RS)['lambda'] == 1.0) & (csv(RS).lag == 2) & (csv(RS).policy == 'oracle')].oracle_cum_reward)):.0f}) but is invisible to them.\n")
+        prov.append({"table": "6A arm-9", "text": f"{Rm[:, -1].mean():.1f}", "file": str(st), "where": "reward_matrix lambda 1 arms", "columns": "scores,labels"})
+else:
+    md.append("`results/phase6_bandit/config_used.yaml` not found.\n")
+
+sec("6B. Phase 4: next-window severity regression (SYNTHETIC ONLY)")
+s_cfg = yml(SEV / "config_used.yaml")
+RG, PG, PS = SEV / "results.csv", SEV / "paired_differences.csv", SEV / "population_by_scenario.csv"
+DG = SEV / "diagnostic"
+if s_cfg and csv(RG) is not None:
+    sc_ = s_cfg["config"]
+    md.append("**Synthetic only: IBM AML has no next-window wash volume, and the generator decides that a planted ring persists (its rounds run all week). These numbers are not evidence of forecasting skill on real data.** "
+              f"Target {sc_['target']} (log1p of the ring's own wash volume in window t+1); {sc_['data']['seeds']} seeds, hard negatives off, {sc_['data']['n_windows']} one-day windows of one week; a window-t candidate is matched to the same ring in t+1 by account set. "
+              f"Excluded D columns (own current volume / activity): {', '.join(s_cfg['excluded'])}. Models ridge (alpha {sc_['models']['ridge']['alpha']}), random forest ({sc_['models']['rf']['n_estimators']} trees), gradient boosting ({sc_['models']['gbr']['n_estimators']} trees, depth {sc_['models']['gbr']['max_depth']}, lr {sc_['models']['gbr']['learning_rate']}); "
+              f"grouped CV by ring ({sc_['cv']['k']} folds, {sc_['cv']['repeats']} repeats), pooled out-of-fold, grouped bootstrap {sc_['bootstrap']['n_boot']} resamples over rings. Config: `{SEV / 'config_used.yaml'}`. Target mean {s_cfg['target_mean']:.3f}, std {s_cfg['target_std']:.3f}.\n")
+    md.append(f"Population: {get(RG, {'feature_set': 'B', 'model': 'ridge'}, 'n_pairs', '{:.0f}', '6B')} (candidate, window) pairs from {get(RG, {'feature_set': 'B', 'model': 'ridge'}, 'n_rings', '{:.0f}', '6B')} rings.\n")
+    md.append(mdtable(["scenario", "pairs", "rings"], [[sn, get(PS, {"scenario": sn}, "pairs", "{:.0f}", "6B"), get(PS, {"scenario": sn}, "rings", "{:.0f}", "6B")] for sn in ("isolated", "dense", "chorded")]))
+    SM_ = ["ridge", "rf", "gbr"]
+    for met in ("rmse", "mae", "spearman"):
+        cell = lambda w: f"{get(RG, w, met, '{:.3f}', '6B')} [{get(RG, w, met + '_ci_low', '{:.3f}', '6B')}, {get(RG, w, met + '_ci_high', '{:.3f}', '6B')}]"  # noqa: E731
+        rows = [[s] + [cell({"feature_set": s, "model": m}) for m in SM_] for s in ("B", "B+D", "B+D+T", "T")]
+        rows.append(["mean predictor", cell({"feature_set": "mean", "model": "none"}), "", ""])
+        rows.append(["persistence reference (excluded `D_log_volume` used directly as the predictor, unscaled)", cell({"feature_set": "persistence_ref", "model": "none"}), "", ""])
+        rows.append(["fair persistence (y = a + b * `D_log_volume`, fitted in each training fold; diagnostic)", (lambda w: f"{get(DG / 'results.csv', w, met, '{:.3f}', '6B')} [{get(DG / 'results.csv', w, met + '_ci_low', '{:.3f}', '6B')}, {get(DG / 'results.csv', w, met + '_ci_high', '{:.3f}', '6B')}]")({"predictor": "persistence_fit", "model": "none"}), "", ""])
+        md.append(f"{met.upper() if met != 'spearman' else 'Spearman'} [95% CI] ({'log1p units, lower is better' if met != 'spearman' else 'higher is better'}):\n")
+        md.append(mdtable(["feature set / baseline", *SM_], rows))
+    md.append("Paired differences, B+D+T minus B+D (same resamples; pre-specified primary comparison; RMSE and MAE: negative = B+D+T better):\n")
+    md.append(mdtable(["metric", *SM_], [[met] + [diff_cell(PG, {"model": m, "comparison": "B+D+T minus B+D", "metric": met}, "6B") for m in SM_] for met in ("rmse", "mae", "spearman")]))
+    src(RG, PG, PS, SEV / "config_used.yaml", extra="Seeds 0-5.")
+    md.append("**Diagnostic (structure-only predictors; labelled as diagnostics, not features; the scenario label comes from the generator).** Same pairs, groups, folds, model seeds and bootstrap resamples. "
+              "RMSE [95% CI]:\n")
+    DR = DG / "results.csv"
+    md.append(mdtable(["predictor", *SM_], [[s] + [get(DR, {"predictor": s, "model": m}, "rmse", "{:.3f}", "6B") + " [" + get(DR, {"predictor": s, "model": m}, "rmse_ci_low", "{:.3f}", "6B") + ", " + get(DR, {"predictor": s, "model": m}, "rmse_ci_high", "{:.3f}", "6B") + "]" for m in SM_] for s in ("B+D", "D_length", "scenario", "D_length+scenario")]))
+    DP = DG / "paired_differences.csv"
+    md.append("Paired B+D minus baseline, RMSE (negative = B+D better):\n")
+    md.append(mdtable(["comparison", *SM_], [[c] + [diff_cell(DP, {"model": m, "comparison": c, "metric": "rmse"}, "6B") for m in SM_] for c in ("B+D minus D_length", "B+D minus scenario", "B+D minus D_length+scenario")] + [["B+D minus persistence_fit"] + [diff_cell(DP, {"model": m, "comparison": "B+D minus persistence_fit", "metric": "rmse"}, "6B") for m in SM_]]))
+    dpd = csv(DP)
+    flag = dpd[(dpd.metric == "rmse") & dpd.ci_includes_0 & dpd.comparison.str.contains("D_length|scenario")]
+    md.append("Flag: " + ("structure-only predictors whose RMSE difference to B+D has a CI including 0: " + ", ".join(f"{r.model}/{r.comparison}" for r in flag.itertuples()) + "." if len(flag) else "no structure-only baseline matches B+D within the RMSE CI.")
+              + f" Structure-only `D_length` has a lower RMSE than B+D for rf ({get(DR, {'predictor': 'D_length', 'model': 'rf'}, 'rmse', '{:.3f}', '6B')} vs {get(DR, {'predictor': 'B+D', 'model': 'rf'}, 'rmse', '{:.3f}', '6B')}) and gbr.\n")
+    IM = DG / "rf_importance_BD.csv"
+    imp_ = csv(IM)
+    if imp_ is not None:
+        md.append("Random-forest impurity importance of B+D (no volume), top 10:\n")
+        md.append(mdtable(["rank", "column", "importance"], [[i + 1, r.column, f"{r.rf_impurity_importance:.3f}"] for i, r in imp_.head(10).iterrows()]))
+        for i in range(10):
+            prov.append({"table": "6B", "text": f"{imp_.iloc[i].rf_impurity_importance:.3f}", "file": str(IM), "where": json.dumps({"rank": i + 1}), "columns": "rf_impurity_importance"})
+    src(DR, DP, IM, DG / "config_used.yaml")
+else:
+    md.append("Severity results not found.\n")
+
+sec("6C. Infinite-bar cap sensitivity")
+md.append("Primary cap = `window_max` (the pre-set default); `fixed_1.0`, `max_x1.1` (1.1 x window max) and `ring_local_max` (T_local only: max edge weight of the ring's own neighbourhood; T_win keeps the window max) are sensitivity variants defined in `configs/cap_sensitivity.yaml`. "
+          "The persistence diagrams do not depend on the cap; B+D rows do not depend on it either. Fixed hyperparameters, same folds and bootstrap resamples as the stored classification runs. **The `ring_local_max` svm cells are a post hoc finding in a single model, uncorrected for multiplicity, and are not a result.**\n")
+for srcn, label in (("ibm", "IBM HI-Small (tau 0.05, primary variant)"), ("synthetic", "synthetic hn-off, chords default (6 seeds, primary variant)")):
+    CR, CPd, CRc = CAP / srcn / "results.csv", CAP / srcn / "paired_differences.csv", CAP / srcn / "reproduction_check.csv"
+    cr = csv(CR)
+    if cr is None:
+        continue
+    r0 = cr.iloc[0]
+    nm = r0.source
+    md.append(f"**{label}**: {int(r0.n_rows)} candidates, {int(r0.n_pos)} positives, prevalence {r0.n_pos / r0.n_rows:.4f}, {int(r0.n_pos_groups)} positive groups. `window_max` reproduces the stored T columns to max abs difference {get(CRc, {'source': nm}, 'max_abs_diff_window_max_vs_stored_T', '{:.1f}', '6C')}. "
+              f"B+D (cap-free): " + ", ".join(f"{m} {ci_cell(CR, {'variant': '(cap-free)', 'feature_set': 'B+D', 'model': m}, '6C')}" for m in MODELS) + "\n")
+    for sname in ("B+D+T", "B+D+T_local"):
+        md.append(f"{sname}, PR-AUC [95% CI]:\n")
+        md.append(mdtable(["cap variant", *MODELS], [[vv] + [ci_cell(CR, {"variant": vv, "feature_set": sname, "model": m}, "6C") for m in MODELS] for vv in ("window_max", "fixed_1.0", "max_x1.1", "ring_local_max")]))
+    md.append("Paired differences (same resamples):\n")
+    rows = []
+    for vv in ("window_max", "fixed_1.0", "max_x1.1", "ring_local_max"):
+        for sname in ("B+D+T", "B+D+T_local"):
+            rows.append([vv, f"{sname} minus B+D"] + [diff_cell(CPd, {"variant": vv, "feature_set": sname, "model": m, "comparison": f"{sname} minus B+D"}, "6C") for m in MODELS])
+            if vv != "window_max":
+                rows.append([vv, f"{sname} under this cap minus under window_max"] + [diff_cell(CPd, {"variant": vv, "feature_set": sname, "model": m, "comparison": f"{sname} under this cap minus {sname} under window_max"}, "6C") for m in MODELS])
+    md.append(mdtable(["cap variant", "comparison", *MODELS], rows))
+    src(CR, CPd, CRc, CAP / srcn / "config_used.yaml")
+
+sec("6D. Phase 4: Ward clustering of positive rings against pattern type (exploratory)")
+CLR, CLC = CLU / "results.csv", CLU / "counts_by_type.csv"
+if csv(CLR) is not None:
+    cl = csv(CLR)
+    cc_ = yml(CLU / "config_used.yaml")
+    md.append("Ward linkage, Euclidean, vectors standardized on the population; population = positives of the primary variant for pattern types with at least 3 positive groups; k = number of types (fixed) or best silhouette over 2..8 (exploratory). "
+              f"CIs: grouped bootstrap over positive groups ({int(cl.n_boot.iloc[0])} resamples, recluster each). Baselines: mean over 1000 permutations of the cluster labels, and majority-class purity. Config `{CLU / 'config_used.yaml'}`. "
+              "The percentile CIs of this bootstrap are biased upward (resampled duplicate rings): several do not contain their own point estimate.\n")
+    cn = csv(CLC)
+    md.append(mdtable(["dataset", "type", "rings", "groups", "in population"], [[r.dataset, r.kind, int(r.rings), int(r.groups), r.in_population] for r in cn.itertuples()]))
+    for ds in cl.dataset.unique():
+        rows = []
+        for r in cl[cl.dataset == ds].itertuples():
+            k = {"dataset": ds, "vector": r.vector, "k_mode": r.k_mode}
+            rows.append([f"{r.vector} ({r.k_mode})", r.k] + [get(CLR, k, s, "{:.3f}", "6D") + " [" + get(CLR, k, s + "_ci_low", "{:.3f}", "6D") + ", " + get(CLR, k, s + "_ci_high", "{:.3f}", "6D") + "]" for s in ("ari_type", "purity_type", "ari_group")]
+                        + [get(CLR, k, "ari_type_random", "{:.3f}", "6D"), get(CLR, k, "purity_type_random", "{:.3f}", "6D"), get(CLR, k, "purity_majority", "{:.3f}", "6D")])
+        md.append(f"{ds}:\n")
+        md.append(mdtable(["vector", "k", "ARI vs type [CI]", "purity vs type [CI]", "ARI vs group id [CI]", "random ARI", "random purity", "majority purity"], rows))
+    src(CLR, CLC)
+else:
+    md.append("not run (`results/phase4_cluster/` not found).\n")
+
+sec("6E. Comparisons made across the project (multiplicity note)")
+md.append("Each row of a paired-difference file is one comparison (model x variant x scope [x metric]) with its own CI; rows within a file are not independent. **Pre-specified primary** = `B+D+T minus B+D` in the primary variant, overall scope (classification, one row per model; transfer: both directions), the same comparison for severity (3 metrics x 3 models), and the bandit-vs-re-tuned (M = 5) comparison at lambda 1, d 2 (Phase 6); everything else (other variants, per-scenario rows, T_local / T_win ablations, cap variants, diagnostics, other lags) is secondary or exploratory. No multiplicity correction is applied anywhere.\n")
+mult = []
+def _n(path, mask=None):
+    d = csv(path)
+    return (None, None) if d is None else (len(d), int(mask(d).sum()))
+for label, path, mk in (
+    ("IBM HI classification", HIP, lambda d: (d.comparison == "B+D+T minus B+D") & (d.variant == "primary")),
+    ("IBM LI classification", LIP, lambda d: (d.comparison == "B+D+T minus B+D") & (d.variant == "primary")),
+    ("HI<->LI transfer", TP, lambda d: d.comparison == "B+D+T minus B+D"),
+    *[(f"synthetic {c}", SYN / c / "paired_differences.csv", lambda d: (d.comparison == "B+D+T minus B+D") & (d.variant == "primary") & (d.scope == "overall")) for c in CONDS],
+    *[(f"synthetic per scenario {c}", SYN / c / "per_scenario_paired.csv", lambda d: d.comparison != d.comparison) for c in CONDS],
+    ("cap sensitivity HI", CAP / "ibm" / "paired_differences.csv", lambda d: d.comparison != d.comparison),
+    ("cap sensitivity synthetic", CAP / "synthetic" / "paired_differences.csv", lambda d: d.comparison != d.comparison),
+    ("severity (3 metrics)", PG, lambda d: (d.comparison == "B+D+T minus B+D")),
+    ("severity diagnostic (3 metrics)", DP, lambda d: d.comparison != d.comparison),
+    ("bandit vs comparators", BV, lambda d: (d.comparator == f"retune_M{b_cfg['config']['primary_retune_every']}") & (d["lambda"] == b_cfg["config"]["reward"]["primary_lambda"]) & (d.lag == b_cfg["config"]["primary_lag"])),
+):
+    tot_, pr_ = _n(path, mk)
+    if tot_ is None:
+        continue
+    mult.append([label, f"`{path}`", tot_, pr_, tot_ - pr_])
+    prov.append({"table": "6E", "text": f"{label}: {tot_} rows", "file": str(path), "where": "row count", "columns": "comparison"})
+md.append(mdtable(["study", "file", "paired rows", "of which pre-specified primary", "secondary / exploratory"], mult))
+md.append(f"Total paired rows over the project: {sum(m[2] for m in mult)}; pre-specified primary rows: {sum(m[3] for m in mult)}; secondary or exploratory: {sum(m[4] for m in mult)}. Cap-sensitivity, per-scenario and diagnostic rows are counted as secondary or exploratory.\n")
+
 # ====================================================================== helpers for sections 7-9
 def ci_excludes_zero(path, where_base, comp, models=MODELS):
     d = csv(path)
@@ -609,6 +785,11 @@ L.append(f"Exploratory comparisons (T_local / T_win ablations) were added after 
 svm_gap = [(float(sel(csv(HIR), {'variant': 'primary', 'feature_set': s, 'model': 'svm'}).pr_auc.iloc[0]), float(sel(csv(HIR), {'variant': 'primary', 'feature_set': s, 'model': 'rf'}).pr_auc.iloc[0])) for s in ("B+D", "B+D+T")]
 L.append(f"The RBF SVM (fixed C=1, gamma=scale, untuned) is weaker than rf on HI: B+D {svm_gap[0][0]:.3f} vs {svm_gap[0][1]:.3f}, B+D+T {svm_gap[1][0]:.3f} vs {svm_gap[1][1]:.3f}.")
 L.append("Currencies are mixed (`Amount Paid` as is); the IBM data are synthetic AML data, not market transactions; the optimisation report numbers come from the pinned report generator (section 2).")
+_sv = SEV / "diagnostic"
+L.append(f"Severity (synthetic only, the generator decides persistence): B+D without volume columns reaches rf RMSE {get(RG, {'feature_set': 'B+D', 'model': 'rf'}, 'rmse', '{:.3f}', '7')} against {get(_sv / 'results.csv', {'predictor': 'persistence_fit', 'model': 'none'}, 'rmse', '{:.3f}', '7')} for a fair persistence fit and {get(_sv / 'results.csv', {'predictor': 'D_length', 'model': 'rf'}, 'rmse', '{:.3f}', '7')} for `D_length` alone; the top rf importance is `D_length` ({get(_sv / 'rf_importance_BD.csv', {'rank': 1} if False else {'column': 'D_length'}, 'rf_impurity_importance', '{:.3f}', '7')}). This is recovery of generator structure, not forecasting skill.")
+L.append(f"Bandit benchmark: at lambda 1, d 2 the bandits lose to the re-tuned comparator (discounted UCB {get(BV, {'lambda': 1.0, 'lag': 2, 'bandit': 'ducb', 'comparator': 'retune_M5'}, 'diff_share_mean', '{:+.3f}', '7')} share of oracle, {get(BV, {'lambda': 1.0, 'lag': 2, 'bandit': 'ducb', 'comparator': 'retune_M5'}, 'seeds_bandit_better', '{:.0f}', '7')} of 6 seeds better; sliding-window Thompson {get(BV, {'lambda': 1.0, 'lag': 2, 'bandit': 'swts', 'comparator': 'retune_M5'}, 'diff_share_mean', '{:+.3f}', '7')}, {get(BV, {'lambda': 1.0, 'lag': 2, 'bandit': 'swts', 'comparator': 'retune_M5'}, 'seeds_bandit_better', '{:.0f}', '7')} of 6); exploring the flag-everything arm is very costly and its size is hidden by the reward clipping.")
+L.append(f"Clustering (exploratory): on HI with k = 4, ARI against pattern type is {get(CLR, {'dataset': 'HI', 'vector': 'D', 'k_mode': 'fixed'}, 'ari_type', '{:.3f}', '7')} (D) to {get(CLR, {'dataset': 'HI', 'vector': 'D+T_local_landscape', 'k_mode': 'fixed'}, 'ari_type', '{:.3f}', '7')} (D + T_local landscape), purity {get(CLR, {'dataset': 'HI', 'vector': 'D+T_local_landscape', 'k_mode': 'fixed'}, 'purity_type', '{:.3f}', '7')} against a majority purity of {get(CLR, {'dataset': 'HI', 'vector': 'D', 'k_mode': 'fixed'}, 'purity_majority', '{:.3f}', '7')}; 4 to 12 groups per type, and the bootstrap CIs are biased upward.")
+L.append(f"Cap sensitivity: on HI, `ring_local_max` changes the svm B+D+T PR-AUC by {get(CAP / 'ibm' / 'paired_differences.csv', {'variant': 'ring_local_max', 'feature_set': 'B+D+T', 'model': 'svm', 'comparison': 'B+D+T under this cap minus B+D+T under window_max'}, 'diff', '{:+.3f}', '7')} (post hoc, one model, uncorrected for multiplicity).")
 md.append("\n".join(f"{i + 1}. {x}" for i, x in enumerate(L)) + "\n")
 
 # ====================================================================== 8. claims
@@ -640,6 +821,13 @@ claims_no.append("That the synthetic topology gains predict IBM results: B+D+T m
 claims_no.append(f"That the `T_win` contribution on HI is topological: `T_win` columns are constant within a window; alone they score {v(HIR, {'variant': 'primary', 'feature_set': 'T_win', 'model': 'logreg'}, 'pr_auc')} (logreg) on HI at prevalence {v(HIR, {'variant': 'primary', 'feature_set': 'B', 'model': 'logreg'}, 'prevalence', '{:.4f}')} and {v(LIR, {'variant': 'primary', 'feature_set': 'T_win', 'model': 'logreg'}, 'pr_auc')} on LI at prevalence {v(LIR, {'variant': 'primary', 'feature_set': 'B', 'model': 'logreg'}, 'prevalence', '{:.4f}')}; a time proxy is consistent with this but was not tested directly.")
 kk = {"source": "HI", "scope": "days0-5", "max_len": 6, "tau_quantile": 0.05}
 claims_yes.append(f"Candidate recall is partial and tau-dependent (section 6): HI days 0-5, tau 0.05, max_len 6 recovers {v(IB, kk, 'n_recovered', '{:.0f}')} of {v(IB, kk, 'n_complete_le_maxlen', '{:.0f}')} reachable complete CYCLE attempts ({v(IB, kk, 'n_complete', '{:.0f}')} complete); synthetic recall is 1.00 with hard negatives off at every tau tested.")
+_cp = csv(CAP / "ibm" / "paired_differences.csv")
+_cc = _cp[_cp.comparison.str.contains("under this cap") & _cp.variant.isin(["fixed_1.0", "max_x1.1"])]
+claims_yes.append(f"T_local / T_win cap choice among window_max, fixed 1.0 and 1.1 x window max barely changes HI B+D+T PR-AUC: largest absolute paired difference to window_max {_cc['diff'].abs().max():.3f} (all models, both sets); `ring_local_max` is a post hoc variant (svm cell single-model, uncorrected).")
+claims_no.append(f"That the bandits beat periodic re-tuning at the same lag: at lambda 1, d 2 the paired share-of-oracle difference is {v(BV, {'lambda': 1.0, 'lag': 2, 'bandit': 'ducb', 'comparator': 'retune_M5'}, 'diff_share_mean', '{:+.3f}')} (discounted UCB) and {v(BV, {'lambda': 1.0, 'lag': 2, 'bandit': 'swts', 'comparator': 'retune_M5'}, 'diff_share_mean', '{:+.3f}')} (sliding-window Thompson); the only positive cell is discounted UCB at d = 5 ({v(BV, {'lambda': 1.0, 'lag': 5, 'bandit': 'ducb', 'comparator': 'retune_M5'}, 'diff_share_mean', '{:+.3f}')}); the online gradient ascent comparator is at {v(SM, {'lambda': 1.0, 'lag': 2, 'policy': 'ascent'}, 'share_mean', '{:.3f}')} of oracle.")
+claims_no.append(f"That the severity model forecasts a ring's next-window volume beyond what ring size gives: `D_length` alone reaches rf RMSE {v(_sv / 'results.csv', {'predictor': 'D_length', 'model': 'rf'}, 'rmse', '{:.3f}')} against {v(RG, {'feature_set': 'B+D', 'model': 'rf'}, 'rmse', '{:.3f}')} for B+D; synthetic only.")
+claims_yes.append(f"On synthetic severity data B+D (no volume columns) predicts better than the mean predictor and than a fair persistence fit (rf RMSE {v(RG, {'feature_set': 'B+D', 'model': 'rf'}, 'rmse', '{:.3f}')} vs {v(RG, {'feature_set': 'mean', 'model': 'none'}, 'rmse', '{:.3f}')} and {v(_sv / 'results.csv', {'predictor': 'persistence_fit', 'model': 'none'}, 'rmse', '{:.3f}')}); topology does not change it (B+D+T minus B+D rf RMSE {v(PG, {'model': 'rf', 'comparison': 'B+D+T minus B+D', 'metric': 'rmse'}, 'diff', '{:+.3f}')}).")
+claims_no.append(f"That Ward clustering of positive rings recovers pattern types: HI ARI against type is at most {csv(CLR)[(csv(CLR).dataset == 'HI') & (csv(CLR).k_mode == 'fixed')].ari_type.max():.3f} with k = 4 (exploratory, bootstrap CIs include values near 0).")
 md.append("**Supported:**\n\n" + "\n".join(f"- {x}" for x in claims_yes) + "\n\n**Not supported:**\n\n" + "\n".join(f"- {x}" for x in claims_no) + "\n")
 
 # ====================================================================== 9. deviations
@@ -657,7 +845,9 @@ dev = [
     "Ambiguity: candidates whose laundering edges rest only on unattributed rows, or whose backing is split across structures, are `ambiguous`; results are reported with them excluded (primary) and counted positive.",
     "Hard-negative false-positive rate at 80% recall was replaced by the mean out-of-fold score rank percentile of each negative kind.",
     "Recall of complete cycle attempts uses the account-set definition (README measurement); the label-based count is reported next to it.",
-    "Phases 4-6 are not done (architecture.md: Phase 4 clustering and severity regression, Phase 5 NFT loader and label-provenance audit, Phase 6 bandit policies and drift benchmark). The adaptive-threshold study exists only in the optimization report (section 2).",
+    "Phase 4 clustering and severity regression, and Phase 6 (bandit policies and drift benchmark), were run as exploratory studies (sections 6A-6D); severity is synthetic only (IBM has no next-window wash volume) and the bandit benchmark uses the optimization report's synthetic drift stream.",
+    "Phase 5 (NFT loader, proxy labels, label-provenance audit) is NOT done. Blocker: running queries on Dune is blocked on the free tier. BigQuery access was confirmed and the schemas were inspected: `nft.wash_trades` combines five filters, of which filters 2 and 3 are cycle-type rules, so the planned leakage-controlled subset would be filters 4 and 5 only.",
+    "Not done: pump-and-dump temporal-motif track, undirected clique-complex ablation, persistence-image ablation, per-score classifier filtrations (classifiers on single-score filtrations), and the sensitivity sweeps over window length, stride, `max_len`-in-classification, tau (classification beyond IBM tau 0.05) and label threshold X.",
     "Learned-weight (Problem B), classifier (Problem A) and threshold (Problem C) results in section 2 come from the pinned report generator, not from IBM AML.",
 ]
 md.append("\n".join(f"{i + 1}. {x}" for i, x in enumerate(dev)) + "\n")
@@ -676,6 +866,9 @@ figs = [
     (CL / "candidate_recall" / "synthetic.png", "recall_synthetic.png"),
     (P3 / "audit" / "HI_audit_scores.png", "hi_audit_scores.png"),
     (P3 / "audit" / "LI_audit_scores.png", "li_audit_scores.png"),
+    (P6 / "bandit_drift.png", "bandit_drift.png"),
+    (CLU / "pca_HI.png", "cluster_pca_HI.png"),
+    (CLU / "pca_LI.png", "cluster_pca_LI.png"),
 ] + [(f, f.name) for f in sorted((RES / "figures").glob("*.png"))]
 stale = []
 for s, d in figs:
@@ -696,6 +889,13 @@ cap = [
     ("hi_pr_auc.png", f"IBM HI-Small, PR-AUC of B, B+D, B+D+T, B+D+T_local, B+D+T_win, T and the controls D, T_local, T_win by model; primary variant (ambiguous excluded), prevalence {prev(HIR, w0)}, {get(HIR, w0, 'n_pos_groups', '{:.0f}', 'figures')} positive groups. Error bars: 95% grouped-bootstrap CI. Pooled out-of-fold, mean of 5 repeats."),
     ("synthetic_pr_auc.png", "Synthetic data, PR-AUC of B, B+D, B+D+T, B+D+T_local, T by model in the four conditions (hard negatives x dense_internal_chords); primary variant, prevalence " + ", ".join(f"{prev(SYN / c / 'results.csv', w0)} ({c})" for c in CONDS) + ". Error bars: 95% grouped-bootstrap CI over six seeds pooled."),
     ("synthetic_lift_per_scenario.png", "F7. Synthetic data, paired PR-AUC difference B+D+T minus B+D per scenario (isolated, dense, chorded), by model, hard negatives off (left) and on (right); filled markers = dense_internal_chords default, hollow = off. Error bars: 95% grouped-bootstrap CI of the paired difference (same resamples for both feature sets). **Prevalence differs per scenario** (positives of one scenario against all negatives): " + "; ".join(f"{sc} {min(pv[sc]):.4f}-{max(pv[sc]):.4f}" for sc in ["isolated", "dense", "chorded"]) + " across the four conditions; positive groups per scenario " + ", ".join(f"{sc} {pg[sc]}" for sc in ["isolated", "dense", "chorded"]) + " (hn-off, chords default)."),
+    ("bandit_drift.png", f"Phase 6, synthetic drift stream (the optimization report's, {b_cfg['n_seeds']} seeds, 40 windows). Left: share of hindsight-oracle cumulative reward by policy and lag d at lambda 1, mean +- std over seeds (not a CI); discounted UCB and sliding-window Thompson (pre-set hyperparameters) against fixed, re-tuned (M = 5) and online ascent. Middle and right: rolling 5-window precision and recall of the flagged set, stream seed 0, d = 2, lambda 1. Class prevalence is the stream's candidate mix ({get(P6 / 'rolling_seed0.csv', {'policy': 'oracle', 'window': 5}, 'positives', '{:.0f}', 'figures')} positives in window 5); no bootstrap CI."),
+    ("cluster_pca_HI.png", "Phase 4 (exploratory), IBM HI-Small positive rings ({} rings, {} positive groups): 2D PCA of the standardized vectors (D, T_local landscape, D + T_local landscape, B+D+T), top row coloured by pattern type, bottom row by Ward cluster (k = {}). Descriptive: no CI; rings per type CYCLE / GATHER-SCATTER / SCATTER-GATHER / STACK = {}.".format(
+        get(CLR, {"dataset": "HI", "vector": "D", "k_mode": "fixed"}, "n_rings", "{:.0f}", "figures"), get(CLR, {"dataset": "HI", "vector": "D", "k_mode": "fixed"}, "n_groups", "{:.0f}", "figures"),
+        get(CLR, {"dataset": "HI", "vector": "D", "k_mode": "fixed"}, "k", "{:.0f}", "figures"), " / ".join(get(CLC, {"dataset": "HI", "kind": k}, "rings", "{:.0f}", "figures") for k in ("CYCLE", "GATHER-SCATTER", "SCATTER-GATHER", "STACK")))),
+    ("cluster_pca_LI.png", "Phase 4 (exploratory), IBM LI-Small positive rings ({} rings, {} positive groups, {} types in the population): same layout as the HI figure, k = {}. Descriptive: no CI.".format(
+        get(CLR, {"dataset": "LI", "vector": "D", "k_mode": "fixed"}, "n_rings", "{:.0f}", "figures"), get(CLR, {"dataset": "LI", "vector": "D", "k_mode": "fixed"}, "n_groups", "{:.0f}", "figures"),
+        get(CLR, {"dataset": "LI", "vector": "D", "k_mode": "fixed"}, "n_types", "{:.0f}", "figures"), get(CLR, {"dataset": "LI", "vector": "D", "k_mode": "fixed"}, "k", "{:.0f}", "figures"))),
     ("recall_ibm.png", "Candidate recall of complete CYCLE attempts (reachable ones, at most max_len accounts) against tau_quantile on HI and LI, days 0-5 and whole data, max_len 6 and 8. Counts, not a sample: no CI; prevalence not applicable. LI days 0-5 has one complete attempt."),
     ("recall_synthetic.png", "Recall of planted wash rings (isolated, dense, chorded) against tau_quantile, six seeds, hard negatives off and on. Mean over rings, no CI. With hard negatives on, the cells where the enumeration cap is hit (daggers in section 6.2, from tau 0.25 or 0.30) are limited by the cap."),
     ("hi_audit_scores.png", "IBM HI-Small pattern-behaviour audit: box plots of the rank-normalised s_rec, s_bal, s_reg and the combined weight (low = suspicious) by pattern group and background pairs, pooled over the audited windows. Descriptive: no CI, no class prevalence (pair counts in section 3.5)."),
@@ -703,6 +903,8 @@ cap = [
 ]
 for f, t in cap:
     fl.append(f"- **{f}**: {t}")
+fl.append("")
+fl.append("No figure exists for the severity regression (synthetic only; tables in section 6B) or the cap sensitivity (tables in section 6C); none was generated, as the data freeze allows no new experiments.")
 fl.append("")
 for f in sorted((RES / "figures").glob("*.png")):
     fl.append(f"- **{f.name}**: optimization-report figure (pinned report generator, deterministic); no CI and no class prevalence stated here, see the report text.")

@@ -1,0 +1,9 @@
+dataset,kind,rings,groups,attempts,in_population
+HI,CYCLE,36,12,16,True
+HI,GATHER-SCATTER,44,4,11,True
+HI,SCATTER-GATHER,18,4,5,True
+HI,STACK,33,6,11,True
+LI,CYCLE,3,3,3,True
+LI,GATHER-SCATTER,1,1,1,False
+LI,SCATTER-GATHER,17,4,5,True
+LI,STACK,17,5,5,True

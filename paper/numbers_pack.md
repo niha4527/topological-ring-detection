@@ -5,7 +5,7 @@ Every number below was read by `experiments/make_numbers_pack.py` from the resul
 
 ## 1. Setup
 
-- Tests collected (`pytest --collect-only -q`): 189.
+- Tests collected (`pytest --collect-only -q`): 204.
 
 | dataset | transactions (self-loops dropped) | windows | window length / stride | tau_quantile | max_len | windows with candidates | candidates | negatives | positives (primary) | ambiguous | groups | positive groups |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -1056,6 +1056,367 @@ Planted wash rings per window (per condition, per seed): isolated 9, dense 4, ch
 *Source:* `results/phase3_features/classify/candidate_recall/synthetic.csv`
 
 
+## 6A. Phase 6: bandit threshold policies in the drift benchmark (synthetic)
+
+Stream = the optimization report's drift stream (wash timing jitter 0.05 -> 0.6, amount noise 0.01 -> 0.16 over 40 windows; stream seed 0 is the report's stream, 6 seeds, window seeds offset by 1000 per seed). K = 10 arms (thresholds 0.05..0.95); reward TP - lambda*FP; lambdas [0.5, 1.0, 2.0] (primary 1.0); lags d [0, 1, 2, 5] (primary 2); warm start 5 windows; discounted UCB gamma 0.9, c 0.5; sliding-window Thompson window 10 (Beta-Bernoulli on the normalised reward); re-tune every M in [2, 5, 10] (primary 5); ascent eta 0.05, T 0.02. Hyperparameters were fixed in `configs/bandit.yaml` before the run. Runtime 29 s. Config stored in `results/phase6_bandit/config_used.yaml`.
+
+Share of oracle = cumulative reward from window 5 / hindsight-oracle cumulative reward (401-point grid). Mean +- std over seeds. Bandits see only the played arm's reward; comparators see whole labelled windows. Lag convention: labels of window s usable at t >= s + d; bandits cannot use a reward before the arm is played, so their effective lag is max(d, 1); at d = 0 the re-tuned and ascent comparators use the window's own labels (not like-for-like).
+
+share of oracle, lambda = 0.5:
+
+| policy | d=0 | d=1 | d=2 | d=5 |
+|---|---|---|---|---|
+| fixed | 0.297 +- 0.059 | 0.297 +- 0.059 | 0.297 +- 0.059 | 0.297 +- 0.059 |
+| retune_M2 | 0.972 +- 0.009 | 0.942 +- 0.010 | 0.915 +- 0.015 | 0.799 +- 0.022 |
+| retune_M5 | 0.931 +- 0.021 | 0.895 +- 0.013 | 0.867 +- 0.022 | 0.726 +- 0.036 |
+| retune_M10 | 0.844 +- 0.047 | 0.817 +- 0.031 | 0.777 +- 0.028 | 0.600 +- 0.030 |
+| ascent | 0.991 +- 0.003 | 0.991 +- 0.003 | 0.991 +- 0.003 | 0.991 +- 0.003 |
+| ducb | 0.472 +- 0.349 | 0.472 +- 0.349 | 0.313 +- 0.529 | 0.991 +- 0.004 |
+| swts | -0.029 +- 1.473 | -0.164 +- 1.224 | 0.529 +- 0.394 | 0.215 +- 0.819 |
+| oracle_arms | 0.996 +- 0.002 | 0.996 +- 0.002 | 0.996 +- 0.002 | 0.996 +- 0.002 |
+| oracle | 1.000 +- 0.000 | 1.000 +- 0.000 | 1.000 +- 0.000 | 1.000 +- 0.000 |
+
+share of oracle, lambda = 1.0:
+
+| policy | d=0 | d=1 | d=2 | d=5 |
+|---|---|---|---|---|
+| fixed | 0.298 +- 0.059 | 0.298 +- 0.059 | 0.298 +- 0.059 | 0.298 +- 0.059 |
+| retune_M2 | 0.966 +- 0.007 | 0.936 +- 0.011 | 0.909 +- 0.016 | 0.798 +- 0.022 |
+| retune_M5 | 0.928 +- 0.018 | 0.890 +- 0.012 | 0.861 +- 0.020 | 0.724 +- 0.035 |
+| retune_M10 | 0.841 +- 0.044 | 0.816 +- 0.031 | 0.772 +- 0.031 | 0.600 +- 0.030 |
+| ascent | 0.981 +- 0.006 | 0.981 +- 0.006 | 0.981 +- 0.006 | 0.981 +- 0.006 |
+| ducb | -0.047 +- 0.706 | -0.047 +- 0.706 | -0.383 +- 1.067 | 0.982 +- 0.007 |
+| swts | -0.982 +- 3.015 | -1.098 +- 2.565 | 0.091 +- 0.753 | -0.849 +- 1.519 |
+| oracle_arms | 0.992 +- 0.003 | 0.992 +- 0.003 | 0.992 +- 0.003 | 0.992 +- 0.003 |
+| oracle | 1.000 +- 0.000 | 1.000 +- 0.000 | 1.000 +- 0.000 | 1.000 +- 0.000 |
+
+cumulative reward, lambda = 1.0:
+
+| policy | d=0 | d=1 | d=2 | d=5 |
+|---|---|---|---|---|
+| fixed | 90.5 +- 18.7 | 90.5 +- 18.7 | 90.5 +- 18.7 | 90.5 +- 18.7 |
+| retune_M2 | 292.5 +- 3.7 | 283.3 +- 5.3 | 275.3 +- 5.7 | 241.7 +- 7.7 |
+| retune_M5 | 281.2 +- 6.9 | 269.7 +- 4.2 | 260.8 +- 5.7 | 219.3 +- 11.3 |
+| retune_M10 | 254.7 +- 14.0 | 247.2 +- 11.2 | 233.8 +- 10.2 | 181.7 +- 10.0 |
+| ascent | 297.0 +- 4.0 | 297.0 +- 4.0 | 297.0 +- 4.0 | 297.0 +- 4.0 |
+| ducb | -13.5 +- 213.2 | -13.5 +- 213.2 | -115.2 +- 322.0 | 297.3 +- 4.5 |
+| swts | -295.0 +- 905.5 | -330.0 +- 770.2 | 27.8 +- 227.3 | -257.3 +- 458.1 |
+| oracle_arms | 300.5 +- 3.5 | 300.5 +- 3.5 | 300.5 +- 3.5 | 300.5 +- 3.5 |
+| oracle | 302.8 +- 2.7 | 302.8 +- 2.7 | 302.8 +- 2.7 | 302.8 +- 2.7 |
+
+share of oracle, lambda = 2.0:
+
+| policy | d=0 | d=1 | d=2 | d=5 |
+|---|---|---|---|---|
+| fixed | 0.300 +- 0.059 | 0.300 +- 0.059 | 0.300 +- 0.059 | 0.300 +- 0.059 |
+| retune_M2 | 0.958 +- 0.010 | 0.928 +- 0.015 | 0.901 +- 0.019 | 0.792 +- 0.028 |
+| retune_M5 | 0.925 +- 0.017 | 0.883 +- 0.018 | 0.855 +- 0.019 | 0.721 +- 0.036 |
+| retune_M10 | 0.838 +- 0.044 | 0.811 +- 0.031 | 0.766 +- 0.028 | 0.596 +- 0.033 |
+| ascent | 0.957 +- 0.013 | 0.957 +- 0.013 | 0.957 +- 0.013 | 0.957 +- 0.013 |
+| ducb | -1.103 +- 1.432 | -1.103 +- 1.432 | -1.793 +- 2.167 | 0.959 +- 0.016 |
+| swts | -2.591 +- 6.123 | -2.599 +- 5.268 | -0.476 +- 0.995 | -3.328 +- 3.066 |
+| oracle_arms | 0.983 +- 0.007 | 0.983 +- 0.007 | 0.983 +- 0.007 | 0.983 +- 0.007 |
+| oracle | 1.000 +- 0.000 | 1.000 +- 0.000 | 1.000 +- 0.000 | 1.000 +- 0.000 |
+
+Bandit minus comparator, share of oracle, paired per seed (primary comparison: bandit vs re-tuned with the same lag, M = 5; negative = the bandit loses). lambda = 1.0:
+
+| d | bandit | comparator | mean difference +- std | seeds with the bandit better |
+|---|---|---|---|---|
+| 0 | ducb | retune_M5 | -0.976 +- 0.703 | 0/6 |
+| 0 | ducb | ascent | -1.028 +- 0.705 | 0/6 |
+| 0 | swts | retune_M5 | -1.911 +- 3.001 | 1/6 |
+| 0 | swts | ascent | -1.963 +- 3.010 | 0/6 |
+| 1 | ducb | retune_M5 | -0.938 +- 0.711 | 0/6 |
+| 1 | ducb | ascent | -1.028 +- 0.705 | 0/6 |
+| 1 | swts | retune_M5 | -1.988 +- 2.561 | 1/6 |
+| 1 | swts | ascent | -2.079 +- 2.559 | 0/6 |
+| 2 | ducb | retune_M5 | -1.245 +- 1.066 | 0/6 |
+| 2 | ducb | ascent | -1.364 +- 1.068 | 0/6 |
+| 2 | swts | retune_M5 | -0.771 +- 0.744 | 2/6 |
+| 2 | swts | ascent | -0.890 +- 0.748 | 0/6 |
+| 5 | ducb | retune_M5 | +0.258 +- 0.033 | 6/6 |
+| 5 | ducb | ascent | +0.001 +- 0.002 | 2/6 |
+| 5 | swts | retune_M5 | -1.573 +- 1.520 | 1/6 |
+| 5 | swts | ascent | -1.829 +- 1.520 | 0/6 |
+
+**Sensitivity (exploratory, lambda 1.0, d 2).** The pre-set values (gamma 0.9, window 10) are the headline; the rows below were NOT used to choose them and gamma 0.95 is NOT adopted:
+
+| setting | share of oracle |
+|---|---|
+| sens_ducb_gamma0.8 | -0.286 +- 0.673 |
+| sens_ducb_gamma0.9 | -0.383 +- 1.067 |
+| sens_ducb_gamma0.95 | 0.976 +- 0.010 |
+| sens_swts_window5 | -1.355 +- 1.818 |
+| sens_swts_window10 | 0.091 +- 0.753 |
+| sens_swts_window20 | 0.578 +- 0.608 |
+
+Seed-0 reproduction of the report's online-ascent result (lambda 1, d 2, cumulative reward from window 5):
+
+| policy | this run (seed 0) | `results/gd_metrics.json` |
+|---|---|---|
+| fixed | 71.0 | 71.0 |
+| retune | 258.0 | 258.0 |
+| ascent | 291.0 | 291.0 |
+| oracle | 300.0 | 300.0 |
+
+*Source:* `results/phase6_bandit/summary.csv`, `results/phase6_bandit/bandit_vs_comparators.csv`, `results/phase6_bandit/results.csv`. Stream cache `results/phase6_bandit/cache/stream_seed<k>.pkl`.
+
+**Arm-9 cost (stream seed 0, lambda 1, windows 5-39).** Mean raw reward per window of arms 0-8 (thresholds 0.05..0.85): 8.22; of the last arm (threshold 0.95, flags almost every candidate): mean -306.4, worst -1983. The policies see rewards clipped to +-10, so one exploratory play of that arm costs about as much as the whole oracle total (300) but is invisible to them.
+
+
+## 6B. Phase 4: next-window severity regression (SYNTHETIC ONLY)
+
+**Synthetic only: IBM AML has no next-window wash volume, and the generator decides that a planted ring persists (its rounds run all week). These numbers are not evidence of forecasting skill on real data.** Target log1p_wash_volume_next_window (log1p of the ring's own wash volume in window t+1); 6 seeds, hard negatives off, 7 one-day windows of one week; a window-t candidate is matched to the same ring in t+1 by account set. Excluded D columns (own current volume / activity): D_log_volume, D_vol_ratio, D_vol_cv, D_log_count_mean. Models ridge (alpha 1.0), random forest (300 trees), gradient boosting (200 trees, depth 3, lr 0.05); grouped CV by ring (5 folds, 5 repeats), pooled out-of-fold, grouped bootstrap 1000 resamples over rings. Config: `results/phase4_severity/config_used.yaml`. Target mean 8.131, std 0.382.
+
+Population: 610 (candidate, window) pairs from 90 rings.
+
+| scenario | pairs | rings |
+|---|---|---|
+| isolated | 322 | 54 |
+| dense | 144 | 24 |
+| chorded | 144 | 12 |
+
+RMSE [95% CI] (log1p units, lower is better):
+
+| feature set / baseline | ridge | rf | gbr |
+|---|---|---|---|
+| B | 0.201 [0.187, 0.213] | 0.196 [0.178, 0.216] | 0.193 [0.176, 0.211] |
+| B+D | 0.162 [0.151, 0.173] | 0.141 [0.134, 0.149] | 0.144 [0.136, 0.151] |
+| B+D+T | 0.280 [0.160, 0.424] | 0.140 [0.133, 0.148] | 0.144 [0.136, 0.152] |
+| T | 0.778 [0.230, 1.336] | 0.232 [0.213, 0.251] | 0.228 [0.208, 0.247] |
+| mean predictor | 0.385 [0.355, 0.418] |  |  |
+| persistence reference (excluded `D_log_volume` used directly as the predictor, unscaled) | 0.231 [0.207, 0.251] |  |  |
+| fair persistence (y = a + b * `D_log_volume`, fitted in each training fold; diagnostic) | 0.221 [0.203, 0.237] |  |  |
+
+MAE [95% CI] (log1p units, lower is better):
+
+| feature set / baseline | ridge | rf | gbr |
+|---|---|---|---|
+| B | 0.158 [0.147, 0.169] | 0.145 [0.133, 0.157] | 0.144 [0.133, 0.156] |
+| B+D | 0.128 [0.118, 0.138] | 0.112 [0.106, 0.118] | 0.114 [0.108, 0.120] |
+| B+D+T | 0.142 [0.126, 0.164] | 0.111 [0.104, 0.118] | 0.114 [0.108, 0.120] |
+| T | 0.222 [0.179, 0.296] | 0.182 [0.165, 0.199] | 0.177 [0.161, 0.194] |
+| mean predictor | 0.336 [0.307, 0.368] |  |  |
+| persistence reference (excluded `D_log_volume` used directly as the predictor, unscaled) | 0.178 [0.160, 0.196] |  |  |
+| fair persistence (y = a + b * `D_log_volume`, fitted in each training fold; diagnostic) | 0.176 [0.162, 0.189] |  |  |
+
+Spearman [95% CI] (higher is better):
+
+| feature set / baseline | ridge | rf | gbr |
+|---|---|---|---|
+| B | 0.802 [0.712, 0.854] | 0.782 [0.699, 0.830] | 0.784 [0.696, 0.832] |
+| B+D | 0.821 [0.731, 0.872] | 0.802 [0.703, 0.857] | 0.802 [0.704, 0.855] |
+| B+D+T | 0.825 [0.738, 0.873] | 0.811 [0.721, 0.861] | 0.811 [0.720, 0.859] |
+| T | 0.721 [0.627, 0.791] | 0.706 [0.608, 0.777] | 0.725 [0.630, 0.791] |
+| mean predictor | -0.148 [-0.221, -0.068] |  |  |
+| persistence reference (excluded `D_log_volume` used directly as the predictor, unscaled) | 0.762 [0.662, 0.830] |  |  |
+| fair persistence (y = a + b * `D_log_volume`, fitted in each training fold; diagnostic) | 0.760 [0.659, 0.829] |  |  |
+
+Paired differences, B+D+T minus B+D (same resamples; pre-specified primary comparison; RMSE and MAE: negative = B+D+T better):
+
+| metric | ridge | rf | gbr |
+|---|---|---|---|
+| rmse | +0.118 [+0.000, +0.266] | -0.001 [-0.004, +0.002] | -0.000 [-0.003, +0.003] |
+| mae | +0.013 [+0.000, +0.036] | -0.001 [-0.004, +0.002] | +0.000 [-0.002, +0.003] |
+| spearman | +0.004 [-0.007, +0.016] | +0.009 [-0.007, +0.030] | +0.009 [-0.007, +0.028] |
+
+*Source:* `results/phase4_severity/results.csv`, `results/phase4_severity/paired_differences.csv`, `results/phase4_severity/population_by_scenario.csv`, `results/phase4_severity/config_used.yaml`. Seeds 0-5.
+
+**Diagnostic (structure-only predictors; labelled as diagnostics, not features; the scenario label comes from the generator).** Same pairs, groups, folds, model seeds and bootstrap resamples. RMSE [95% CI]:
+
+| predictor | ridge | rf | gbr |
+|---|---|---|---|
+| B+D | 0.162 [0.151, 0.173] | 0.141 [0.134, 0.149] | 0.144 [0.136, 0.151] |
+| D_length | 0.192 [0.168, 0.210] | 0.132 [0.125, 0.139] | 0.132 [0.125, 0.139] |
+| scenario | 0.329 [0.299, 0.361] | 0.329 [0.299, 0.361] | 0.329 [0.299, 0.361] |
+| D_length+scenario | 0.189 [0.168, 0.205] | 0.132 [0.125, 0.140] | 0.132 [0.125, 0.140] |
+
+Paired B+D minus baseline, RMSE (negative = B+D better):
+
+| comparison | ridge | rf | gbr |
+|---|---|---|---|
+| B+D minus D_length | -0.030 [-0.043, -0.014] | +0.009 [+0.006, +0.012] | +0.012 [+0.009, +0.015] |
+| B+D minus scenario | -0.167 [-0.206, -0.132] | -0.188 [-0.223, -0.156] | -0.186 [-0.220, -0.154] |
+| B+D minus D_length+scenario | -0.027 [-0.038, -0.013] | +0.009 [+0.006, +0.012] | +0.012 [+0.008, +0.015] |
+| B+D minus persistence_fit | -0.059 [-0.071, -0.047] | -0.080 [-0.093, -0.066] | -0.077 [-0.091, -0.063] |
+
+Flag: no structure-only baseline matches B+D within the RMSE CI. Structure-only `D_length` has a lower RMSE than B+D for rf (0.132 vs 0.141) and gbr.
+
+Random-forest impurity importance of B+D (no volume), top 10:
+
+| rank | column | importance |
+|---|---|---|
+| 1 | D_length | 0.796 |
+| 2 | D_rec_min | 0.047 |
+| 3 | D_rec_mean | 0.042 |
+| 4 | D_reg_min | 0.009 |
+| 5 | D_deg_imb_mean | 0.008 |
+| 6 | B_w_var | 0.008 |
+| 7 | D_gap_cv_mean | 0.007 |
+| 8 | D_bal_mean | 0.007 |
+| 9 | B_density | 0.007 |
+| 10 | B_betw_max | 0.007 |
+
+*Source:* `results/phase4_severity/diagnostic/results.csv`, `results/phase4_severity/diagnostic/paired_differences.csv`, `results/phase4_severity/diagnostic/rf_importance_BD.csv`, `results/phase4_severity/diagnostic/config_used.yaml`
+
+
+## 6C. Infinite-bar cap sensitivity
+
+Primary cap = `window_max` (the pre-set default); `fixed_1.0`, `max_x1.1` (1.1 x window max) and `ring_local_max` (T_local only: max edge weight of the ring's own neighbourhood; T_win keeps the window max) are sensitivity variants defined in `configs/cap_sensitivity.yaml`. The persistence diagrams do not depend on the cap; B+D rows do not depend on it either. Fixed hyperparameters, same folds and bootstrap resamples as the stored classification runs. **The `ring_local_max` svm cells are a post hoc finding in a single model, uncorrected for multiplicity, and are not a result.**
+
+**IBM HI-Small (tau 0.05, primary variant)**: 7555 candidates, 131 positives, prevalence 0.0173, 14 positive groups. `window_max` reproduces the stored T columns to max abs difference 0.0. B+D (cap-free): logreg 0.477 [0.240, 0.657], rf 0.652 [0.328, 0.830], svm 0.326 [0.126, 0.536]
+
+B+D+T, PR-AUC [95% CI]:
+
+| cap variant | logreg | rf | svm |
+|---|---|---|---|
+| window_max | 0.581 [0.300, 0.733] | 0.676 [0.351, 0.868] | 0.329 [0.135, 0.509] |
+| fixed_1.0 | 0.569 [0.298, 0.721] | 0.673 [0.346, 0.866] | 0.305 [0.126, 0.485] |
+| max_x1.1 | 0.578 [0.297, 0.731] | 0.682 [0.352, 0.872] | 0.334 [0.137, 0.519] |
+| ring_local_max | 0.517 [0.231, 0.715] | 0.683 [0.363, 0.859] | 0.518 [0.249, 0.697] |
+
+B+D+T_local, PR-AUC [95% CI]:
+
+| cap variant | logreg | rf | svm |
+|---|---|---|---|
+| window_max | 0.618 [0.385, 0.747] | 0.692 [0.355, 0.881] | 0.363 [0.173, 0.543] |
+| fixed_1.0 | 0.618 [0.386, 0.747] | 0.693 [0.352, 0.878] | 0.363 [0.173, 0.543] |
+| max_x1.1 | 0.615 [0.380, 0.746] | 0.694 [0.350, 0.881] | 0.363 [0.174, 0.542] |
+| ring_local_max | 0.557 [0.334, 0.711] | 0.692 [0.363, 0.869] | 0.580 [0.339, 0.746] |
+
+Paired differences (same resamples):
+
+| cap variant | comparison | logreg | rf | svm |
+|---|---|---|---|---|
+| window_max | B+D+T minus B+D | +0.104 [-0.002, +0.171] | +0.025 [-0.050, +0.102] | +0.003 [-0.111, +0.077] |
+| window_max | B+D+T_local minus B+D | +0.141 [+0.031, +0.224] | +0.041 [-0.037, +0.106] | +0.037 [-0.081, +0.126] |
+| fixed_1.0 | B+D+T minus B+D | +0.093 [-0.006, +0.161] | +0.021 [-0.059, +0.100] | -0.021 [-0.135, +0.056] |
+| fixed_1.0 | B+D+T under this cap minus under window_max | -0.011 [-0.023, +0.000] | -0.004 [-0.012, +0.001] | -0.024 [-0.037, -0.004] |
+| fixed_1.0 | B+D+T_local minus B+D | +0.142 [+0.031, +0.224] | +0.042 [-0.040, +0.105] | +0.037 [-0.081, +0.126] |
+| fixed_1.0 | B+D+T_local under this cap minus under window_max | +0.001 [-0.001, +0.003] | +0.001 [-0.008, +0.007] | -0.000 [-0.000, +0.000] |
+| max_x1.1 | B+D+T minus B+D | +0.101 [-0.006, +0.167] | +0.030 [-0.049, +0.102] | +0.008 [-0.106, +0.083] |
+| max_x1.1 | B+D+T under this cap minus under window_max | -0.003 [-0.006, -0.001] | +0.005 [-0.006, +0.011] | +0.005 [+0.001, +0.011] |
+| max_x1.1 | B+D+T_local minus B+D | +0.138 [+0.031, +0.218] | +0.042 [-0.041, +0.107] | +0.037 [-0.081, +0.125] |
+| max_x1.1 | B+D+T_local under this cap minus under window_max | -0.003 [-0.007, +0.000] | +0.001 [-0.006, +0.005] | -0.000 [-0.004, +0.004] |
+| ring_local_max | B+D+T minus B+D | +0.041 [-0.088, +0.139] | +0.031 [-0.013, +0.088] | +0.192 [+0.041, +0.278] |
+| ring_local_max | B+D+T under this cap minus under window_max | -0.063 [-0.166, +0.028] | +0.006 [-0.035, +0.057] | +0.190 [+0.097, +0.240] |
+| ring_local_max | B+D+T_local minus B+D | +0.080 [-0.029, +0.153] | +0.040 [-0.018, +0.094] | +0.254 [+0.113, +0.349] |
+| ring_local_max | B+D+T_local under this cap minus under window_max | -0.061 [-0.154, +0.025] | -0.001 [-0.032, +0.034] | +0.217 [+0.121, +0.269] |
+
+*Source:* `results/phase3_features/cap_sensitivity/ibm/results.csv`, `results/phase3_features/cap_sensitivity/ibm/paired_differences.csv`, `results/phase3_features/cap_sensitivity/ibm/reproduction_check.csv`, `results/phase3_features/cap_sensitivity/ibm/config_used.yaml`
+
+**synthetic hn-off, chords default (6 seeds, primary variant)**: 5071 candidates, 103 positives, prevalence 0.0203, 46 positive groups. `window_max` reproduces the stored T columns to max abs difference 0.0. B+D (cap-free): logreg 0.970 [0.930, 0.985], rf 0.959 [0.896, 0.990], svm 0.892 [0.791, 0.950]
+
+B+D+T, PR-AUC [95% CI]:
+
+| cap variant | logreg | rf | svm |
+|---|---|---|---|
+| window_max | 0.988 [0.978, 0.999] | 0.996 [0.989, 1.000] | 0.969 [0.940, 0.996] |
+| fixed_1.0 | 0.981 [0.967, 0.999] | 0.997 [0.989, 1.000] | 0.967 [0.934, 0.996] |
+| max_x1.1 | 0.985 [0.974, 0.998] | 0.996 [0.988, 1.000] | 0.968 [0.941, 0.996] |
+| ring_local_max | 0.987 [0.969, 0.998] | 0.982 [0.952, 0.998] | 0.940 [0.879, 0.982] |
+
+B+D+T_local, PR-AUC [95% CI]:
+
+| cap variant | logreg | rf | svm |
+|---|---|---|---|
+| window_max | 0.993 [0.985, 1.000] | 0.997 [0.991, 1.000] | 0.987 [0.970, 1.000] |
+| fixed_1.0 | 0.993 [0.986, 1.000] | 0.997 [0.992, 1.000] | 0.987 [0.970, 1.000] |
+| max_x1.1 | 0.989 [0.977, 1.000] | 0.997 [0.992, 1.000] | 0.984 [0.965, 1.000] |
+| ring_local_max | 0.992 [0.977, 1.000] | 0.988 [0.965, 0.999] | 0.970 [0.936, 0.990] |
+
+Paired differences (same resamples):
+
+| cap variant | comparison | logreg | rf | svm |
+|---|---|---|---|---|
+| window_max | B+D+T minus B+D | +0.018 [+0.002, +0.057] | +0.038 [+0.010, +0.095] | +0.077 [+0.019, +0.175] |
+| window_max | B+D+T_local minus B+D | +0.022 [+0.006, +0.064] | +0.038 [+0.010, +0.097] | +0.094 [+0.032, +0.194] |
+| fixed_1.0 | B+D+T minus B+D | +0.011 [-0.011, +0.060] | +0.038 [+0.010, +0.096] | +0.075 [+0.019, +0.170] |
+| fixed_1.0 | B+D+T under this cap minus under window_max | -0.007 [-0.022, +0.006] | +0.000 [-0.000, +0.000] | -0.002 [-0.013, +0.005] |
+| fixed_1.0 | B+D+T_local minus B+D | +0.023 [+0.006, +0.065] | +0.038 [+0.010, +0.097] | +0.094 [+0.033, +0.195] |
+| fixed_1.0 | B+D+T_local under this cap minus under window_max | +0.001 [-0.001, +0.002] | +0.000 [-0.000, +0.001] | +0.000 [-0.001, +0.001] |
+| max_x1.1 | B+D+T minus B+D | +0.014 [-0.001, +0.055] | +0.037 [+0.010, +0.095] | +0.076 [+0.017, +0.176] |
+| max_x1.1 | B+D+T under this cap minus under window_max | -0.003 [-0.005, -0.000] | -0.000 [-0.001, +0.000] | -0.001 [-0.003, +0.003] |
+| max_x1.1 | B+D+T_local minus B+D | +0.018 [-0.003, +0.061] | +0.038 [+0.010, +0.097] | +0.092 [+0.030, +0.195] |
+| max_x1.1 | B+D+T_local under this cap minus under window_max | -0.004 [-0.010, +0.000] | +0.000 [-0.000, +0.001] | -0.003 [-0.006, +0.000] |
+| ring_local_max | B+D+T minus B+D | +0.017 [+0.001, +0.052] | +0.024 [+0.004, +0.064] | +0.048 [-0.000, +0.125] |
+| ring_local_max | B+D+T under this cap minus under window_max | -0.001 [-0.021, +0.010] | -0.014 [-0.038, -0.001] | -0.029 [-0.082, +0.003] |
+| ring_local_max | B+D+T_local minus B+D | +0.021 [+0.004, +0.060] | +0.029 [+0.007, +0.073] | +0.078 [+0.026, +0.156] |
+| ring_local_max | B+D+T_local under this cap minus under window_max | -0.001 [-0.014, +0.008] | -0.009 [-0.026, -0.001] | -0.017 [-0.051, +0.005] |
+
+*Source:* `results/phase3_features/cap_sensitivity/synthetic/results.csv`, `results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv`, `results/phase3_features/cap_sensitivity/synthetic/reproduction_check.csv`, `results/phase3_features/cap_sensitivity/synthetic/config_used.yaml`
+
+
+## 6D. Phase 4: Ward clustering of positive rings against pattern type (exploratory)
+
+Ward linkage, Euclidean, vectors standardized on the population; population = positives of the primary variant for pattern types with at least 3 positive groups; k = number of types (fixed) or best silhouette over 2..8 (exploratory). CIs: grouped bootstrap over positive groups (500 resamples, recluster each). Baselines: mean over 1000 permutations of the cluster labels, and majority-class purity. Config `results/phase4_cluster/config_used.yaml`. The percentile CIs of this bootstrap are biased upward (resampled duplicate rings): several do not contain their own point estimate.
+
+| dataset | type | rings | groups | in population |
+|---|---|---|---|---|
+| HI | CYCLE | 36 | 12 | True |
+| HI | GATHER-SCATTER | 44 | 4 | True |
+| HI | SCATTER-GATHER | 18 | 4 | True |
+| HI | STACK | 33 | 6 | True |
+| LI | CYCLE | 3 | 3 | True |
+| LI | GATHER-SCATTER | 1 | 1 | False |
+| LI | SCATTER-GATHER | 17 | 4 | True |
+| LI | STACK | 17 | 5 | True |
+
+HI:
+
+| vector | k | ARI vs type [CI] | purity vs type [CI] | ARI vs group id [CI] | random ARI | random purity | majority purity |
+|---|---|---|---|---|---|---|---|
+| D (fixed) | 4 | 0.059 [-0.002, 0.369] | 0.458 [0.371, 0.728] | 0.169 [0.001, 0.435] | 0.000 | 0.363 | 0.336 |
+| D (silhouette) | 8 | 0.062 [-0.030, 0.238] | 0.519 [0.335, 0.730] | 0.160 [-0.021, 0.469] | -0.000 | 0.398 | 0.336 |
+| T_local_landscape (fixed) | 4 | 0.073 [0.010, 0.431] | 0.466 [0.392, 0.757] | 0.296 [0.103, 0.752] | -0.000 | 0.358 | 0.336 |
+| T_local_landscape (silhouette) | 8 | 0.113 [0.059, 0.392] | 0.534 [0.489, 0.784] | 0.417 [0.098, 0.767] | -0.000 | 0.389 | 0.336 |
+| D+T_local_landscape (fixed) | 4 | 0.097 [0.018, 0.456] | 0.489 [0.396, 0.747] | 0.398 [0.182, 0.757] | 0.000 | 0.365 | 0.336 |
+| D+T_local_landscape (silhouette) | 8 | 0.111 [-0.037, 0.458] | 0.534 [0.313, 0.746] | 0.472 [-0.040, 0.775] | -0.000 | 0.389 | 0.336 |
+| B+D+T_all (fixed) | 4 | 0.031 [-0.046, 0.406] | 0.443 [0.349, 0.721] | 0.303 [0.007, 0.543] | -0.000 | 0.364 | 0.336 |
+| B+D+T_all (silhouette) | 3 | 0.007 [-0.046, 0.379] | 0.412 [0.322, 0.725] | 0.095 [-0.023, 0.435] | 0.000 | 0.353 | 0.336 |
+
+LI:
+
+| vector | k | ARI vs type [CI] | purity vs type [CI] | ARI vs group id [CI] | random ARI | random purity | majority purity |
+|---|---|---|---|---|---|---|---|
+| D (fixed) | 3 | 0.139 [-0.041, 0.708] | 0.649 [0.564, 0.925] | 0.091 [-0.035, 0.584] | 0.001 | 0.532 | 0.459 |
+| D (silhouette) | 2 | 0.067 [0.056, 0.529] | 0.486 [0.493, 1.000] | 0.015 [0.021, 0.627] | 0.002 | 0.486 | 0.459 |
+| T_local_landscape (fixed) | 3 | 0.260 [-0.016, 0.496] | 0.730 [0.524, 0.854] | 0.067 [-0.025, 0.356] | 0.001 | 0.536 | 0.459 |
+| T_local_landscape (silhouette) | 2 | 0.067 [-0.022, 0.347] | 0.486 [0.486, 0.920] | 0.015 [-0.029, 0.355] | 0.002 | 0.486 | 0.459 |
+| D+T_local_landscape (fixed) | 3 | 0.260 [-0.011, 0.572] | 0.730 [0.536, 0.879] | 0.067 [-0.028, 0.436] | 0.001 | 0.536 | 0.459 |
+| D+T_local_landscape (silhouette) | 2 | 0.067 [-0.019, 0.508] | 0.486 [0.486, 1.000] | 0.015 [-0.029, 0.556] | 0.002 | 0.486 | 0.459 |
+| B+D+T_all (fixed) | 3 | 0.032 [-0.105, 0.343] | 0.514 [0.500, 0.822] | 0.006 [-0.062, 0.197] | 0.000 | 0.516 | 0.459 |
+| B+D+T_all (silhouette) | 2 | 0.033 [-0.066, 0.294] | 0.514 [0.483, 0.932] | 0.013 [-0.063, 0.350] | 0.000 | 0.504 | 0.459 |
+
+*Source:* `results/phase4_cluster/results.csv`, `results/phase4_cluster/counts_by_type.csv`
+
+
+## 6E. Comparisons made across the project (multiplicity note)
+
+Each row of a paired-difference file is one comparison (model x variant x scope [x metric]) with its own CI; rows within a file are not independent. **Pre-specified primary** = `B+D+T minus B+D` in the primary variant, overall scope (classification, one row per model; transfer: both directions), the same comparison for severity (3 metrics x 3 models), and the bandit-vs-re-tuned (M = 5) comparison at lambda 1, d 2 (Phase 6); everything else (other variants, per-scenario rows, T_local / T_win ablations, cap variants, diagnostics, other lags) is secondary or exploratory. No multiplicity correction is applied anywhere.
+
+| study | file | paired rows | of which pre-specified primary | secondary / exploratory |
+|---|---|---|---|---|
+| IBM HI classification | `results/phase3_features/classify/HI_tau0.05/paired_differences.csv` | 60 | 3 | 57 |
+| IBM LI classification | `results/phase3_features/classify/LI_tau0.05/paired_differences.csv` | 30 | 3 | 27 |
+| HI<->LI transfer | `results/phase3_features/classify/transfer/paired_differences.csv` | 12 | 6 | 6 |
+| synthetic hn-off_chords-default | `results/phase3_features/classify/synthetic/hn-off_chords-default/paired_differences.csv` | 18 | 3 | 15 |
+| synthetic hn-off_chords-off | `results/phase3_features/classify/synthetic/hn-off_chords-off/paired_differences.csv` | 18 | 3 | 15 |
+| synthetic hn-on_chords-default | `results/phase3_features/classify/synthetic/hn-on_chords-default/paired_differences.csv` | 12 | 3 | 9 |
+| synthetic hn-on_chords-off | `results/phase3_features/classify/synthetic/hn-on_chords-off/paired_differences.csv` | 12 | 3 | 9 |
+| synthetic per scenario hn-off_chords-default | `results/phase3_features/classify/synthetic/hn-off_chords-default/per_scenario_paired.csv` | 27 | 0 | 27 |
+| synthetic per scenario hn-off_chords-off | `results/phase3_features/classify/synthetic/hn-off_chords-off/per_scenario_paired.csv` | 27 | 0 | 27 |
+| synthetic per scenario hn-on_chords-default | `results/phase3_features/classify/synthetic/hn-on_chords-default/per_scenario_paired.csv` | 27 | 0 | 27 |
+| synthetic per scenario hn-on_chords-off | `results/phase3_features/classify/synthetic/hn-on_chords-off/per_scenario_paired.csv` | 27 | 0 | 27 |
+| cap sensitivity HI | `results/phase3_features/cap_sensitivity/ibm/paired_differences.csv` | 42 | 0 | 42 |
+| cap sensitivity synthetic | `results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv` | 42 | 0 | 42 |
+| severity (3 metrics) | `results/phase4_severity/paired_differences.csv` | 27 | 9 | 18 |
+| severity diagnostic (3 metrics) | `results/phase4_severity/diagnostic/paired_differences.csv` | 36 | 0 | 36 |
+| bandit vs comparators | `results/phase6_bandit/bandit_vs_comparators.csv` | 72 | 2 | 70 |
+
+Total paired rows over the project: 489; pre-specified primary rows: 35; secondary or exploratory: 454. Cap-sensitivity, per-scenario and diagnostic rows are counted as secondary or exploratory.
+
+
 ## 7. Limitations and caveats
 
 1. Few positive groups: 14 on HI and 10 on LI (positives 131 and 38 candidates); the effective sample size is the group count, so CIs are wide.
@@ -1073,6 +1434,10 @@ Planted wash rings per window (per condition, per seed): isolated 9, dense 4, ch
 13. Exploratory comparisons (T_local / T_win ablations) were added after the first HI run; 36 such paired rows exist in the HI file and 18 in the LI file; no multiplicity correction.
 14. The RBF SVM (fixed C=1, gamma=scale, untuned) is weaker than rf on HI: B+D 0.326 vs 0.652, B+D+T 0.329 vs 0.676.
 15. Currencies are mixed (`Amount Paid` as is); the IBM data are synthetic AML data, not market transactions; the optimisation report numbers come from the pinned report generator (section 2).
+16. Severity (synthetic only, the generator decides persistence): B+D without volume columns reaches rf RMSE 0.141 against 0.221 for a fair persistence fit and 0.132 for `D_length` alone; the top rf importance is `D_length` (0.796). This is recovery of generator structure, not forecasting skill.
+17. Bandit benchmark: at lambda 1, d 2 the bandits lose to the re-tuned comparator (discounted UCB -1.245 share of oracle, 0 of 6 seeds better; sliding-window Thompson -0.771, 2 of 6); exploring the flag-everything arm is very costly and its size is hidden by the reward clipping.
+18. Clustering (exploratory): on HI with k = 4, ARI against pattern type is 0.059 (D) to 0.097 (D + T_local landscape), purity 0.489 against a majority purity of 0.336; 4 to 12 groups per type, and the bootstrap CIs are biased upward.
+19. Cap sensitivity: on HI, `ring_local_max` changes the svm B+D+T PR-AUC by +0.190 (post hoc, one model, uncorrected for multiplicity).
 
 
 ## 8. Claims the data supports / does not support
@@ -1084,6 +1449,8 @@ Planted wash rings per window (per condition, per seed): isolated 9, dense 4, ch
 - On synthetic data B+D+T improves on B+D by a paired CI above 0 in 7 of 12 condition-model cells (hn-off_chords-default: 3/3; hn-off_chords-off: 3/3; hn-on_chords-default: 0/3; hn-on_chords-off: 1/3); B+D itself scores 0.960 to 0.997 (logreg minimum, rf maximum over the four conditions).
 - Exploratory: the local topology columns alone (B+D+T_local) add to B+D on HI for logreg only (CI excludes 0 in 1 of 3 models: logreg +0.141, rf +0.041, svm +0.037); this is one of the exploratory comparisons and is not corrected for multiplicity.
 - Candidate recall is partial and tau-dependent (section 6): HI days 0-5, tau 0.05, max_len 6 recovers 8 of 11 reachable complete CYCLE attempts (15 complete); synthetic recall is 1.00 with hard negatives off at every tau tested.
+- T_local / T_win cap choice among window_max, fixed 1.0 and 1.1 x window max barely changes HI B+D+T PR-AUC: largest absolute paired difference to window_max 0.024 (all models, both sets); `ring_local_max` is a post hoc variant (svm cell single-model, uncorrected).
+- On synthetic severity data B+D (no volume columns) predicts better than the mean predictor and than a fair persistence fit (rf RMSE 0.141 vs 0.385 and 0.221); topology does not change it (B+D+T minus B+D rf RMSE -0.001).
 
 **Not supported:**
 
@@ -1094,6 +1461,9 @@ Planted wash rings per window (per condition, per seed): isolated 9, dense 4, ch
 - That the ring-birth signal carries over from HI to LI: `-D_birth` alone is 0.006 on LI at prevalence 0.0039 (HI: 0.314).
 - That the synthetic topology gains predict IBM results: B+D+T minus B+D has a CI above 0 in 7 of 12 synthetic cells and in 0 IBM cells (HI primary, LI primary); IBM has few positive groups, so absence of a detected gain is not evidence of no gain.
 - That the `T_win` contribution on HI is topological: `T_win` columns are constant within a window; alone they score 0.121 (logreg) on HI at prevalence 0.0173 and 0.006 on LI at prevalence 0.0039; a time proxy is consistent with this but was not tested directly.
+- That the bandits beat periodic re-tuning at the same lag: at lambda 1, d 2 the paired share-of-oracle difference is -1.245 (discounted UCB) and -0.771 (sliding-window Thompson); the only positive cell is discounted UCB at d = 5 (+0.258); the online gradient ascent comparator is at 0.981 of oracle.
+- That the severity model forecasts a ring's next-window volume beyond what ring size gives: `D_length` alone reaches rf RMSE 0.132 against 0.141 for B+D; synthetic only.
+- That Ward clustering of positive rings recovers pattern types: HI ARI against type is at most 0.097 with k = 4 (exploratory, bootstrap CIs include values near 0).
 
 
 ## 9. Deviations from the v3 proposal
@@ -1107,8 +1477,10 @@ Planted wash rings per window (per condition, per seed): isolated 9, dense 4, ch
 7. Ambiguity: candidates whose laundering edges rest only on unattributed rows, or whose backing is split across structures, are `ambiguous`; results are reported with them excluded (primary) and counted positive.
 8. Hard-negative false-positive rate at 80% recall was replaced by the mean out-of-fold score rank percentile of each negative kind.
 9. Recall of complete cycle attempts uses the account-set definition (README measurement); the label-based count is reported next to it.
-10. Phases 4-6 are not done (architecture.md: Phase 4 clustering and severity regression, Phase 5 NFT loader and label-provenance audit, Phase 6 bandit policies and drift benchmark). The adaptive-threshold study exists only in the optimization report (section 2).
-11. Learned-weight (Problem B), classifier (Problem A) and threshold (Problem C) results in section 2 come from the pinned report generator, not from IBM AML.
+10. Phase 4 clustering and severity regression, and Phase 6 (bandit policies and drift benchmark), were run as exploratory studies (sections 6A-6D); severity is synthetic only (IBM has no next-window wash volume) and the bandit benchmark uses the optimization report's synthetic drift stream.
+11. Phase 5 (NFT loader, proxy labels, label-provenance audit) is NOT done. Blocker: running queries on Dune is blocked on the free tier. BigQuery access was confirmed and the schemas were inspected: `nft.wash_trades` combines five filters, of which filters 2 and 3 are cycle-type rules, so the planned leakage-controlled subset would be filters 4 and 5 only.
+12. Not done: pump-and-dump temporal-motif track, undirected clique-complex ablation, persistence-image ablation, per-score classifier filtrations (classifiers on single-score filtrations), and the sensitivity sweeps over window length, stride, `max_len`-in-classification, tau (classification beyond IBM tau 0.05) and label threshold X.
+13. Learned-weight (Problem B), classifier (Problem A) and threshold (Problem C) results in section 2 come from the pinned report generator, not from IBM AML.
 
 
 ## Expected files that were missing

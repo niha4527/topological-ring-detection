@@ -1878,6 +1878,935 @@ hn-on_chords-off,"+0.610 [+0.456, +0.700]",results/phase3_features/classify/synt
 6.2,hn=False chords=False,results/phase3_features/classify/candidate_recall/synthetic.csv,"groupby hard_negatives,dense_internal_chords,scenario,tau_quantile","recovered,n_truncated_sccs,n_candidates"
 6.2,hn=True chords=True,results/phase3_features/classify/candidate_recall/synthetic.csv,"groupby hard_negatives,dense_internal_chords,scenario,tau_quantile","recovered,n_truncated_sccs,n_candidates"
 6.2,hn=True chords=False,results/phase3_features/classify/candidate_recall/synthetic.csv,"groupby hard_negatives,dense_internal_chords,scenario,tau_quantile","recovered,n_truncated_sccs,n_candidates"
+6A,0.297,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""fixed""}",share_mean
+6A,0.059,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""fixed""}",share_std
+6A,0.297,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""fixed""}",share_mean
+6A,0.059,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""fixed""}",share_std
+6A,0.297,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""fixed""}",share_mean
+6A,0.059,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""fixed""}",share_std
+6A,0.297,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""fixed""}",share_mean
+6A,0.059,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""fixed""}",share_std
+6A,0.972,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""retune_M2""}",share_mean
+6A,0.009,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""retune_M2""}",share_std
+6A,0.942,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""retune_M2""}",share_mean
+6A,0.010,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""retune_M2""}",share_std
+6A,0.915,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""retune_M2""}",share_mean
+6A,0.015,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""retune_M2""}",share_std
+6A,0.799,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""retune_M2""}",share_mean
+6A,0.022,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""retune_M2""}",share_std
+6A,0.931,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""retune_M5""}",share_mean
+6A,0.021,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""retune_M5""}",share_std
+6A,0.895,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""retune_M5""}",share_mean
+6A,0.013,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""retune_M5""}",share_std
+6A,0.867,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""retune_M5""}",share_mean
+6A,0.022,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""retune_M5""}",share_std
+6A,0.726,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""retune_M5""}",share_mean
+6A,0.036,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""retune_M5""}",share_std
+6A,0.844,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""retune_M10""}",share_mean
+6A,0.047,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""retune_M10""}",share_std
+6A,0.817,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""retune_M10""}",share_mean
+6A,0.031,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""retune_M10""}",share_std
+6A,0.777,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""retune_M10""}",share_mean
+6A,0.028,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""retune_M10""}",share_std
+6A,0.600,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""retune_M10""}",share_mean
+6A,0.030,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""retune_M10""}",share_std
+6A,0.991,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""ascent""}",share_mean
+6A,0.003,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""ascent""}",share_std
+6A,0.991,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""ascent""}",share_mean
+6A,0.003,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""ascent""}",share_std
+6A,0.991,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""ascent""}",share_mean
+6A,0.003,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""ascent""}",share_std
+6A,0.991,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""ascent""}",share_mean
+6A,0.003,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""ascent""}",share_std
+6A,0.472,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""ducb""}",share_mean
+6A,0.349,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""ducb""}",share_std
+6A,0.472,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""ducb""}",share_mean
+6A,0.349,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""ducb""}",share_std
+6A,0.313,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""ducb""}",share_mean
+6A,0.529,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""ducb""}",share_std
+6A,0.991,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""ducb""}",share_mean
+6A,0.004,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""ducb""}",share_std
+6A,-0.029,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""swts""}",share_mean
+6A,1.473,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""swts""}",share_std
+6A,-0.164,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""swts""}",share_mean
+6A,1.224,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""swts""}",share_std
+6A,0.529,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""swts""}",share_mean
+6A,0.394,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""swts""}",share_std
+6A,0.215,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""swts""}",share_mean
+6A,0.819,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""swts""}",share_std
+6A,0.996,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""oracle_arms""}",share_mean
+6A,0.002,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""oracle_arms""}",share_std
+6A,0.996,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""oracle_arms""}",share_mean
+6A,0.002,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""oracle_arms""}",share_std
+6A,0.996,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""oracle_arms""}",share_mean
+6A,0.002,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""oracle_arms""}",share_std
+6A,0.996,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""oracle_arms""}",share_mean
+6A,0.002,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""oracle_arms""}",share_std
+6A,1.000,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""oracle""}",share_mean
+6A,0.000,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 0, ""policy"": ""oracle""}",share_std
+6A,1.000,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""oracle""}",share_mean
+6A,0.000,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 1, ""policy"": ""oracle""}",share_std
+6A,1.000,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""oracle""}",share_mean
+6A,0.000,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 2, ""policy"": ""oracle""}",share_std
+6A,1.000,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""oracle""}",share_mean
+6A,0.000,results/phase6_bandit/summary.csv,"{""lambda"": 0.5, ""lag"": 5, ""policy"": ""oracle""}",share_std
+6A,0.298,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""fixed""}",share_mean
+6A,0.059,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""fixed""}",share_std
+6A,0.298,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""fixed""}",share_mean
+6A,0.059,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""fixed""}",share_std
+6A,0.298,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""fixed""}",share_mean
+6A,0.059,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""fixed""}",share_std
+6A,0.298,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""fixed""}",share_mean
+6A,0.059,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""fixed""}",share_std
+6A,0.966,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""retune_M2""}",share_mean
+6A,0.007,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""retune_M2""}",share_std
+6A,0.936,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""retune_M2""}",share_mean
+6A,0.011,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""retune_M2""}",share_std
+6A,0.909,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""retune_M2""}",share_mean
+6A,0.016,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""retune_M2""}",share_std
+6A,0.798,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""retune_M2""}",share_mean
+6A,0.022,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""retune_M2""}",share_std
+6A,0.928,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""retune_M5""}",share_mean
+6A,0.018,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""retune_M5""}",share_std
+6A,0.890,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""retune_M5""}",share_mean
+6A,0.012,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""retune_M5""}",share_std
+6A,0.861,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""retune_M5""}",share_mean
+6A,0.020,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""retune_M5""}",share_std
+6A,0.724,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""retune_M5""}",share_mean
+6A,0.035,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""retune_M5""}",share_std
+6A,0.841,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""retune_M10""}",share_mean
+6A,0.044,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""retune_M10""}",share_std
+6A,0.816,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""retune_M10""}",share_mean
+6A,0.031,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""retune_M10""}",share_std
+6A,0.772,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""retune_M10""}",share_mean
+6A,0.031,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""retune_M10""}",share_std
+6A,0.600,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""retune_M10""}",share_mean
+6A,0.030,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""retune_M10""}",share_std
+6A,0.981,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""ascent""}",share_mean
+6A,0.006,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""ascent""}",share_std
+6A,0.981,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""ascent""}",share_mean
+6A,0.006,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""ascent""}",share_std
+6A,0.981,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""ascent""}",share_mean
+6A,0.006,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""ascent""}",share_std
+6A,0.981,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""ascent""}",share_mean
+6A,0.006,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""ascent""}",share_std
+6A,-0.047,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""ducb""}",share_mean
+6A,0.706,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""ducb""}",share_std
+6A,-0.047,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""ducb""}",share_mean
+6A,0.706,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""ducb""}",share_std
+6A,-0.383,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""ducb""}",share_mean
+6A,1.067,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""ducb""}",share_std
+6A,0.982,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""ducb""}",share_mean
+6A,0.007,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""ducb""}",share_std
+6A,-0.982,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""swts""}",share_mean
+6A,3.015,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""swts""}",share_std
+6A,-1.098,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""swts""}",share_mean
+6A,2.565,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""swts""}",share_std
+6A,0.091,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""swts""}",share_mean
+6A,0.753,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""swts""}",share_std
+6A,-0.849,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""swts""}",share_mean
+6A,1.519,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""swts""}",share_std
+6A,0.992,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""oracle_arms""}",share_mean
+6A,0.003,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""oracle_arms""}",share_std
+6A,0.992,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""oracle_arms""}",share_mean
+6A,0.003,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""oracle_arms""}",share_std
+6A,0.992,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""oracle_arms""}",share_mean
+6A,0.003,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""oracle_arms""}",share_std
+6A,0.992,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""oracle_arms""}",share_mean
+6A,0.003,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""oracle_arms""}",share_std
+6A,1.000,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""oracle""}",share_mean
+6A,0.000,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""oracle""}",share_std
+6A,1.000,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""oracle""}",share_mean
+6A,0.000,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""oracle""}",share_std
+6A,1.000,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""oracle""}",share_mean
+6A,0.000,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""oracle""}",share_std
+6A,1.000,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""oracle""}",share_mean
+6A,0.000,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""oracle""}",share_std
+6A,90.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""fixed""}",cum_mean
+6A,18.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""fixed""}",cum_std
+6A,90.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""fixed""}",cum_mean
+6A,18.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""fixed""}",cum_std
+6A,90.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""fixed""}",cum_mean
+6A,18.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""fixed""}",cum_std
+6A,90.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""fixed""}",cum_mean
+6A,18.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""fixed""}",cum_std
+6A,292.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""retune_M2""}",cum_mean
+6A,3.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""retune_M2""}",cum_std
+6A,283.3,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""retune_M2""}",cum_mean
+6A,5.3,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""retune_M2""}",cum_std
+6A,275.3,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""retune_M2""}",cum_mean
+6A,5.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""retune_M2""}",cum_std
+6A,241.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""retune_M2""}",cum_mean
+6A,7.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""retune_M2""}",cum_std
+6A,281.2,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""retune_M5""}",cum_mean
+6A,6.9,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""retune_M5""}",cum_std
+6A,269.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""retune_M5""}",cum_mean
+6A,4.2,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""retune_M5""}",cum_std
+6A,260.8,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""retune_M5""}",cum_mean
+6A,5.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""retune_M5""}",cum_std
+6A,219.3,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""retune_M5""}",cum_mean
+6A,11.3,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""retune_M5""}",cum_std
+6A,254.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""retune_M10""}",cum_mean
+6A,14.0,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""retune_M10""}",cum_std
+6A,247.2,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""retune_M10""}",cum_mean
+6A,11.2,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""retune_M10""}",cum_std
+6A,233.8,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""retune_M10""}",cum_mean
+6A,10.2,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""retune_M10""}",cum_std
+6A,181.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""retune_M10""}",cum_mean
+6A,10.0,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""retune_M10""}",cum_std
+6A,297.0,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""ascent""}",cum_mean
+6A,4.0,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""ascent""}",cum_std
+6A,297.0,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""ascent""}",cum_mean
+6A,4.0,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""ascent""}",cum_std
+6A,297.0,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""ascent""}",cum_mean
+6A,4.0,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""ascent""}",cum_std
+6A,297.0,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""ascent""}",cum_mean
+6A,4.0,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""ascent""}",cum_std
+6A,-13.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""ducb""}",cum_mean
+6A,213.2,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""ducb""}",cum_std
+6A,-13.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""ducb""}",cum_mean
+6A,213.2,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""ducb""}",cum_std
+6A,-115.2,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""ducb""}",cum_mean
+6A,322.0,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""ducb""}",cum_std
+6A,297.3,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""ducb""}",cum_mean
+6A,4.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""ducb""}",cum_std
+6A,-295.0,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""swts""}",cum_mean
+6A,905.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""swts""}",cum_std
+6A,-330.0,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""swts""}",cum_mean
+6A,770.2,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""swts""}",cum_std
+6A,27.8,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""swts""}",cum_mean
+6A,227.3,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""swts""}",cum_std
+6A,-257.3,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""swts""}",cum_mean
+6A,458.1,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""swts""}",cum_std
+6A,300.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""oracle_arms""}",cum_mean
+6A,3.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""oracle_arms""}",cum_std
+6A,300.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""oracle_arms""}",cum_mean
+6A,3.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""oracle_arms""}",cum_std
+6A,300.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""oracle_arms""}",cum_mean
+6A,3.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""oracle_arms""}",cum_std
+6A,300.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""oracle_arms""}",cum_mean
+6A,3.5,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""oracle_arms""}",cum_std
+6A,302.8,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""oracle""}",cum_mean
+6A,2.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 0, ""policy"": ""oracle""}",cum_std
+6A,302.8,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""oracle""}",cum_mean
+6A,2.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 1, ""policy"": ""oracle""}",cum_std
+6A,302.8,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""oracle""}",cum_mean
+6A,2.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""oracle""}",cum_std
+6A,302.8,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""oracle""}",cum_mean
+6A,2.7,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 5, ""policy"": ""oracle""}",cum_std
+6A,0.300,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""fixed""}",share_mean
+6A,0.059,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""fixed""}",share_std
+6A,0.300,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""fixed""}",share_mean
+6A,0.059,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""fixed""}",share_std
+6A,0.300,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""fixed""}",share_mean
+6A,0.059,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""fixed""}",share_std
+6A,0.300,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""fixed""}",share_mean
+6A,0.059,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""fixed""}",share_std
+6A,0.958,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""retune_M2""}",share_mean
+6A,0.010,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""retune_M2""}",share_std
+6A,0.928,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""retune_M2""}",share_mean
+6A,0.015,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""retune_M2""}",share_std
+6A,0.901,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""retune_M2""}",share_mean
+6A,0.019,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""retune_M2""}",share_std
+6A,0.792,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""retune_M2""}",share_mean
+6A,0.028,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""retune_M2""}",share_std
+6A,0.925,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""retune_M5""}",share_mean
+6A,0.017,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""retune_M5""}",share_std
+6A,0.883,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""retune_M5""}",share_mean
+6A,0.018,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""retune_M5""}",share_std
+6A,0.855,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""retune_M5""}",share_mean
+6A,0.019,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""retune_M5""}",share_std
+6A,0.721,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""retune_M5""}",share_mean
+6A,0.036,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""retune_M5""}",share_std
+6A,0.838,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""retune_M10""}",share_mean
+6A,0.044,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""retune_M10""}",share_std
+6A,0.811,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""retune_M10""}",share_mean
+6A,0.031,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""retune_M10""}",share_std
+6A,0.766,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""retune_M10""}",share_mean
+6A,0.028,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""retune_M10""}",share_std
+6A,0.596,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""retune_M10""}",share_mean
+6A,0.033,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""retune_M10""}",share_std
+6A,0.957,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""ascent""}",share_mean
+6A,0.013,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""ascent""}",share_std
+6A,0.957,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""ascent""}",share_mean
+6A,0.013,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""ascent""}",share_std
+6A,0.957,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""ascent""}",share_mean
+6A,0.013,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""ascent""}",share_std
+6A,0.957,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""ascent""}",share_mean
+6A,0.013,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""ascent""}",share_std
+6A,-1.103,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""ducb""}",share_mean
+6A,1.432,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""ducb""}",share_std
+6A,-1.103,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""ducb""}",share_mean
+6A,1.432,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""ducb""}",share_std
+6A,-1.793,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""ducb""}",share_mean
+6A,2.167,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""ducb""}",share_std
+6A,0.959,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""ducb""}",share_mean
+6A,0.016,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""ducb""}",share_std
+6A,-2.591,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""swts""}",share_mean
+6A,6.123,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""swts""}",share_std
+6A,-2.599,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""swts""}",share_mean
+6A,5.268,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""swts""}",share_std
+6A,-0.476,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""swts""}",share_mean
+6A,0.995,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""swts""}",share_std
+6A,-3.328,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""swts""}",share_mean
+6A,3.066,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""swts""}",share_std
+6A,0.983,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""oracle_arms""}",share_mean
+6A,0.007,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""oracle_arms""}",share_std
+6A,0.983,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""oracle_arms""}",share_mean
+6A,0.007,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""oracle_arms""}",share_std
+6A,0.983,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""oracle_arms""}",share_mean
+6A,0.007,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""oracle_arms""}",share_std
+6A,0.983,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""oracle_arms""}",share_mean
+6A,0.007,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""oracle_arms""}",share_std
+6A,1.000,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""oracle""}",share_mean
+6A,0.000,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 0, ""policy"": ""oracle""}",share_std
+6A,1.000,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""oracle""}",share_mean
+6A,0.000,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 1, ""policy"": ""oracle""}",share_std
+6A,1.000,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""oracle""}",share_mean
+6A,0.000,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 2, ""policy"": ""oracle""}",share_std
+6A,1.000,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""oracle""}",share_mean
+6A,0.000,results/phase6_bandit/summary.csv,"{""lambda"": 2.0, ""lag"": 5, ""policy"": ""oracle""}",share_std
+6A,-0.976,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",diff_share_mean
+6A,0.703,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",diff_share_std
+6A,0,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",n_seeds
+6A,-1.028,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",diff_share_mean
+6A,0.705,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",diff_share_std
+6A,0,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",n_seeds
+6A,-1.911,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",diff_share_mean
+6A,3.001,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",diff_share_std
+6A,1,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",n_seeds
+6A,-1.963,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""swts"", ""comparator"": ""ascent""}",diff_share_mean
+6A,3.010,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""swts"", ""comparator"": ""ascent""}",diff_share_std
+6A,0,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""swts"", ""comparator"": ""ascent""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 0, ""bandit"": ""swts"", ""comparator"": ""ascent""}",n_seeds
+6A,-0.938,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",diff_share_mean
+6A,0.711,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",diff_share_std
+6A,0,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",n_seeds
+6A,-1.028,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",diff_share_mean
+6A,0.705,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",diff_share_std
+6A,0,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",n_seeds
+6A,-1.988,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",diff_share_mean
+6A,2.561,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",diff_share_std
+6A,1,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",n_seeds
+6A,-2.079,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""swts"", ""comparator"": ""ascent""}",diff_share_mean
+6A,2.559,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""swts"", ""comparator"": ""ascent""}",diff_share_std
+6A,0,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""swts"", ""comparator"": ""ascent""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 1, ""bandit"": ""swts"", ""comparator"": ""ascent""}",n_seeds
+6A,-1.245,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",diff_share_mean
+6A,1.066,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",diff_share_std
+6A,0,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",n_seeds
+6A,-1.364,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",diff_share_mean
+6A,1.068,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",diff_share_std
+6A,0,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",n_seeds
+6A,-0.771,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",diff_share_mean
+6A,0.744,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",diff_share_std
+6A,2,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",n_seeds
+6A,-0.890,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""swts"", ""comparator"": ""ascent""}",diff_share_mean
+6A,0.748,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""swts"", ""comparator"": ""ascent""}",diff_share_std
+6A,0,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""swts"", ""comparator"": ""ascent""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""swts"", ""comparator"": ""ascent""}",n_seeds
+6A,+0.258,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",diff_share_mean
+6A,0.033,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",diff_share_std
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",n_seeds
+6A,+0.001,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",diff_share_mean
+6A,0.002,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",diff_share_std
+6A,2,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""ducb"", ""comparator"": ""ascent""}",n_seeds
+6A,-1.573,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",diff_share_mean
+6A,1.520,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",diff_share_std
+6A,1,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",n_seeds
+6A,-1.829,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""swts"", ""comparator"": ""ascent""}",diff_share_mean
+6A,1.520,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""swts"", ""comparator"": ""ascent""}",diff_share_std
+6A,0,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""swts"", ""comparator"": ""ascent""}",seeds_bandit_better
+6A,6,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""swts"", ""comparator"": ""ascent""}",n_seeds
+6A,-0.286,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""sens_ducb_gamma0.8""}",share_mean
+6A,0.673,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""sens_ducb_gamma0.8""}",share_std
+6A,-0.383,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""sens_ducb_gamma0.9""}",share_mean
+6A,1.067,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""sens_ducb_gamma0.9""}",share_std
+6A,0.976,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""sens_ducb_gamma0.95""}",share_mean
+6A,0.010,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""sens_ducb_gamma0.95""}",share_std
+6A,-1.355,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""sens_swts_window5""}",share_mean
+6A,1.818,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""sens_swts_window5""}",share_std
+6A,0.091,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""sens_swts_window10""}",share_mean
+6A,0.753,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""sens_swts_window10""}",share_std
+6A,0.578,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""sens_swts_window20""}",share_mean
+6A,0.608,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""sens_swts_window20""}",share_std
+6A,71.0,results/phase6_bandit/results.csv,"{""seed"": 0, ""lambda"": 1.0, ""lag"": 2, ""policy"": ""fixed""}",cum_reward
+6A,258.0,results/phase6_bandit/results.csv,"{""seed"": 0, ""lambda"": 1.0, ""lag"": 2, ""policy"": ""retune_M5""}",cum_reward
+6A,291.0,results/phase6_bandit/results.csv,"{""seed"": 0, ""lambda"": 1.0, ""lag"": 2, ""policy"": ""ascent""}",cum_reward
+6A,300.0,results/phase6_bandit/results.csv,"{""seed"": 0, ""lambda"": 1.0, ""lag"": 2, ""policy"": ""oracle""}",cum_reward
+6A arm-9,-306.4,results/phase6_bandit/cache/stream_seed0.pkl,reward_matrix lambda 1 arms,"scores,labels"
+6B,610,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""ridge""}",n_pairs
+6B,90,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""ridge""}",n_rings
+6B,322,results/phase4_severity/population_by_scenario.csv,"{""scenario"": ""isolated""}",pairs
+6B,54,results/phase4_severity/population_by_scenario.csv,"{""scenario"": ""isolated""}",rings
+6B,144,results/phase4_severity/population_by_scenario.csv,"{""scenario"": ""dense""}",pairs
+6B,24,results/phase4_severity/population_by_scenario.csv,"{""scenario"": ""dense""}",rings
+6B,144,results/phase4_severity/population_by_scenario.csv,"{""scenario"": ""chorded""}",pairs
+6B,12,results/phase4_severity/population_by_scenario.csv,"{""scenario"": ""chorded""}",rings
+6B,0.201,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""ridge""}",rmse
+6B,0.187,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""ridge""}",rmse_ci_low
+6B,0.213,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""ridge""}",rmse_ci_high
+6B,0.196,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""rf""}",rmse
+6B,0.178,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""rf""}",rmse_ci_low
+6B,0.216,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""rf""}",rmse_ci_high
+6B,0.193,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""gbr""}",rmse
+6B,0.176,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""gbr""}",rmse_ci_low
+6B,0.211,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""gbr""}",rmse_ci_high
+6B,0.162,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""ridge""}",rmse
+6B,0.151,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""ridge""}",rmse_ci_low
+6B,0.173,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""ridge""}",rmse_ci_high
+6B,0.141,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""rf""}",rmse
+6B,0.134,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""rf""}",rmse_ci_low
+6B,0.149,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""rf""}",rmse_ci_high
+6B,0.144,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""gbr""}",rmse
+6B,0.136,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""gbr""}",rmse_ci_low
+6B,0.151,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""gbr""}",rmse_ci_high
+6B,0.280,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""ridge""}",rmse
+6B,0.160,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""ridge""}",rmse_ci_low
+6B,0.424,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""ridge""}",rmse_ci_high
+6B,0.140,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""rf""}",rmse
+6B,0.133,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""rf""}",rmse_ci_low
+6B,0.148,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""rf""}",rmse_ci_high
+6B,0.144,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""gbr""}",rmse
+6B,0.136,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""gbr""}",rmse_ci_low
+6B,0.152,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""gbr""}",rmse_ci_high
+6B,0.778,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""ridge""}",rmse
+6B,0.230,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""ridge""}",rmse_ci_low
+6B,1.336,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""ridge""}",rmse_ci_high
+6B,0.232,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""rf""}",rmse
+6B,0.213,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""rf""}",rmse_ci_low
+6B,0.251,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""rf""}",rmse_ci_high
+6B,0.228,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""gbr""}",rmse
+6B,0.208,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""gbr""}",rmse_ci_low
+6B,0.247,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""gbr""}",rmse_ci_high
+6B,0.385,results/phase4_severity/results.csv,"{""feature_set"": ""mean"", ""model"": ""none""}",rmse
+6B,0.355,results/phase4_severity/results.csv,"{""feature_set"": ""mean"", ""model"": ""none""}",rmse_ci_low
+6B,0.418,results/phase4_severity/results.csv,"{""feature_set"": ""mean"", ""model"": ""none""}",rmse_ci_high
+6B,0.231,results/phase4_severity/results.csv,"{""feature_set"": ""persistence_ref"", ""model"": ""none""}",rmse
+6B,0.207,results/phase4_severity/results.csv,"{""feature_set"": ""persistence_ref"", ""model"": ""none""}",rmse_ci_low
+6B,0.251,results/phase4_severity/results.csv,"{""feature_set"": ""persistence_ref"", ""model"": ""none""}",rmse_ci_high
+6B,0.221,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""persistence_fit"", ""model"": ""none""}",rmse
+6B,0.203,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""persistence_fit"", ""model"": ""none""}",rmse_ci_low
+6B,0.237,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""persistence_fit"", ""model"": ""none""}",rmse_ci_high
+6B,0.158,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""ridge""}",mae
+6B,0.147,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""ridge""}",mae_ci_low
+6B,0.169,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""ridge""}",mae_ci_high
+6B,0.145,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""rf""}",mae
+6B,0.133,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""rf""}",mae_ci_low
+6B,0.157,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""rf""}",mae_ci_high
+6B,0.144,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""gbr""}",mae
+6B,0.133,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""gbr""}",mae_ci_low
+6B,0.156,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""gbr""}",mae_ci_high
+6B,0.128,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""ridge""}",mae
+6B,0.118,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""ridge""}",mae_ci_low
+6B,0.138,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""ridge""}",mae_ci_high
+6B,0.112,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""rf""}",mae
+6B,0.106,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""rf""}",mae_ci_low
+6B,0.118,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""rf""}",mae_ci_high
+6B,0.114,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""gbr""}",mae
+6B,0.108,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""gbr""}",mae_ci_low
+6B,0.120,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""gbr""}",mae_ci_high
+6B,0.142,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""ridge""}",mae
+6B,0.126,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""ridge""}",mae_ci_low
+6B,0.164,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""ridge""}",mae_ci_high
+6B,0.111,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""rf""}",mae
+6B,0.104,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""rf""}",mae_ci_low
+6B,0.118,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""rf""}",mae_ci_high
+6B,0.114,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""gbr""}",mae
+6B,0.108,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""gbr""}",mae_ci_low
+6B,0.120,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""gbr""}",mae_ci_high
+6B,0.222,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""ridge""}",mae
+6B,0.179,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""ridge""}",mae_ci_low
+6B,0.296,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""ridge""}",mae_ci_high
+6B,0.182,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""rf""}",mae
+6B,0.165,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""rf""}",mae_ci_low
+6B,0.199,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""rf""}",mae_ci_high
+6B,0.177,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""gbr""}",mae
+6B,0.161,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""gbr""}",mae_ci_low
+6B,0.194,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""gbr""}",mae_ci_high
+6B,0.336,results/phase4_severity/results.csv,"{""feature_set"": ""mean"", ""model"": ""none""}",mae
+6B,0.307,results/phase4_severity/results.csv,"{""feature_set"": ""mean"", ""model"": ""none""}",mae_ci_low
+6B,0.368,results/phase4_severity/results.csv,"{""feature_set"": ""mean"", ""model"": ""none""}",mae_ci_high
+6B,0.178,results/phase4_severity/results.csv,"{""feature_set"": ""persistence_ref"", ""model"": ""none""}",mae
+6B,0.160,results/phase4_severity/results.csv,"{""feature_set"": ""persistence_ref"", ""model"": ""none""}",mae_ci_low
+6B,0.196,results/phase4_severity/results.csv,"{""feature_set"": ""persistence_ref"", ""model"": ""none""}",mae_ci_high
+6B,0.176,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""persistence_fit"", ""model"": ""none""}",mae
+6B,0.162,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""persistence_fit"", ""model"": ""none""}",mae_ci_low
+6B,0.189,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""persistence_fit"", ""model"": ""none""}",mae_ci_high
+6B,0.802,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""ridge""}",spearman
+6B,0.712,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""ridge""}",spearman_ci_low
+6B,0.854,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""ridge""}",spearman_ci_high
+6B,0.782,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""rf""}",spearman
+6B,0.699,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""rf""}",spearman_ci_low
+6B,0.830,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""rf""}",spearman_ci_high
+6B,0.784,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""gbr""}",spearman
+6B,0.696,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""gbr""}",spearman_ci_low
+6B,0.832,results/phase4_severity/results.csv,"{""feature_set"": ""B"", ""model"": ""gbr""}",spearman_ci_high
+6B,0.821,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""ridge""}",spearman
+6B,0.731,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""ridge""}",spearman_ci_low
+6B,0.872,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""ridge""}",spearman_ci_high
+6B,0.802,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""rf""}",spearman
+6B,0.703,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""rf""}",spearman_ci_low
+6B,0.857,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""rf""}",spearman_ci_high
+6B,0.802,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""gbr""}",spearman
+6B,0.704,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""gbr""}",spearman_ci_low
+6B,0.855,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""gbr""}",spearman_ci_high
+6B,0.825,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""ridge""}",spearman
+6B,0.738,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""ridge""}",spearman_ci_low
+6B,0.873,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""ridge""}",spearman_ci_high
+6B,0.811,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""rf""}",spearman
+6B,0.721,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""rf""}",spearman_ci_low
+6B,0.861,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""rf""}",spearman_ci_high
+6B,0.811,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""gbr""}",spearman
+6B,0.720,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""gbr""}",spearman_ci_low
+6B,0.859,results/phase4_severity/results.csv,"{""feature_set"": ""B+D+T"", ""model"": ""gbr""}",spearman_ci_high
+6B,0.721,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""ridge""}",spearman
+6B,0.627,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""ridge""}",spearman_ci_low
+6B,0.791,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""ridge""}",spearman_ci_high
+6B,0.706,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""rf""}",spearman
+6B,0.608,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""rf""}",spearman_ci_low
+6B,0.777,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""rf""}",spearman_ci_high
+6B,0.725,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""gbr""}",spearman
+6B,0.630,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""gbr""}",spearman_ci_low
+6B,0.791,results/phase4_severity/results.csv,"{""feature_set"": ""T"", ""model"": ""gbr""}",spearman_ci_high
+6B,-0.148,results/phase4_severity/results.csv,"{""feature_set"": ""mean"", ""model"": ""none""}",spearman
+6B,-0.221,results/phase4_severity/results.csv,"{""feature_set"": ""mean"", ""model"": ""none""}",spearman_ci_low
+6B,-0.068,results/phase4_severity/results.csv,"{""feature_set"": ""mean"", ""model"": ""none""}",spearman_ci_high
+6B,0.762,results/phase4_severity/results.csv,"{""feature_set"": ""persistence_ref"", ""model"": ""none""}",spearman
+6B,0.662,results/phase4_severity/results.csv,"{""feature_set"": ""persistence_ref"", ""model"": ""none""}",spearman_ci_low
+6B,0.830,results/phase4_severity/results.csv,"{""feature_set"": ""persistence_ref"", ""model"": ""none""}",spearman_ci_high
+6B,0.760,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""persistence_fit"", ""model"": ""none""}",spearman
+6B,0.659,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""persistence_fit"", ""model"": ""none""}",spearman_ci_low
+6B,0.829,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""persistence_fit"", ""model"": ""none""}",spearman_ci_high
+6B,"+0.118 [+0.000, +0.266]",results/phase4_severity/paired_differences.csv,"{""model"": ""ridge"", ""comparison"": ""B+D+T minus B+D"", ""metric"": ""rmse""}","diff,ci_low,ci_high"
+6B,"-0.001 [-0.004, +0.002]",results/phase4_severity/paired_differences.csv,"{""model"": ""rf"", ""comparison"": ""B+D+T minus B+D"", ""metric"": ""rmse""}","diff,ci_low,ci_high"
+6B,"-0.000 [-0.003, +0.003]",results/phase4_severity/paired_differences.csv,"{""model"": ""gbr"", ""comparison"": ""B+D+T minus B+D"", ""metric"": ""rmse""}","diff,ci_low,ci_high"
+6B,"+0.013 [+0.000, +0.036]",results/phase4_severity/paired_differences.csv,"{""model"": ""ridge"", ""comparison"": ""B+D+T minus B+D"", ""metric"": ""mae""}","diff,ci_low,ci_high"
+6B,"-0.001 [-0.004, +0.002]",results/phase4_severity/paired_differences.csv,"{""model"": ""rf"", ""comparison"": ""B+D+T minus B+D"", ""metric"": ""mae""}","diff,ci_low,ci_high"
+6B,"+0.000 [-0.002, +0.003]",results/phase4_severity/paired_differences.csv,"{""model"": ""gbr"", ""comparison"": ""B+D+T minus B+D"", ""metric"": ""mae""}","diff,ci_low,ci_high"
+6B,"+0.004 [-0.007, +0.016]",results/phase4_severity/paired_differences.csv,"{""model"": ""ridge"", ""comparison"": ""B+D+T minus B+D"", ""metric"": ""spearman""}","diff,ci_low,ci_high"
+6B,"+0.009 [-0.007, +0.030]",results/phase4_severity/paired_differences.csv,"{""model"": ""rf"", ""comparison"": ""B+D+T minus B+D"", ""metric"": ""spearman""}","diff,ci_low,ci_high"
+6B,"+0.009 [-0.007, +0.028]",results/phase4_severity/paired_differences.csv,"{""model"": ""gbr"", ""comparison"": ""B+D+T minus B+D"", ""metric"": ""spearman""}","diff,ci_low,ci_high"
+6B,0.162,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""B+D"", ""model"": ""ridge""}",rmse
+6B,0.151,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""B+D"", ""model"": ""ridge""}",rmse_ci_low
+6B,0.173,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""B+D"", ""model"": ""ridge""}",rmse_ci_high
+6B,0.141,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""B+D"", ""model"": ""rf""}",rmse
+6B,0.134,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""B+D"", ""model"": ""rf""}",rmse_ci_low
+6B,0.149,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""B+D"", ""model"": ""rf""}",rmse_ci_high
+6B,0.144,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""B+D"", ""model"": ""gbr""}",rmse
+6B,0.136,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""B+D"", ""model"": ""gbr""}",rmse_ci_low
+6B,0.151,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""B+D"", ""model"": ""gbr""}",rmse_ci_high
+6B,0.192,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length"", ""model"": ""ridge""}",rmse
+6B,0.168,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length"", ""model"": ""ridge""}",rmse_ci_low
+6B,0.210,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length"", ""model"": ""ridge""}",rmse_ci_high
+6B,0.132,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length"", ""model"": ""rf""}",rmse
+6B,0.125,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length"", ""model"": ""rf""}",rmse_ci_low
+6B,0.139,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length"", ""model"": ""rf""}",rmse_ci_high
+6B,0.132,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length"", ""model"": ""gbr""}",rmse
+6B,0.125,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length"", ""model"": ""gbr""}",rmse_ci_low
+6B,0.139,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length"", ""model"": ""gbr""}",rmse_ci_high
+6B,0.329,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""scenario"", ""model"": ""ridge""}",rmse
+6B,0.299,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""scenario"", ""model"": ""ridge""}",rmse_ci_low
+6B,0.361,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""scenario"", ""model"": ""ridge""}",rmse_ci_high
+6B,0.329,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""scenario"", ""model"": ""rf""}",rmse
+6B,0.299,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""scenario"", ""model"": ""rf""}",rmse_ci_low
+6B,0.361,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""scenario"", ""model"": ""rf""}",rmse_ci_high
+6B,0.329,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""scenario"", ""model"": ""gbr""}",rmse
+6B,0.299,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""scenario"", ""model"": ""gbr""}",rmse_ci_low
+6B,0.361,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""scenario"", ""model"": ""gbr""}",rmse_ci_high
+6B,0.189,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length+scenario"", ""model"": ""ridge""}",rmse
+6B,0.168,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length+scenario"", ""model"": ""ridge""}",rmse_ci_low
+6B,0.205,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length+scenario"", ""model"": ""ridge""}",rmse_ci_high
+6B,0.132,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length+scenario"", ""model"": ""rf""}",rmse
+6B,0.125,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length+scenario"", ""model"": ""rf""}",rmse_ci_low
+6B,0.140,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length+scenario"", ""model"": ""rf""}",rmse_ci_high
+6B,0.132,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length+scenario"", ""model"": ""gbr""}",rmse
+6B,0.125,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length+scenario"", ""model"": ""gbr""}",rmse_ci_low
+6B,0.140,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length+scenario"", ""model"": ""gbr""}",rmse_ci_high
+6B,"-0.030 [-0.043, -0.014]",results/phase4_severity/diagnostic/paired_differences.csv,"{""model"": ""ridge"", ""comparison"": ""B+D minus D_length"", ""metric"": ""rmse""}","diff,ci_low,ci_high"
+6B,"+0.009 [+0.006, +0.012]",results/phase4_severity/diagnostic/paired_differences.csv,"{""model"": ""rf"", ""comparison"": ""B+D minus D_length"", ""metric"": ""rmse""}","diff,ci_low,ci_high"
+6B,"+0.012 [+0.009, +0.015]",results/phase4_severity/diagnostic/paired_differences.csv,"{""model"": ""gbr"", ""comparison"": ""B+D minus D_length"", ""metric"": ""rmse""}","diff,ci_low,ci_high"
+6B,"-0.167 [-0.206, -0.132]",results/phase4_severity/diagnostic/paired_differences.csv,"{""model"": ""ridge"", ""comparison"": ""B+D minus scenario"", ""metric"": ""rmse""}","diff,ci_low,ci_high"
+6B,"-0.188 [-0.223, -0.156]",results/phase4_severity/diagnostic/paired_differences.csv,"{""model"": ""rf"", ""comparison"": ""B+D minus scenario"", ""metric"": ""rmse""}","diff,ci_low,ci_high"
+6B,"-0.186 [-0.220, -0.154]",results/phase4_severity/diagnostic/paired_differences.csv,"{""model"": ""gbr"", ""comparison"": ""B+D minus scenario"", ""metric"": ""rmse""}","diff,ci_low,ci_high"
+6B,"-0.027 [-0.038, -0.013]",results/phase4_severity/diagnostic/paired_differences.csv,"{""model"": ""ridge"", ""comparison"": ""B+D minus D_length+scenario"", ""metric"": ""rmse""}","diff,ci_low,ci_high"
+6B,"+0.009 [+0.006, +0.012]",results/phase4_severity/diagnostic/paired_differences.csv,"{""model"": ""rf"", ""comparison"": ""B+D minus D_length+scenario"", ""metric"": ""rmse""}","diff,ci_low,ci_high"
+6B,"+0.012 [+0.008, +0.015]",results/phase4_severity/diagnostic/paired_differences.csv,"{""model"": ""gbr"", ""comparison"": ""B+D minus D_length+scenario"", ""metric"": ""rmse""}","diff,ci_low,ci_high"
+6B,"-0.059 [-0.071, -0.047]",results/phase4_severity/diagnostic/paired_differences.csv,"{""model"": ""ridge"", ""comparison"": ""B+D minus persistence_fit"", ""metric"": ""rmse""}","diff,ci_low,ci_high"
+6B,"-0.080 [-0.093, -0.066]",results/phase4_severity/diagnostic/paired_differences.csv,"{""model"": ""rf"", ""comparison"": ""B+D minus persistence_fit"", ""metric"": ""rmse""}","diff,ci_low,ci_high"
+6B,"-0.077 [-0.091, -0.063]",results/phase4_severity/diagnostic/paired_differences.csv,"{""model"": ""gbr"", ""comparison"": ""B+D minus persistence_fit"", ""metric"": ""rmse""}","diff,ci_low,ci_high"
+6B,0.132,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length"", ""model"": ""rf""}",rmse
+6B,0.141,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""B+D"", ""model"": ""rf""}",rmse
+6B,0.796,results/phase4_severity/diagnostic/rf_importance_BD.csv,"{""rank"": 1}",rf_impurity_importance
+6B,0.047,results/phase4_severity/diagnostic/rf_importance_BD.csv,"{""rank"": 2}",rf_impurity_importance
+6B,0.042,results/phase4_severity/diagnostic/rf_importance_BD.csv,"{""rank"": 3}",rf_impurity_importance
+6B,0.009,results/phase4_severity/diagnostic/rf_importance_BD.csv,"{""rank"": 4}",rf_impurity_importance
+6B,0.008,results/phase4_severity/diagnostic/rf_importance_BD.csv,"{""rank"": 5}",rf_impurity_importance
+6B,0.008,results/phase4_severity/diagnostic/rf_importance_BD.csv,"{""rank"": 6}",rf_impurity_importance
+6B,0.007,results/phase4_severity/diagnostic/rf_importance_BD.csv,"{""rank"": 7}",rf_impurity_importance
+6B,0.007,results/phase4_severity/diagnostic/rf_importance_BD.csv,"{""rank"": 8}",rf_impurity_importance
+6B,0.007,results/phase4_severity/diagnostic/rf_importance_BD.csv,"{""rank"": 9}",rf_impurity_importance
+6B,0.007,results/phase4_severity/diagnostic/rf_importance_BD.csv,"{""rank"": 10}",rf_impurity_importance
+6C,0.0,results/phase3_features/cap_sensitivity/ibm/reproduction_check.csv,"{""source"": ""HI""}",max_abs_diff_window_max_vs_stored_T
+6C,"0.477 [0.240, 0.657]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""(cap-free)"", ""feature_set"": ""B+D"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.652 [0.328, 0.830]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""(cap-free)"", ""feature_set"": ""B+D"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.326 [0.126, 0.536]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""(cap-free)"", ""feature_set"": ""B+D"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.581 [0.300, 0.733]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.676 [0.351, 0.868]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.329 [0.135, 0.509]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.569 [0.298, 0.721]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.673 [0.346, 0.866]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.305 [0.126, 0.485]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.578 [0.297, 0.731]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.682 [0.352, 0.872]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.334 [0.137, 0.519]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.517 [0.231, 0.715]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.683 [0.363, 0.859]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.518 [0.249, 0.697]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.618 [0.385, 0.747]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.692 [0.355, 0.881]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.363 [0.173, 0.543]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.618 [0.386, 0.747]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.693 [0.352, 0.878]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.363 [0.173, 0.543]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.615 [0.380, 0.746]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.694 [0.350, 0.881]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.363 [0.174, 0.542]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.557 [0.334, 0.711]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.692 [0.363, 0.869]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.580 [0.339, 0.746]",results/phase3_features/cap_sensitivity/ibm/results.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"+0.104 [-0.002, +0.171]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T"", ""model"": ""logreg"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.025 [-0.050, +0.102]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T"", ""model"": ""rf"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.003 [-0.111, +0.077]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.141 [+0.031, +0.224]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.041 [-0.037, +0.106]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.037 [-0.081, +0.126]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.093 [-0.006, +0.161]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""logreg"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.021 [-0.059, +0.100]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""rf"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"-0.021 [-0.135, +0.056]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"-0.011 [-0.023, +0.000]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""logreg"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"-0.004 [-0.012, +0.001]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""rf"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"-0.024 [-0.037, -0.004]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"+0.142 [+0.031, +0.224]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.042 [-0.040, +0.105]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.037 [-0.081, +0.126]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.001 [-0.001, +0.003]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"+0.001 [-0.008, +0.007]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"-0.000 [-0.000, +0.000]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"+0.101 [-0.006, +0.167]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""logreg"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.030 [-0.049, +0.102]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""rf"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.008 [-0.106, +0.083]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"-0.003 [-0.006, -0.001]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""logreg"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"+0.005 [-0.006, +0.011]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""rf"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"+0.005 [+0.001, +0.011]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"+0.138 [+0.031, +0.218]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.042 [-0.041, +0.107]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.037 [-0.081, +0.125]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"-0.003 [-0.007, +0.000]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"+0.001 [-0.006, +0.005]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"-0.000 [-0.004, +0.004]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"+0.041 [-0.088, +0.139]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""logreg"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.031 [-0.013, +0.088]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""rf"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.192 [+0.041, +0.278]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"-0.063 [-0.166, +0.028]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""logreg"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"+0.006 [-0.035, +0.057]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""rf"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"+0.190 [+0.097, +0.240]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"+0.080 [-0.029, +0.153]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.040 [-0.018, +0.094]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.254 [+0.113, +0.349]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"-0.061 [-0.154, +0.025]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"-0.001 [-0.032, +0.034]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"+0.217 [+0.121, +0.269]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,0.0,results/phase3_features/cap_sensitivity/synthetic/reproduction_check.csv,"{""source"": ""hn-off_chords-default""}",max_abs_diff_window_max_vs_stored_T
+6C,"0.970 [0.930, 0.985]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""(cap-free)"", ""feature_set"": ""B+D"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.959 [0.896, 0.990]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""(cap-free)"", ""feature_set"": ""B+D"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.892 [0.791, 0.950]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""(cap-free)"", ""feature_set"": ""B+D"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.988 [0.978, 0.999]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.996 [0.989, 1.000]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.969 [0.940, 0.996]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.981 [0.967, 0.999]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.997 [0.989, 1.000]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.967 [0.934, 0.996]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.985 [0.974, 0.998]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.996 [0.988, 1.000]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.968 [0.941, 0.996]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.987 [0.969, 0.998]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.982 [0.952, 0.998]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.940 [0.879, 0.982]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.993 [0.985, 1.000]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.997 [0.991, 1.000]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.987 [0.970, 1.000]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.993 [0.986, 1.000]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.997 [0.992, 1.000]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.987 [0.970, 1.000]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.989 [0.977, 1.000]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.997 [0.992, 1.000]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.984 [0.965, 1.000]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"0.992 [0.977, 1.000]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6C,"0.988 [0.965, 0.999]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6C,"0.970 [0.936, 0.990]",results/phase3_features/cap_sensitivity/synthetic/results.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6C,"+0.018 [+0.002, +0.057]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T"", ""model"": ""logreg"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.038 [+0.010, +0.095]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T"", ""model"": ""rf"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.077 [+0.019, +0.175]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.022 [+0.006, +0.064]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.038 [+0.010, +0.097]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.094 [+0.032, +0.194]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""window_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.011 [-0.011, +0.060]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""logreg"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.038 [+0.010, +0.096]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""rf"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.075 [+0.019, +0.170]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"-0.007 [-0.022, +0.006]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""logreg"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"+0.000 [-0.000, +0.000]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""rf"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"-0.002 [-0.013, +0.005]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"+0.023 [+0.006, +0.065]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.038 [+0.010, +0.097]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.094 [+0.033, +0.195]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.001 [-0.001, +0.002]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"+0.000 [-0.000, +0.001]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"+0.000 [-0.001, +0.001]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""fixed_1.0"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"+0.014 [-0.001, +0.055]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""logreg"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.037 [+0.010, +0.095]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""rf"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.076 [+0.017, +0.176]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"-0.003 [-0.005, -0.000]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""logreg"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"-0.000 [-0.001, +0.000]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""rf"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"-0.001 [-0.003, +0.003]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"+0.018 [-0.003, +0.061]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.038 [+0.010, +0.097]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.092 [+0.030, +0.195]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"-0.004 [-0.010, +0.000]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"+0.000 [-0.000, +0.001]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"-0.003 [-0.006, +0.000]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""max_x1.1"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"+0.017 [+0.001, +0.052]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""logreg"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.024 [+0.004, +0.064]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""rf"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.048 [-0.000, +0.125]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T minus B+D""}","diff,ci_low,ci_high"
+6C,"-0.001 [-0.021, +0.010]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""logreg"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"-0.014 [-0.038, -0.001]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""rf"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"-0.029 [-0.082, +0.003]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
+6C,"+0.021 [+0.004, +0.060]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.029 [+0.007, +0.073]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"+0.078 [+0.026, +0.156]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm"", ""comparison"": ""B+D+T_local minus B+D""}","diff,ci_low,ci_high"
+6C,"-0.001 [-0.014, +0.008]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""logreg"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"-0.009 [-0.026, -0.001]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""rf"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6C,"-0.017 [-0.051, +0.005]",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T_local"", ""model"": ""svm"", ""comparison"": ""B+D+T_local under this cap minus B+D+T_local under window_max""}","diff,ci_low,ci_high"
+6D,0.059,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",ari_type
+6D,-0.002,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",ari_type_ci_low
+6D,0.369,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",ari_type_ci_high
+6D,0.458,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",purity_type
+6D,0.371,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",purity_type_ci_low
+6D,0.728,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",purity_type_ci_high
+6D,0.169,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",ari_group
+6D,0.001,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",ari_group_ci_low
+6D,0.435,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",ari_group_ci_high
+6D,0.000,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",ari_type_random
+6D,0.363,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",purity_type_random
+6D,0.336,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",purity_majority
+6D,0.062,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",ari_type
+6D,-0.030,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",ari_type_ci_low
+6D,0.238,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",ari_type_ci_high
+6D,0.519,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",purity_type
+6D,0.335,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",purity_type_ci_low
+6D,0.730,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",purity_type_ci_high
+6D,0.160,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",ari_group
+6D,-0.021,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",ari_group_ci_low
+6D,0.469,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",ari_group_ci_high
+6D,-0.000,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",ari_type_random
+6D,0.398,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",purity_type_random
+6D,0.336,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",purity_majority
+6D,0.073,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",ari_type
+6D,0.010,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",ari_type_ci_low
+6D,0.431,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",ari_type_ci_high
+6D,0.466,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",purity_type
+6D,0.392,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",purity_type_ci_low
+6D,0.757,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",purity_type_ci_high
+6D,0.296,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",ari_group
+6D,0.103,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",ari_group_ci_low
+6D,0.752,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",ari_group_ci_high
+6D,-0.000,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",ari_type_random
+6D,0.358,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",purity_type_random
+6D,0.336,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",purity_majority
+6D,0.113,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type
+6D,0.059,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type_ci_low
+6D,0.392,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type_ci_high
+6D,0.534,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type
+6D,0.489,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type_ci_low
+6D,0.784,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type_ci_high
+6D,0.417,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",ari_group
+6D,0.098,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",ari_group_ci_low
+6D,0.767,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",ari_group_ci_high
+6D,-0.000,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type_random
+6D,0.389,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type_random
+6D,0.336,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",purity_majority
+6D,0.097,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",ari_type
+6D,0.018,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",ari_type_ci_low
+6D,0.456,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",ari_type_ci_high
+6D,0.489,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",purity_type
+6D,0.396,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",purity_type_ci_low
+6D,0.747,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",purity_type_ci_high
+6D,0.398,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",ari_group
+6D,0.182,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",ari_group_ci_low
+6D,0.757,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",ari_group_ci_high
+6D,0.000,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",ari_type_random
+6D,0.365,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",purity_type_random
+6D,0.336,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",purity_majority
+6D,0.111,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type
+6D,-0.037,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type_ci_low
+6D,0.458,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type_ci_high
+6D,0.534,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type
+6D,0.313,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type_ci_low
+6D,0.746,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type_ci_high
+6D,0.472,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",ari_group
+6D,-0.040,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",ari_group_ci_low
+6D,0.775,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",ari_group_ci_high
+6D,-0.000,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type_random
+6D,0.389,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type_random
+6D,0.336,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",purity_majority
+6D,0.031,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",ari_type
+6D,-0.046,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",ari_type_ci_low
+6D,0.406,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",ari_type_ci_high
+6D,0.443,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",purity_type
+6D,0.349,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",purity_type_ci_low
+6D,0.721,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",purity_type_ci_high
+6D,0.303,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",ari_group
+6D,0.007,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",ari_group_ci_low
+6D,0.543,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",ari_group_ci_high
+6D,-0.000,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",ari_type_random
+6D,0.364,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",purity_type_random
+6D,0.336,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",purity_majority
+6D,0.007,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",ari_type
+6D,-0.046,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",ari_type_ci_low
+6D,0.379,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",ari_type_ci_high
+6D,0.412,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",purity_type
+6D,0.322,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",purity_type_ci_low
+6D,0.725,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",purity_type_ci_high
+6D,0.095,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",ari_group
+6D,-0.023,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",ari_group_ci_low
+6D,0.435,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",ari_group_ci_high
+6D,0.000,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",ari_type_random
+6D,0.353,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",purity_type_random
+6D,0.336,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",purity_majority
+6D,0.139,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",ari_type
+6D,-0.041,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",ari_type_ci_low
+6D,0.708,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",ari_type_ci_high
+6D,0.649,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",purity_type
+6D,0.564,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",purity_type_ci_low
+6D,0.925,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",purity_type_ci_high
+6D,0.091,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",ari_group
+6D,-0.035,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",ari_group_ci_low
+6D,0.584,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",ari_group_ci_high
+6D,0.001,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",ari_type_random
+6D,0.532,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",purity_type_random
+6D,0.459,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",purity_majority
+6D,0.067,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",ari_type
+6D,0.056,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",ari_type_ci_low
+6D,0.529,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",ari_type_ci_high
+6D,0.486,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",purity_type
+6D,0.493,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",purity_type_ci_low
+6D,1.000,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",purity_type_ci_high
+6D,0.015,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",ari_group
+6D,0.021,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",ari_group_ci_low
+6D,0.627,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",ari_group_ci_high
+6D,0.002,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",ari_type_random
+6D,0.486,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",purity_type_random
+6D,0.459,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""silhouette""}",purity_majority
+6D,0.260,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",ari_type
+6D,-0.016,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",ari_type_ci_low
+6D,0.496,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",ari_type_ci_high
+6D,0.730,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",purity_type
+6D,0.524,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",purity_type_ci_low
+6D,0.854,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",purity_type_ci_high
+6D,0.067,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",ari_group
+6D,-0.025,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",ari_group_ci_low
+6D,0.356,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",ari_group_ci_high
+6D,0.001,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",ari_type_random
+6D,0.536,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",purity_type_random
+6D,0.459,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",purity_majority
+6D,0.067,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type
+6D,-0.022,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type_ci_low
+6D,0.347,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type_ci_high
+6D,0.486,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type
+6D,0.486,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type_ci_low
+6D,0.920,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type_ci_high
+6D,0.015,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",ari_group
+6D,-0.029,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",ari_group_ci_low
+6D,0.355,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",ari_group_ci_high
+6D,0.002,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type_random
+6D,0.486,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type_random
+6D,0.459,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""silhouette""}",purity_majority
+6D,0.260,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",ari_type
+6D,-0.011,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",ari_type_ci_low
+6D,0.572,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",ari_type_ci_high
+6D,0.730,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",purity_type
+6D,0.536,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",purity_type_ci_low
+6D,0.879,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",purity_type_ci_high
+6D,0.067,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",ari_group
+6D,-0.028,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",ari_group_ci_low
+6D,0.436,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",ari_group_ci_high
+6D,0.001,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",ari_type_random
+6D,0.536,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",purity_type_random
+6D,0.459,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",purity_majority
+6D,0.067,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type
+6D,-0.019,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type_ci_low
+6D,0.508,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type_ci_high
+6D,0.486,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type
+6D,0.486,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type_ci_low
+6D,1.000,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type_ci_high
+6D,0.015,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",ari_group
+6D,-0.029,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",ari_group_ci_low
+6D,0.556,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",ari_group_ci_high
+6D,0.002,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",ari_type_random
+6D,0.486,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",purity_type_random
+6D,0.459,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""silhouette""}",purity_majority
+6D,0.032,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",ari_type
+6D,-0.105,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",ari_type_ci_low
+6D,0.343,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",ari_type_ci_high
+6D,0.514,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",purity_type
+6D,0.500,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",purity_type_ci_low
+6D,0.822,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",purity_type_ci_high
+6D,0.006,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",ari_group
+6D,-0.062,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",ari_group_ci_low
+6D,0.197,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",ari_group_ci_high
+6D,0.000,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",ari_type_random
+6D,0.516,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",purity_type_random
+6D,0.459,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""fixed""}",purity_majority
+6D,0.033,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",ari_type
+6D,-0.066,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",ari_type_ci_low
+6D,0.294,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",ari_type_ci_high
+6D,0.514,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",purity_type
+6D,0.483,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",purity_type_ci_low
+6D,0.932,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",purity_type_ci_high
+6D,0.013,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",ari_group
+6D,-0.063,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",ari_group_ci_low
+6D,0.350,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",ari_group_ci_high
+6D,0.000,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",ari_type_random
+6D,0.504,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",purity_type_random
+6D,0.459,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",purity_majority
+6E,IBM HI classification: 60 rows,results/phase3_features/classify/HI_tau0.05/paired_differences.csv,row count,comparison
+6E,IBM LI classification: 30 rows,results/phase3_features/classify/LI_tau0.05/paired_differences.csv,row count,comparison
+6E,HI<->LI transfer: 12 rows,results/phase3_features/classify/transfer/paired_differences.csv,row count,comparison
+6E,synthetic hn-off_chords-default: 18 rows,results/phase3_features/classify/synthetic/hn-off_chords-default/paired_differences.csv,row count,comparison
+6E,synthetic hn-off_chords-off: 18 rows,results/phase3_features/classify/synthetic/hn-off_chords-off/paired_differences.csv,row count,comparison
+6E,synthetic hn-on_chords-default: 12 rows,results/phase3_features/classify/synthetic/hn-on_chords-default/paired_differences.csv,row count,comparison
+6E,synthetic hn-on_chords-off: 12 rows,results/phase3_features/classify/synthetic/hn-on_chords-off/paired_differences.csv,row count,comparison
+6E,synthetic per scenario hn-off_chords-default: 27 rows,results/phase3_features/classify/synthetic/hn-off_chords-default/per_scenario_paired.csv,row count,comparison
+6E,synthetic per scenario hn-off_chords-off: 27 rows,results/phase3_features/classify/synthetic/hn-off_chords-off/per_scenario_paired.csv,row count,comparison
+6E,synthetic per scenario hn-on_chords-default: 27 rows,results/phase3_features/classify/synthetic/hn-on_chords-default/per_scenario_paired.csv,row count,comparison
+6E,synthetic per scenario hn-on_chords-off: 27 rows,results/phase3_features/classify/synthetic/hn-on_chords-off/per_scenario_paired.csv,row count,comparison
+6E,cap sensitivity HI: 42 rows,results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,row count,comparison
+6E,cap sensitivity synthetic: 42 rows,results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,row count,comparison
+6E,severity (3 metrics): 27 rows,results/phase4_severity/paired_differences.csv,row count,comparison
+6E,severity diagnostic (3 metrics): 36 rows,results/phase4_severity/diagnostic/paired_differences.csv,row count,comparison
+6E,bandit vs comparators: 72 rows,results/phase6_bandit/bandit_vs_comparators.csv,row count,comparison
 7-9,14,results/phase3_features/classify/HI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",n_pos_groups
 7-9,10,results/phase3_features/classify/LI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",n_pos_groups
 7-9,131,results/phase3_features/classify/HI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",n_pos
@@ -1911,6 +2840,19 @@ hn-on_chords-off,"+0.610 [+0.456, +0.700]",results/phase3_features/classify/synt
 7-9,1,results/phase3_features/classify/candidate_recall/ibm.csv,"{""source"": ""LI"", ""scope"": ""days0-5"", ""max_len"": 6, ""tau_quantile"": 0.05}",n_complete
 7-9,10,results/phase3_features/classify/transfer/results.csv,"{""train"": ""HI"", ""test"": ""LI"", ""feature_set"": ""B"", ""model"": ""logreg""}",n_test_pos_groups
 7-9,14,results/phase3_features/classify/transfer/results.csv,"{""train"": ""LI"", ""test"": ""HI"", ""feature_set"": ""B"", ""model"": ""logreg""}",n_test_pos_groups
+7,0.141,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""rf""}",rmse
+7,0.221,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""persistence_fit"", ""model"": ""none""}",rmse
+7,0.132,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length"", ""model"": ""rf""}",rmse
+7,0.796,results/phase4_severity/diagnostic/rf_importance_BD.csv,"{""column"": ""D_length""}",rf_impurity_importance
+7,-1.245,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",diff_share_mean
+7,0,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",seeds_bandit_better
+7,-0.771,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",diff_share_mean
+7,2,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",seeds_bandit_better
+7,0.059,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",ari_type
+7,0.097,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",ari_type
+7,0.489,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",purity_type
+7,0.336,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",purity_majority
+7,+0.190,results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}",diff
 7-9,0.006,results/phase3_features/classify/LI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""D_birth_alone"", ""model"": ""none""}",pr_auc
 7-9,0.0039,results/phase3_features/classify/LI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
 7-9,0.314,results/phase3_features/classify/HI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""D_birth_alone"", ""model"": ""none""}",pr_auc
@@ -1921,6 +2863,16 @@ hn-on_chords-off,"+0.610 [+0.456, +0.700]",results/phase3_features/classify/synt
 7-9,8,results/phase3_features/classify/candidate_recall/ibm.csv,"{""source"": ""HI"", ""scope"": ""days0-5"", ""max_len"": 6, ""tau_quantile"": 0.05}",n_recovered
 7-9,11,results/phase3_features/classify/candidate_recall/ibm.csv,"{""source"": ""HI"", ""scope"": ""days0-5"", ""max_len"": 6, ""tau_quantile"": 0.05}",n_complete_le_maxlen
 7-9,15,results/phase3_features/classify/candidate_recall/ibm.csv,"{""source"": ""HI"", ""scope"": ""days0-5"", ""max_len"": 6, ""tau_quantile"": 0.05}",n_complete
+7-9,-1.245,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",diff_share_mean
+7-9,-0.771,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",diff_share_mean
+7-9,+0.258,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",diff_share_mean
+7-9,0.981,results/phase6_bandit/summary.csv,"{""lambda"": 1.0, ""lag"": 2, ""policy"": ""ascent""}",share_mean
+7-9,0.132,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""D_length"", ""model"": ""rf""}",rmse
+7-9,0.141,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""rf""}",rmse
+7-9,0.141,results/phase4_severity/results.csv,"{""feature_set"": ""B+D"", ""model"": ""rf""}",rmse
+7-9,0.385,results/phase4_severity/results.csv,"{""feature_set"": ""mean"", ""model"": ""none""}",rmse
+7-9,0.221,results/phase4_severity/diagnostic/results.csv,"{""predictor"": ""persistence_fit"", ""model"": ""none""}",rmse
+7-9,-0.001,results/phase4_severity/paired_differences.csv,"{""model"": ""rf"", ""comparison"": ""B+D+T minus B+D"", ""metric"": ""rmse""}",diff
 dev,0,results/phase3_features/ibm_split_counts.csv,"{""dataset"": ""HI"", ""tau_quantile"": 0.05, ""scheme"": ""time_ordered"", ""part"": ""test""}",candidates
 dev,1,results/phase3_features/ibm_split_counts.csv,"{""dataset"": ""LI"", ""tau_quantile"": 0.05, ""scheme"": ""time_ordered"", ""part"": ""test""}",candidates
 figures,0.010753,results/phase3_features/classify/synthetic/hn-off_chords-default/per_scenario.csv,"{""scenario"": ""isolated"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
@@ -1944,3 +2896,15 @@ figures,0.0203,results/phase3_features/classify/synthetic/hn-off_chords-default/
 figures,0.0267,results/phase3_features/classify/synthetic/hn-off_chords-off/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
 figures,0.0412,results/phase3_features/classify/synthetic/hn-on_chords-default/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
 figures,0.0481,results/phase3_features/classify/synthetic/hn-on_chords-off/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,9,results/phase6_bandit/rolling_seed0.csv,"{""policy"": ""oracle"", ""window"": 5}",positives
+figures,131,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",n_rings
+figures,14,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",n_groups
+figures,4,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",k
+figures,36,results/phase4_cluster/counts_by_type.csv,"{""dataset"": ""HI"", ""kind"": ""CYCLE""}",rings
+figures,44,results/phase4_cluster/counts_by_type.csv,"{""dataset"": ""HI"", ""kind"": ""GATHER-SCATTER""}",rings
+figures,18,results/phase4_cluster/counts_by_type.csv,"{""dataset"": ""HI"", ""kind"": ""SCATTER-GATHER""}",rings
+figures,33,results/phase4_cluster/counts_by_type.csv,"{""dataset"": ""HI"", ""kind"": ""STACK""}",rings
+figures,37,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",n_rings
+figures,9,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",n_groups
+figures,3,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",n_types
+figures,3,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",k
