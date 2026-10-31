@@ -1,0 +1,18 @@
+# IBM AML (AMLworld) settings; see README "Phase 3 design decisions". Data lives in data/ibm_aml/ (git-ignored).
+data_root: data/ibm_aml
+datasets: [HI, LI]          # HI-Small, LI-Small
+window:
+  length_days: 5
+  stride_days: 1
+candidates:
+  tau_quantiles: [0.02, 0.05, 0.10]
+  max_len: 6
+labels:
+  label_x: 0.8              # §3.7 ring-labeling rule: >= x of edges from one attempt -> positive
+splits:
+  k: 5                      # stratified group k-fold; falls back to fallback_k if a fold has no positive
+  fallback_k: 3
+  repeats: 5
+  seed: 0
+  time_train_max_day: 5.0   # time-ordered check: groups first seen on or before this day -> train
+  time_test_min_day: 7.0    # ... groups first seen on or after this day -> test (2-day gap)

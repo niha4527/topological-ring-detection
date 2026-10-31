@@ -38,10 +38,17 @@ def edge_backing(tx: pd.DataFrame) -> dict[tuple, set[int]]:
     return out
 
 
-def label_ring(edges, backing: dict, patterns: dict[int, str], x: float = 0.8) -> tuple[str, int]:
-    """(kind, pattern_id) for one candidate; pattern_id is -1 unless kind names a structure."""
+def label_ring(edges, backing: dict, patterns: dict[int, str], x: float = 0.8, flagged=None) -> tuple[str, int]:
+    """(kind, pattern_id) for one candidate; pattern_id is -1 unless kind names a structure.
+
+    flagged: optional set of edges carrying laundering-flagged transactions that belong to no
+    attempt (IBM AML). A ring with no attempt-backed edge but some flagged edge is ambiguous, not
+    a negative (README decision 4).
+    """
     counts = Counter(pid for e in edges for pid in backing.get(e, ()))
     if not counts:
+        if flagged and any(e in flagged for e in edges):
+            return AMBIGUOUS, -1
         return BACKGROUND, -1
     pid, n = counts.most_common(1)[0]
     if n / len(edges) >= x:
@@ -57,4 +64,23 @@ def label_candidates(candidates, tx: pd.DataFrame, planted, x: float = 0.8) -> p
     for c in candidates:
         kind, pid = label_ring(c.edges, backing, patterns, x)
         rows.append({"kind": kind, "pattern_id": pid, "y": float("nan") if kind == AMBIGUOUS else float(kind == "wash_ring")})
+    return pd.DataFrame(rows, columns=["kind", "pattern_id", "y"])
+
+
+def unattributed_edges(tx: pd.DataFrame) -> set[tuple]:
+    """Edges carrying laundering-flagged transactions that belong to no attempt (IBM AML)."""
+    u = tx[tx["laundering"] & (tx["pattern_id"] < 0)]
+    return set(zip(u["src"].tolist(), u["dst"].tolist()))
+
+
+def label_candidates_ibm(candidates, tx: pd.DataFrame, attempts: dict[int, str], x: float = 0.8, flagged=None) -> pd.DataFrame:
+    """IBM AML ring labels (§3.7): kind = the attempt's pattern type (positive), "background" (negative)
+    or "ambiguous". Columns kind, pattern_id (attempt id, -1 unless positive), y (1 / 0 / NaN).
+    """
+    backing = edge_backing(tx)
+    flagged = unattributed_edges(tx) if flagged is None else flagged
+    rows = []
+    for c in candidates:
+        kind, pid = label_ring(c.edges, backing, attempts, x, flagged)
+        rows.append({"kind": kind, "pattern_id": pid, "y": float("nan") if kind == AMBIGUOUS else float(kind != BACKGROUND)})
     return pd.DataFrame(rows, columns=["kind", "pattern_id", "y"])
