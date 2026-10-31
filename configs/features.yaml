@@ -1,0 +1,8 @@
+# B (graph baseline) features, src/ringtda/graph/baseline_features.py. Neighbourhood hops come from
+# configs/topology.yaml (local.hops), so B and T use the same 1-hop neighbourhood (B on the full window graph).
+betweenness:
+  exact_max_nodes: 3000     # windows with at most this many nodes: exact betweenness
+  k: 100                    # larger windows: k-source sampled betweenness (fixed seed, cached per window)
+  seed: 0
+  graph: full               # full | sparsified (set at the quantile below if full is too slow)
+  sparsify_quantile: 0.25   # used only when graph: sparsified

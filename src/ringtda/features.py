@@ -20,6 +20,9 @@ import numpy as np
 import pandas as pd
 
 from ringtda.eval.labels import label_candidates
+from ringtda.graph.baseline_features import B_NAMES, WindowBaseline, baseline_features
+from ringtda.graph.baseline_features import load_config as load_features_config
+from ringtda.graph.direction_features import D_NAMES, direction_features, gap_cv_fill
 from ringtda.graph.weights import edge_weights, to_digraph
 from ringtda.graph.windows import aggregate_pairs
 from ringtda.topology.candidates import candidate_rings, sparsify
@@ -90,6 +93,49 @@ def window_candidates(
     return pd.DataFrame(rows), Z
 
 
+KEYS = ["window_id", "candidate_id"]
+
+
+def _feature_table(windows, parts, tau_quantile, max_len, cfg, backend, return_candidates):
+    """Shared loop of the B / D / T tables: same windows, graphs, candidates and (window_id,
+    candidate_id) keys for every part. parts: subset of {"B", "D", "T"}; columns are
+    keys + B + D + T_local + T_win in that order."""
+    if tau_quantile is None:
+        tau_quantile = cfg["candidates"]["tau_quantile"]
+    names = (
+        (B_NAMES if "B" in parts else [])
+        + (D_NAMES if "D" in parts else [])
+        + (feature_names(cfg, "T_local") + feature_names(cfg, "T_win") if "T" in parts else [])
+    )
+    rows, cands = [], {}
+    for wid, tx in enumerate(windows):
+        _, G, Gs, tau = window_graphs(tx, tau_quantile)
+        res = candidate_rings(G, tau=tau, max_len=max_len)
+        cands[wid] = res.candidates
+        if not res.candidates:
+            continue
+        if "T" in parts:
+            wmax = float(max(d["weight"] for _, _, d in G.edges(data=True)))
+            win = window_topology_features(Gs, wmax, cfg, backend)  # once per window
+            LG = local_graph(G, Gs, cfg)
+        if "B" in parts:
+            ctx = WindowBaseline(G, load_features_config())  # betweenness once per window
+        if "D" in parts:
+            fill = gap_cv_fill(G)
+        for cid, c in enumerate(res.candidates):
+            row = {"window_id": wid, "candidate_id": cid}
+            if "B" in parts:
+                row.update(baseline_features(G, c, ctx, cfg["local"]["hops"]))
+            if "D" in parts:
+                row.update(direction_features(G, c, fill))
+            if "T" in parts:
+                row.update(local_topology_features(LG, c, wmax, cfg, backend))
+                row.update(win)
+            rows.append(row)
+    df = pd.DataFrame(rows, columns=KEYS + names)
+    return (df, cands) if return_candidates else df
+
+
 def t_feature_table(
     windows, tau_quantile: float | None = None, max_len: int = 6, config: dict | None = None, backend: str | None = None,
     return_candidates: bool = False,
@@ -104,21 +150,25 @@ def t_feature_table(
     tau_quantile (None = configs/topology.yaml `candidates.tau_quantile`) sets the sparsification
     cutoff tau_s; max_len=6 follows §3.3 (window_candidates keeps 5 for the optimization report).
     """
+    return _feature_table(windows, {"T"}, tau_quantile, max_len, config or load_config(), backend, return_candidates)
+
+
+def bd_feature_table(windows, tau_quantile: float | None = None, max_len: int = 6, config: dict | None = None, return_candidates: bool = False):
+    """B + D table with the same keys, windows and candidates as `t_feature_table` (B: graph baseline
+    on the full window graph; D: direction/behaviour incl. ring birth). Label-free by signature."""
+    return _feature_table(windows, {"B", "D"}, tau_quantile, max_len, config or load_config(), None, return_candidates)
+
+
+def full_feature_table(
+    windows, tau_quantile: float | None = None, max_len: int = 6, config: dict | None = None, backend: str | None = None,
+    return_candidates: bool = False,
+):
+    """B + D + T joined on (window_id, candidate_id), computing windows and candidates once."""
+    return _feature_table(windows, {"B", "D", "T"}, tau_quantile, max_len, config or load_config(), backend, return_candidates)
+
+
+def feature_sets(config: dict | None = None) -> dict[str, list[str]]:
+    """Explicit column lists of the classification feature sets, built from the prefixes B_ / D_ / T_."""
     cfg = config or load_config()
-    if tau_quantile is None:
-        tau_quantile = cfg["candidates"]["tau_quantile"]
-    names = feature_names(cfg, "T_local") + feature_names(cfg, "T_win")
-    rows, cands = [], {}
-    for wid, tx in enumerate(windows):
-        _, G, Gs, tau = window_graphs(tx, tau_quantile)
-        res = candidate_rings(G, tau=tau, max_len=max_len)
-        cands[wid] = res.candidates
-        if not res.candidates:
-            continue
-        wmax = float(max(d["weight"] for _, _, d in G.edges(data=True)))
-        win = window_topology_features(Gs, wmax, cfg, backend)  # once per window
-        LG = local_graph(G, Gs, cfg)
-        for cid, c in enumerate(res.candidates):
-            rows.append({"window_id": wid, "candidate_id": cid, **local_topology_features(LG, c, wmax, cfg, backend), **win})
-    df = pd.DataFrame(rows, columns=["window_id", "candidate_id", *names])
-    return (df, cands) if return_candidates else df
+    T = feature_names(cfg, "T_local") + feature_names(cfg, "T_win")
+    return {"B": list(B_NAMES), "B+D": list(B_NAMES) + list(D_NAMES), "B+D+T": list(B_NAMES) + list(D_NAMES) + T, "T": T}
