@@ -38,9 +38,12 @@ making design decisions; section numbers (§3.1 etc.) in code comments refer to 
   another new folder, never to the report's.
 
 ## Status / next
-See README "Status". Phase 1 and Phase 2 are done: generator, candidates, persistence, and the T
-feature table (`features.t_feature_table`, `src/ringtda/topology/vectorize.py`, `configs/topology.yaml`).
-Next: D and B feature code plus the IBM AML pattern-behavior audit (Phase 3 start).
+See README "Status". Done: Phases 1-2 (generator, candidates, persistence, T table), Phase 3 (B and D
+features, resumable IBM feature builder, pattern-behaviour audit, classification harness, HI-Small and LI-Small
+runs, T_local / T_win ablations, HI<->LI transfer, synthetic per-scenario runs, candidate recall) and the results
+numbers pack (`paper/numbers_pack.md`, built by `experiments/make_numbers_pack.py`). Remaining: the write-up.
+Phases 4-6 (clustering and severity regression, NFT loader and provenance audit, bandit policies and drift
+benchmark) are future work.
 Engineering gates run with `hard_negatives=False` ("easy background"); recall with hard negatives on
 is a reported metric, not a gate. Candidate labels: §3.7 rule in `src/ringtda/eval/labels.py` (X = 80%).
 
@@ -62,7 +65,7 @@ default.
   sharing any edge, merged with attempt id (stricter variant: shared account, as a sensitivity check);
   all scaling/hyperparameter/threshold choices inside training folds; stratified group k-fold, 5
   repeats, pooled out-of-fold PR-AUC with grouped bootstrap CIs, prevalence and group counts reported.
-  Only 10-16 positive groups per dataset (58 of 60 folds have < 5): the effective sample size is the group
+  Only 10-16 positive groups per dataset (144 of 150 fold-repeats over tau 0.02/0.05/0.10 and HI/LI have < 5, 50 of 50 at tau 0.05; `results/phase3_features/ibm_split_counts.csv`): the effective sample size is the group
   count, not the positive-candidate count; report wide CIs as they are and do not tune to rescue them.
 - Time-ordered check: tried as specified (train groups first seen days 0-5, test day >= 7, mixed windows
   dropped) and unusable: HI-Small test side has 0 candidates, LI-Small 1, because rings recur and almost

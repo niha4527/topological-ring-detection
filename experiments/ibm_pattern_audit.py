@@ -79,7 +79,7 @@ for w in S.window.unique():
     s = S[S.window == w]
     md.append(f"\n## {w}\n\nPairs per group:\n" + fmt(s.drop_duplicates("group").set_index("group")[["n_pairs"]].T))
     md.append("Edge-level AUC of group vs background:\n" + fmt(s[s.group != "background"].pivot(index="group", columns="score", values="auc_vs_background")[COLUMNS]))
-    md.append("Share of the group beyond the 10% most suspicious tail of the window (all pairs: " + ", ".join(f"{c} {s[s.score == c].decile_share_all.iloc[0]:.3f}" for c in COLUMNS) + "):\n" + fmt(s.pivot(index="group", columns="score", values="decile_share")[COLUMNS]))
+    md.append("Tail share = share of the group's pairs strictly inside the most suspicious 10% tail of the window (for weight: the lowest 10% of weights; baseline = share of all pairs, 0.100 when no ties; all pairs: " + ", ".join(f"{c} {s[s.score == c].decile_share_all.iloc[0]:.3f}" for c in COLUMNS) + "):\n" + fmt(s.pivot(index="group", columns="score", values="decile_share")[COLUMNS]))
     md.append("Share exactly equal to the window median (tie rate):\n" + fmt(s.pivot(index="group", columns="score", values="tie_window_median")[COLUMNS]))
     md.append("Median:\n" + fmt(s.pivot(index="group", columns="score", values="median")[COLUMNS]))
 md.append("\n## gap_cv imputation (pairs with < 3 transactions)\n" + fmt(I.pivot(index="group", columns="window", values="share_imputed")))

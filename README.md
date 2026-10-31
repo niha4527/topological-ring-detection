@@ -77,8 +77,15 @@ results/       figures and metrics (git-ignored). results/report/ (+ the origina
 - [x] Phase 2 topology features: local + window-level persistence, infinite-bar cap, landscapes and scalar
       summaries (`topology/vectorize.py`, `configs/topology.yaml`), T feature table (`features.t_feature_table`)
 - [x] IBM AML loader, ring labels (§3.7), groups and fold assignments; split counts in
-      `experiments/ibm_split_report.py` (counts only, no features or models yet)
-- [ ] Phase 3 start: D and B feature code, IBM AML pattern-behavior audit; then models, evaluation
+      `experiments/ibm_split_report.py`
+- [x] Phase 3: B and D feature code, resumable IBM feature builder, IBM AML pattern-behaviour audit
+- [x] Phase 3: classification harness (`experiments/ibm_classify.py`, grouped CV, grouped-bootstrap CIs, fixed
+      hyperparameters); runs on HI-Small and LI-Small, T_local / T_win ablations, HI<->LI transfer
+      (`experiments/ibm_transfer.py`), synthetic per-scenario runs (`experiments/synth_classify.py`)
+- [x] Candidate-generation recall (`experiments/candidate_recall.py`) and the results numbers pack
+      (`experiments/make_numbers_pack.py` -> `paper/numbers_pack.md`, figure list in `paper/figure_list.md`)
+- [ ] Write-up (paper). Phases 4-6 (clustering and severity regression, NFT loader and label-provenance
+      audit, bandit policies and drift benchmark) are future work, not part of this iteration
 
 ## Decisions and deviations from the proposal
 
@@ -133,7 +140,9 @@ results/       figures and metrics (git-ignored). results/report/ (+ the origina
    - **Primary estimate.** Stratified group k-fold, 5 repeats; pooled out-of-fold PR-AUC with grouped
      bootstrap CIs (resampling groups); prevalence is always reported next to PR-AUC, with the group counts.
      Measured: only 10-16 positive groups per dataset (HI-Small 13-16, LI-Small 10 across
-     `tau_quantile` 0.02-0.10), and 58 of 60 folds have fewer than 5 positive groups. The effective sample
+     `tau_quantile` 0.02-0.10), and 144 of 150 fold-repeats have fewer than 5 positive groups (50 of 50 at
+     `tau_quantile` 0.05; `results/phase3_features/ibm_split_counts.csv`, 3 taus x HI/LI x 5 folds x 5
+     repeats). The effective sample
      size is the number of positive groups, not the number of positive candidates (e.g. 131 positive
      candidates from 43 attempts fall into 14 groups at `tau_quantile` 0.05). Expect wide CIs; they are
      reported as they are, and nothing is tuned to narrow them.
@@ -165,8 +174,12 @@ Measurements behind these (HI-Small, window = days 0-5, 2.2 M transactions after
 aggregate + weights + graph 5.7 s, candidate enumeration <= 0.8 s, `t_feature_table` (q = 0.05,
 `max_len` 6) 11.5 s for 1,113 candidates. 54 CYCLE attempts in total, all simple rings; 34 have <= 6
 accounts. In that window 15 attempts are complete, 11 of them with <= 6 accounts (the recall cap at
-`max_len` 6) and 12 with <= 8 (cap at 8). Recovered as candidates: 8 for `tau_quantile` 0.02-0.10 and 9
-at 0.15, identical at `max_len` 6 and 8. IBM `tau_quantile` sweep range: about 0.02 to 0.15.
+`max_len` 6) and 12 with <= 8 (cap at 8). Recovered as candidates (a candidate whose account set equals the
+attempt's): 8 for `tau_quantile` 0.02-0.10 and 9 at 0.15, identical at `max_len` 6 and 8. Under the stricter
+reading that the recovering candidate must also carry a positive CYCLE label (§3.7, >= 80% of its edges from
+the attempt), the counts are 6 for 0.02-0.10 and 7 at 0.15: two of the recovered rings are labelled otherwise
+(`results/phase3_features/classify/candidate_recall/ibm.csv`, columns `n_recovered` and `n_recovered_labelled`).
+IBM `tau_quantile` sweep range: about 0.02 to 0.15.
 
 ## Feature sets B, D, T (Phase 3)
 
@@ -180,6 +193,9 @@ builders take only graphs, pairs and candidates (never labels, planted structure
   its neighbourhood from the sparsified graph by default, so B sees at least as much of the graph as T.
 - **Betweenness.** Exact for windows with <= 3000 nodes (synthetic), otherwise k = 100 sampled sources with a
   fixed seed on the full window graph, cached per window (`configs/features.yaml`). Timing on an IBM HI-Small
-  5-day window (404k nodes, 554k edges): 17.8 s for k = 50 and 34.8 s for k = 100; k = 50 gave non-zero values
-  for only 166 nodes, so k = 100 is used. The whole B step for that window is about 82 s (betweenness plus
+  5-day window (404k nodes, 554k edges): 17.8 s for k = 50 and 34.8 s for k = 100. Stored k = 100 caches
+  (`results/phase3_features/ibm/betweenness_cache/`): HI window 0 has 64,441 of 404,273 nodes with non-zero
+  betweenness (15.9%), LI window 0 has 17,673 of 551,969 (3.2%); most nodes get 0, so B betweenness is sparse
+  on IBM windows. (An earlier statement that k = 50 gave non-zero values for 166 nodes is not reproducible from
+  any stored file and was removed.) The whole B step for that window is about 82 s (betweenness plus
   neighbourhood extraction and clustering around hubs).
