@@ -1,0 +1,13 @@
+# Infinite-bar cap sensitivity (experiments/cap_sensitivity.py). Alternatives live here only; configs/topology.yaml and the default
+# (window max) are untouched. The cap only enters the vectorisation of the diagrams, so each window's persistence is computed once
+# and vectorised under every variant.
+variants:
+  window_max:     {rule: window_max}                     # default; must reproduce the stored T columns
+  fixed_1.0:      {rule: fixed, fixed: 1.0}              # the legacy report cap
+  max_x1.1:       {rule: window_max_x, factor: 1.1}      # 1.1 x window max
+  ring_local_max: {rule: window_max, local: true}        # T_local: max edge weight of the ring's own neighbourhood (T_win keeps the window max)
+sources:
+  synthetic: {condition: hn-off_chords-default, seeds: 6}
+  ibm: {dataset: HI, tau: "0.05"}
+sets: [B+D+T, B+D+T_local]
+models: [logreg, rf, svm]
