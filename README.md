@@ -84,8 +84,11 @@ results/       figures and metrics (git-ignored). results/report/ (+ the origina
       (`experiments/ibm_transfer.py`), synthetic per-scenario runs (`experiments/synth_classify.py`)
 - [x] Candidate-generation recall (`experiments/candidate_recall.py`) and the results numbers pack
       (`experiments/make_numbers_pack.py` -> `paper/numbers_pack.md`, figure list in `paper/figure_list.md`)
-- [ ] Write-up (paper). Phases 4-6 (clustering and severity regression, NFT loader and label-provenance
-      audit, bandit policies and drift benchmark) are future work, not part of this iteration
+- [x] Phase 6: bandit threshold policies (discounted UCB, sliding-window Thompson) and the drift benchmark
+      (`threshold/bandit_sim.py`, `configs/bandit.yaml`, `experiments/bandit_report.py`; results in
+      `results/phase6_bandit/`, git-ignored)
+- [ ] Write-up (paper). Phases 4 and 5 (clustering and severity regression; NFT loader and label-provenance
+      audit) are future work, not part of this iteration
 
 ## Decisions and deviations from the proposal
 

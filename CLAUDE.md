@@ -42,8 +42,8 @@ See README "Status". Done: Phases 1-2 (generator, candidates, persistence, T tab
 features, resumable IBM feature builder, pattern-behaviour audit, classification harness, HI-Small and LI-Small
 runs, T_local / T_win ablations, HI<->LI transfer, synthetic per-scenario runs, candidate recall) and the results
 numbers pack (`paper/numbers_pack.md`, built by `experiments/make_numbers_pack.py`). Remaining: the write-up.
-Phases 4-6 (clustering and severity regression, NFT loader and provenance audit, bandit policies and drift
-benchmark) are future work.
+Phase 6 (bandit policies and drift benchmark, `threshold/bandit_sim.py`, `configs/bandit.yaml`) is done.
+Phases 4-5 (clustering and severity regression, NFT loader and provenance audit) are future work.
 Engineering gates run with `hard_negatives=False` ("easy background"); recall with hard negatives on
 is a reported metric, not a gate. Candidate labels: §3.7 rule in `src/ringtda/eval/labels.py` (X = 80%).
 

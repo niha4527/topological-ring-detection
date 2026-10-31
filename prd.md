@@ -57,18 +57,18 @@ Build a classical-ML pipeline that finds, scores, types and tracks coordinated m
 | FR3 | Candidate rings via sparsification, SCCs, bounded simple-cycle enumeration, dedup | 2 | done |
 | FR4 | Weighted directed flag persistence (dim ≤ 2) with `flagser` and `reference` backends that agree | 2 | done |
 | FR5 | Ring-level labels from planted ground truth by the §3.7 rule (X = 80%), ambiguous class counted and reported | 2 | done |
-| FR6 | Persistence landscapes of local H1 diagrams; infinite-bar cap at window max filtration; infinite-bar count; persistence-image and scalar ablations | 2 | todo (scalars partial) |
-| FR7 | Feature sets B (graph baseline), D (direction/behaviour, includes ring birth), T (topological); one feature table per candidate | 2 | partial (D, scalar T only) |
-| FR8 | Window-level persistence as context features; undirected clique-complex ablation | 2–3 | todo |
-| FR9 | Classifiers (logistic regression, random forest, RBF-SVM) on B, B+D, B+D+T, T; results overall, per scenario, with and without hard negatives | 3 | todo |
+| FR6 | Persistence landscapes of local H1 diagrams; infinite-bar cap at window max filtration; infinite-bar count; persistence-image and scalar ablations | 2 | partial (landscapes, window-max cap, infinite-bar counts, scalar summaries done; persistence-image ablation not done) |
+| FR7 | Feature sets B (graph baseline), D (direction/behaviour, includes ring birth), T (topological); one feature table per candidate | 2 | done (B, D, T tables; `features.full_feature_table`) |
+| FR8 | Window-level persistence as context features; undirected clique-complex ablation | 2–3 | partial (window-level persistence done; undirected clique-complex ablation not done) |
+| FR9 | Classifiers (logistic regression, random forest, RBF-SVM) on B, B+D, B+D+T, T; results overall, per scenario, with and without hard negatives | 3 | done (HI-Small, LI-Small, HI<->LI transfer, synthetic per scenario with and without hard negatives) |
 | FR10 | Learn score-combination weights `alpha` on the simplex; online-ascent threshold with delay and comparators | opt. report | done |
-| FR11 | IBM AML loader, patterns-file inspection, pattern-behaviour audit of each score, ring-labeling rule, optional AML-specific weight variant | 3 | todo |
-| FR12 | Ward clustering of rings; ARI, purity, silhouette against IBM pattern types | 4 | todo |
-| FR13 | Severity regression on next-window wash volume (ridge, random forest, gradient boosting); no input leakage | 4 | todo |
-| FR14 | NFT loader (Dune or BigQuery), proxy labels, label-provenance audit, results on the subset not flagged by cycle rules | 5 | todo |
-| FR15 | Bandit threshold policies (discounted UCB, sliding-window Thompson) in the drift benchmark; compare with fixed, re-tuned (same lag), hindsight oracle | 6 | todo |
-| FR16 | Sensitivity sweeps: window length, stride, `tau_s`, `max_len`, infinite-bar cap, label threshold X | 3–7 | todo |
-| FR17 | Candidate-recall vs `tau_s` curve reported separately from end-to-end precision/recall | 3 | todo |
+| FR11 | IBM AML loader, patterns-file inspection, pattern-behaviour audit of each score, ring-labeling rule, optional AML-specific weight variant | 3 | done (optional AML-specific weight variant not built) |
+| FR12 | Ward clustering of rings; ARI, purity, silhouette against IBM pattern types | 4 | not done (future work) |
+| FR13 | Severity regression on next-window wash volume (ridge, random forest, gradient boosting); no input leakage | 4 | not done (future work) |
+| FR14 | NFT loader (Dune or BigQuery), proxy labels, label-provenance audit, results on the subset not flagged by cycle rules | 5 | not done (future work) |
+| FR15 | Bandit threshold policies (discounted UCB, sliding-window Thompson) in the drift benchmark; compare with fixed, re-tuned (same lag), hindsight oracle | 6 | done (discounted UCB and sliding-window Thompson run on the report's drift stream against fixed, re-tuned, online ascent and oracle; they do not beat the re-tuned comparator at the primary setting, see `results/phase6_bandit/summary.md`) |
+| FR16 | Sensitivity sweeps: window length, stride, `tau_s`, `max_len`, infinite-bar cap, label threshold X | 3–7 | partial (candidate-recall sweep over `tau_quantile`, `max_len` done; classification run at IBM tau 0.05 only; window length, cap and X sweeps not done) |
+| FR17 | Candidate-recall vs `tau_s` curve reported separately from end-to-end precision/recall | 3 | done (`experiments/candidate_recall.py`) |
 | FR18 | Pump-and-dump temporal-motif track | 7 | optional |
 
 ## 7. Non-functional requirements
@@ -136,7 +136,7 @@ Assumes a roughly 12-week semester; the project is already past the Phase 2 star
 
 ## 12. Success criteria
 
-- All engineering gates pass (`pytest` green; currently 95 tests).
+- All engineering gates pass (`pytest` green; currently 196 tests).
 - Every reporting checkpoint above has numbers with CIs, including null or negative results.
 - The report and paper state limitations from the design (length ≤ 6, synthetic IBM data, heuristic NFT labels, offline-only adaptation, hard negatives modelled).
 - Another person can reproduce the headline numbers from the documented commands.
