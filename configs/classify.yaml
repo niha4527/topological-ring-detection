@@ -1,0 +1,17 @@
+# Classification harness (experiments/ibm_classify.py). Hyperparameters are FIXED: no search of any kind
+# (with 10-16 positive groups a nested search would overfit). Seeds are stored with the results.
+models:
+  logreg: {C: 1.0, max_iter: 2000}                       # L2, class_weight balanced
+  rf: {n_estimators: 300, n_jobs: 2}                     # class_weight balanced_subsample
+  svm: {C: 1.0, gamma: scale}                            # RBF, class_weight balanced, decision_function scores
+cv:
+  k: 5                  # stratified GROUP k-fold; falls back to fallback_k when a fold has no positive
+  fallback_k: 3
+  repeats: 5
+  seed: 0
+bootstrap:
+  n_boot: 1000          # grouped bootstrap (resample groups); 95% percentile CI
+  seed: 12345
+model_seed: 0
+feature_sets: [B, B+D, B+D+T, T]                      # all variants
+control_sets: [D, T_local, T_win]                     # primary variant only (plus the D_birth-alone detector)
