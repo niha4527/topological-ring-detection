@@ -666,12 +666,12 @@ md.append("\n".join(f"{i + 1}. {x}" for i, x in enumerate(dev)) + "\n")
 sec("Expected files that were missing")
 md.append("None.\n" if not missing else "\n".join(f"- `{m}`" for m in missing) + "\n")
 (OUT / "numbers_pack.md").write_text("\n".join(md) + "\n")
-pd.DataFrame(prov).to_csv(PACK / "provenance.csv", index=False)
 
 # ====================================================================== figures + captions
 figs = [
     (CL / "HI_tau0.05" / "pr_auc.png", "hi_pr_auc.png"),
     (SYN / "pr_auc.png", "synthetic_pr_auc.png"),
+    (SYN / "lift_per_scenario.png", "synthetic_lift_per_scenario.png"),
     (CL / "candidate_recall" / "ibm.png", "recall_ibm.png"),
     (CL / "candidate_recall" / "synthetic.png", "recall_synthetic.png"),
     (P3 / "audit" / "HI_audit_scores.png", "hi_audit_scores.png"),
@@ -690,9 +690,12 @@ prev = lambda path, w: get(path, w, "prevalence", "{:.4f}", "figures")  # noqa: 
 w0 = {"variant": "primary", "feature_set": "B", "model": "logreg"}
 fl = ["# Figure list (caption drafts)\n",
       "Copies of existing PNGs in `paper/numbers_pack/figures/` (not regenerated). Every PR-AUC CI is a 95% percentile interval of a grouped bootstrap (resampling groups, 1000 resamples) unless stated.\n"]
+pv = {sc: [float(get(SYN / c / "per_scenario.csv", {"scenario": sc, "feature_set": "B", "model": "logreg"}, "prevalence", "{:.6f}", "figures")) for c in CONDS] for sc in ["isolated", "dense", "chorded"]}
+pg = {sc: get(SYN / "hn-off_chords-default" / "per_scenario.csv", {"scenario": sc, "feature_set": "B", "model": "logreg"}, "n_pos_groups", "{:.0f}", "figures") for sc in ["isolated", "dense", "chorded"]}
 cap = [
-    ("hi_pr_auc.png", f"IBM HI-Small, PR-AUC of B, B+D, B+D+T, T and controls by model; primary variant (ambiguous excluded), prevalence {prev(HIR, w0)}, {get(HIR, w0, 'n_pos_groups', '{:.0f}', 'figures')} positive groups. Error bars: 95% grouped-bootstrap CI. Pooled out-of-fold, mean of 5 repeats."),
+    ("hi_pr_auc.png", f"IBM HI-Small, PR-AUC of B, B+D, B+D+T, B+D+T_local, B+D+T_win, T and the controls D, T_local, T_win by model; primary variant (ambiguous excluded), prevalence {prev(HIR, w0)}, {get(HIR, w0, 'n_pos_groups', '{:.0f}', 'figures')} positive groups. Error bars: 95% grouped-bootstrap CI. Pooled out-of-fold, mean of 5 repeats."),
     ("synthetic_pr_auc.png", "Synthetic data, PR-AUC of B, B+D, B+D+T, B+D+T_local, T by model in the four conditions (hard negatives x dense_internal_chords); primary variant, prevalence " + ", ".join(f"{prev(SYN / c / 'results.csv', w0)} ({c})" for c in CONDS) + ". Error bars: 95% grouped-bootstrap CI over six seeds pooled."),
+    ("synthetic_lift_per_scenario.png", "F7. Synthetic data, paired PR-AUC difference B+D+T minus B+D per scenario (isolated, dense, chorded), by model, hard negatives off (left) and on (right); filled markers = dense_internal_chords default, hollow = off. Error bars: 95% grouped-bootstrap CI of the paired difference (same resamples for both feature sets). **Prevalence differs per scenario** (positives of one scenario against all negatives): " + "; ".join(f"{sc} {min(pv[sc]):.4f}-{max(pv[sc]):.4f}" for sc in ["isolated", "dense", "chorded"]) + " across the four conditions; positive groups per scenario " + ", ".join(f"{sc} {pg[sc]}" for sc in ["isolated", "dense", "chorded"]) + " (hn-off, chords default)."),
     ("recall_ibm.png", "Candidate recall of complete CYCLE attempts (reachable ones, at most max_len accounts) against tau_quantile on HI and LI, days 0-5 and whole data, max_len 6 and 8. Counts, not a sample: no CI; prevalence not applicable. LI days 0-5 has one complete attempt."),
     ("recall_synthetic.png", "Recall of planted wash rings (isolated, dense, chorded) against tau_quantile, six seeds, hard negatives off and on. Mean over rings, no CI. With hard negatives on, the cells where the enumeration cap is hit (daggers in section 6.2, from tau 0.25 or 0.30) are limited by the cap."),
     ("hi_audit_scores.png", "IBM HI-Small pattern-behaviour audit: box plots of the rank-normalised s_rec, s_bal, s_reg and the combined weight (low = suspicious) by pattern group and background pairs, pooled over the audited windows. Descriptive: no CI, no class prevalence (pair counts in section 3.5)."),
@@ -713,6 +716,7 @@ if missing and "None." in txt.split("## Expected files that were missing")[-1][:
     pass
 (OUT / "numbers_pack.md").write_text(txt.split("## Expected files that were missing")[0] + "## Expected files that were missing\n\n" + ("None.\n" if not missing else "\n".join(f"- `{m}`" for m in missing) + "\n"))
 
+pd.DataFrame(prov).to_csv(PACK / "provenance.csv", index=False)
 print(f"wrote {OUT / 'numbers_pack.md'} ({len(prov)} registered numbers), {OUT / 'figure_list.md'}")
 print("MISSING:" if missing else "no expected file missing", *missing, sep="\n  " if missing else "")
 

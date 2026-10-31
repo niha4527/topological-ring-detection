@@ -15,9 +15,9 @@ ds, tau = (sys.argv[1] if len(sys.argv) > 1 else "HI"), (sys.argv[2] if len(sys.
 D = Path("results/phase3_features/classify") / f"{ds}_tau{tau}"
 R = pd.read_csv(D / "results.csv")
 R = R[(R.variant == "primary") & (R.model != "none")]
-sets = [s for s in ["B", "B+D", "B+D+T", "T", "D", "T_local", "T_win"] if s in set(R.feature_set)]
+sets = [s for s in ["B", "B+D", "B+D+T", "B+D+T_local", "B+D+T_win", "T", "D", "T_local", "T_win"] if s in set(R.feature_set)]
 models = ["logreg", "rf", "svm"]
-fig, ax = plt.subplots(figsize=(9, 4.2))
+fig, ax = plt.subplots(figsize=(11, 4.2))
 w = 0.26
 for i, m in enumerate(models):
     d = R[R.model == m].set_index("feature_set").reindex(sets)

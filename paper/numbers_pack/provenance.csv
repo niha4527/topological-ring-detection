@@ -1923,3 +1923,24 @@ hn-on_chords-off,"+0.610 [+0.456, +0.700]",results/phase3_features/classify/synt
 7-9,15,results/phase3_features/classify/candidate_recall/ibm.csv,"{""source"": ""HI"", ""scope"": ""days0-5"", ""max_len"": 6, ""tau_quantile"": 0.05}",n_complete
 dev,0,results/phase3_features/ibm_split_counts.csv,"{""dataset"": ""HI"", ""tau_quantile"": 0.05, ""scheme"": ""time_ordered"", ""part"": ""test""}",candidates
 dev,1,results/phase3_features/ibm_split_counts.csv,"{""dataset"": ""LI"", ""tau_quantile"": 0.05, ""scheme"": ""time_ordered"", ""part"": ""test""}",candidates
+figures,0.010753,results/phase3_features/classify/synthetic/hn-off_chords-default/per_scenario.csv,"{""scenario"": ""isolated"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,0.014170,results/phase3_features/classify/synthetic/hn-off_chords-off/per_scenario.csv,"{""scenario"": ""isolated"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,0.022231,results/phase3_features/classify/synthetic/hn-on_chords-default/per_scenario.csv,"{""scenario"": ""isolated"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,0.026455,results/phase3_features/classify/synthetic/hn-on_chords-off/per_scenario.csv,"{""scenario"": ""isolated"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,0.004808,results/phase3_features/classify/synthetic/hn-off_chords-default/per_scenario.csv,"{""scenario"": ""dense"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,0.006348,results/phase3_features/classify/synthetic/hn-off_chords-off/per_scenario.csv,"{""scenario"": ""dense"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,0.010004,results/phase3_features/classify/synthetic/hn-on_chords-default/per_scenario.csv,"{""scenario"": ""dense"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,0.011284,results/phase3_features/classify/synthetic/hn-on_chords-off/per_scenario.csv,"{""scenario"": ""dense"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,0.005007,results/phase3_features/classify/synthetic/hn-off_chords-default/per_scenario.csv,"{""scenario"": ""chorded"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,0.006610,results/phase3_features/classify/synthetic/hn-off_chords-off/per_scenario.csv,"{""scenario"": ""chorded"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,0.010004,results/phase3_features/classify/synthetic/hn-on_chords-default/per_scenario.csv,"{""scenario"": ""chorded"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,0.011815,results/phase3_features/classify/synthetic/hn-on_chords-off/per_scenario.csv,"{""scenario"": ""chorded"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,39,results/phase3_features/classify/synthetic/hn-off_chords-default/per_scenario.csv,"{""scenario"": ""isolated"", ""feature_set"": ""B"", ""model"": ""logreg""}",n_pos_groups
+figures,10,results/phase3_features/classify/synthetic/hn-off_chords-default/per_scenario.csv,"{""scenario"": ""dense"", ""feature_set"": ""B"", ""model"": ""logreg""}",n_pos_groups
+figures,8,results/phase3_features/classify/synthetic/hn-off_chords-default/per_scenario.csv,"{""scenario"": ""chorded"", ""feature_set"": ""B"", ""model"": ""logreg""}",n_pos_groups
+figures,0.0173,results/phase3_features/classify/HI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,14,results/phase3_features/classify/HI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",n_pos_groups
+figures,0.0203,results/phase3_features/classify/synthetic/hn-off_chords-default/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,0.0267,results/phase3_features/classify/synthetic/hn-off_chords-off/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,0.0412,results/phase3_features/classify/synthetic/hn-on_chords-default/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
+figures,0.0481,results/phase3_features/classify/synthetic/hn-on_chords-off/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
