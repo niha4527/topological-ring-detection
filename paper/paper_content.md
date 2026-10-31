@@ -460,8 +460,8 @@ Live deployment with real delayed feedback; the pump-and-dump motif track; cap-f
 
 ## 11. Gaps to close before writing the final paper
 1. **Citations.** Every `[VERIFY]` item. The related-work table needs a real literature search, including the novelty claim for directed flag complexes in transaction graphs.
-2. **Unfinished code** (README status): persistence landscapes, infinite-bar cap, the full feature table, IBM AML loader and audit, NFT loader, clustering, regression, the evaluation harness, and the bandit variants.
-3. **Choice to make:** whether the adaptive-threshold section reports online gradient ascent (implemented), the discounted-UCB / Thompson bandit (in the proposal), or both.
+2. **Unfinished code** (README status): the NFT loader and label-provenance audit (Phase 5, not done: running Dune queries is blocked on the free tier), the pump-and-dump track, the undirected-complex and persistence-image ablations, and per-score classifier filtrations. Done since this pack was drafted: landscapes, the infinite-bar cap and its sensitivity run, the full feature table, the IBM AML loader and audit, the evaluation harness, clustering (exploratory), severity regression (synthetic only) and the bandit policies.
+3. **Choice made:** the adaptive-threshold section reports both online gradient ascent and the discounted-UCB / sliding-window Thompson bandits; at the primary setting the bandits lose to the re-tuned comparator (`paper/numbers_pack.md` section 6A).
 4. **Sections of the optimization report not yet read in full:** the tail of §4.5 onward and any appendix. Check them for claims to carry over.
 5. **Notation clashes** (§8) to resolve.
-6. **Real-data experiments** do not exist yet; the paper's external-validity claims depend on them.
+6. **Real-data experiments** exist for IBM AML only (HI-Small, LI-Small, transfer; `paper/numbers_pack.md`). The NFT experiment was not run, so external-validity claims beyond IBM AML are not supported.

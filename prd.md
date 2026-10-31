@@ -25,7 +25,7 @@ Build a classical-ML pipeline that finds, scores, types and tracks coordinated m
 - G3. Test honestly whether topological features add predictive value over baseline and direction-aware features.
 - G4. Type rings by clustering and forecast next-window severity without leakage.
 - G5. Keep the alarm threshold accurate under simulated drift with delayed labels.
-- G6. Validate on synthetic data, IBM AML (pipeline machinery), and Ethereum NFT trades (real-world transfer).
+- G6. Validate on synthetic data and IBM AML (pipeline machinery). Ethereum NFT trades (real-world transfer) are NOT done: running queries on Dune is blocked on the free tier; BigQuery access was confirmed and the schemas inspected; the planned leakage-controlled subset is filters 4 and 5 of `nft.wash_trades` only (filters 2 and 3 are cycle-type rules).
 
 ### Non-goals
 - Deep learning of any kind.
@@ -103,11 +103,11 @@ Engineering gates are hard tests. Reporting checkpoints are reported whatever th
 | 1 Synthetic data | 1–2 | Generator, windows, weights | Gate: planted ring edges in lowest-weight decile (easy background) | done |
 | 2 Topology pipeline | 3–4 | Candidates, persistence, landscapes, feature table | Gate: planted rings are candidates; cyclic persists, transitive dies, shortcut-filled dies | gates pass; landscapes, cap, feature table open |
 | Optimization report | (extra) | GD, PGD on simplex, online ascent | Report numbers reproducible | done (`report/Optimization_Report`) |
-| 3 IBM AML | 5–6 | Audit, labels, classifiers, ablations | Report: B+D+T vs B+D with CIs; candidate recall | todo |
-| 4 Typing + severity | 7 | Clustering, regression | Report: ARI/purity, RMSE with CIs | todo |
-| 5 NFT transfer | 8–9 | Loader, provenance audit | Report with caveats | todo |
-| 6 Adaptive threshold | 10 | Bandit vs fixed vs re-tuned vs oracle | Report | partial (ascent done) |
-| 7 Stretch + write-up | 11–12 | Pump-and-dump if time; paper | none | paper pack drafted |
+| 3 IBM AML | 5–6 | Audit, labels, classifiers, ablations | Report: B+D+T vs B+D with CIs; candidate recall | done |
+| 4 Typing + severity | 7 | Clustering, regression | Report: ARI/purity, RMSE with CIs | done (exploratory clustering on IBM positives; severity regression synthetic only) |
+| 5 NFT transfer | 8–9 | Loader, provenance audit | Report with caveats | NOT done: running Dune queries is blocked on the free tier; BigQuery access confirmed and schemas inspected; planned leakage-controlled subset = filters 4/5 only |
+| 6 Adaptive threshold | 10 | Bandit vs fixed vs re-tuned vs oracle | Report | done (ascent and bandits run; the bandits lose to the re-tuned comparator at the primary setting) |
+| 7 Stretch + write-up | 11–12 | Pump-and-dump if time; paper | none | pump-and-dump cut; numbers pack done, write-up remaining |
 
 Assumes a roughly 12-week semester; the project is already past the Phase 2 start date, so the remaining phases need compression or scope cuts (see §11).
 
@@ -130,7 +130,7 @@ Assumes a roughly 12-week semester; the project is already past the Phase 2 star
 | Generator circularity (designer decides hard-negative separability) | Model documented actor behaviour; report with and without; NFT as external check |
 | Sparsification caps recall | Report candidate recall across `tau_s` |
 | Large SCCs blow up enumeration | Time budget, local re-sparsification, logged fallbacks |
-| Schedule slip (late in semester, Phases 3–7 open) | Prioritise Phase 2 finish, classifiers on synthetic, IBM AML; treat NFT, bandit, pump-and-dump as cuttable |
+| Schedule slip (late in semester, Phases 3–7 open) | Prioritise Phase 2 finish, classifiers on synthetic, IBM AML; NFT and pump-and-dump were cut; the bandit was run (it loses to the re-tuned comparator at the primary setting) |
 | Changing generator breaks report numbers | `report` config pins the old generator; diff re-runs in a scratch folder |
 | Adversaries tune to the published scores | Stated in limitations; decoy-rate drift experiments |
 
@@ -145,9 +145,9 @@ Assumes a roughly 12-week semester; the project is already past the Phase 2 star
 
 See the list returned in the chat summary; answers should be recorded here once decided.
 
-1. Is the deadline fixed, and which phases are mandatory for the course?
+1. Is the deadline fixed, and which phases are mandatory for the course? Answered: the deadline is Monday night; Phases 1-4 and 6 are done, Phase 5 (NFT) and pump-and-dump are cut.
 2. Is the IBM AML data downloaded, and is the patterns file format confirmed?
-3. NFT data: Dune or BigQuery access available?
-4. Adaptive threshold: report online gradient ascent, the bandit, or both?
+3. NFT data: Dune or BigQuery access available? Answered: running queries on Dune is blocked on the free tier; BigQuery access is confirmed and the schemas were inspected, but the NFT experiment was not run (planned leakage-controlled subset = filters 4/5 of `nft.wash_trades`).
+4. Adaptive threshold: report online gradient ascent, the bandit, or both? Answered: both are reported (the bandits lose to the re-tuned comparator at the primary setting).
 5. Deviations (`max_len` 5 vs 6, cap 1.0 vs window max, dedup order) accepted or to be aligned with v3?
 6. Paper target venue or format, and who writes which section?

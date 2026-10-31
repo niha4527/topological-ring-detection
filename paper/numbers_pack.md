@@ -1393,28 +1393,28 @@ LI:
 
 ## 6E. Comparisons made across the project (multiplicity note)
 
-Each row of a paired-difference file is one comparison (model x variant x scope [x metric]) with its own CI; rows within a file are not independent. **Pre-specified primary** = `B+D+T minus B+D` in the primary variant, overall scope (classification, one row per model; transfer: both directions), the same comparison for severity (3 metrics x 3 models), and the bandit-vs-re-tuned (M = 5) comparison at lambda 1, d 2 (Phase 6); everything else (other variants, per-scenario rows, T_local / T_win ablations, cap variants, diagnostics, other lags) is secondary or exploratory. No multiplicity correction is applied anywhere.
+Each row of a paired-difference file is one comparison (model x variant x scope [x metric]) with its own CI; rows within a file are not independent. **Definition.** *Pre-specified primary* = rows with `comparison == 'B+D+T minus B+D'`, one row per model x dataset x variant, at overall scope: IBM HI (4 variants x 3 models), IBM LI (2 variants x 3 models), HI<->LI transfer (2 directions x 3 models), synthetic (per condition: primary and ambiguous-positive variants, overall scope), severity (3 metrics x 3 models) and the Phase 6 bandit-vs-re-tuned (M = 5) comparison at lambda 1, d 2 (2 bandits). *Pre-specified secondary* = rows with `comparison == 'B+D minus B'` at the same scope. Everything else is *exploratory or sensitivity*: the T_local / T_win ablation rows, per-scenario rows, cap-sensitivity rows (including its B+D+T minus B+D rows), diagnostics, bandit lags and lambdas other than the primary, and bandit-vs-ascent rows. No multiplicity correction is applied anywhere.
 
-| study | file | paired rows | of which pre-specified primary | secondary / exploratory |
-|---|---|---|---|---|
-| IBM HI classification | `results/phase3_features/classify/HI_tau0.05/paired_differences.csv` | 60 | 3 | 57 |
-| IBM LI classification | `results/phase3_features/classify/LI_tau0.05/paired_differences.csv` | 30 | 3 | 27 |
-| HI<->LI transfer | `results/phase3_features/classify/transfer/paired_differences.csv` | 12 | 6 | 6 |
-| synthetic hn-off_chords-default | `results/phase3_features/classify/synthetic/hn-off_chords-default/paired_differences.csv` | 18 | 3 | 15 |
-| synthetic hn-off_chords-off | `results/phase3_features/classify/synthetic/hn-off_chords-off/paired_differences.csv` | 18 | 3 | 15 |
-| synthetic hn-on_chords-default | `results/phase3_features/classify/synthetic/hn-on_chords-default/paired_differences.csv` | 12 | 3 | 9 |
-| synthetic hn-on_chords-off | `results/phase3_features/classify/synthetic/hn-on_chords-off/paired_differences.csv` | 12 | 3 | 9 |
-| synthetic per scenario hn-off_chords-default | `results/phase3_features/classify/synthetic/hn-off_chords-default/per_scenario_paired.csv` | 27 | 0 | 27 |
-| synthetic per scenario hn-off_chords-off | `results/phase3_features/classify/synthetic/hn-off_chords-off/per_scenario_paired.csv` | 27 | 0 | 27 |
-| synthetic per scenario hn-on_chords-default | `results/phase3_features/classify/synthetic/hn-on_chords-default/per_scenario_paired.csv` | 27 | 0 | 27 |
-| synthetic per scenario hn-on_chords-off | `results/phase3_features/classify/synthetic/hn-on_chords-off/per_scenario_paired.csv` | 27 | 0 | 27 |
-| cap sensitivity HI | `results/phase3_features/cap_sensitivity/ibm/paired_differences.csv` | 42 | 0 | 42 |
-| cap sensitivity synthetic | `results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv` | 42 | 0 | 42 |
-| severity (3 metrics) | `results/phase4_severity/paired_differences.csv` | 27 | 9 | 18 |
-| severity diagnostic (3 metrics) | `results/phase4_severity/diagnostic/paired_differences.csv` | 36 | 0 | 36 |
-| bandit vs comparators | `results/phase6_bandit/bandit_vs_comparators.csv` | 72 | 2 | 70 |
+| study | file | paired rows | pre-specified primary | pre-specified secondary | exploratory / sensitivity |
+|---|---|---|---|---|---|
+| IBM HI classification | `results/phase3_features/classify/HI_tau0.05/paired_differences.csv` | 60 | 12 | 12 | 36 |
+| IBM LI classification | `results/phase3_features/classify/LI_tau0.05/paired_differences.csv` | 30 | 6 | 6 | 18 |
+| HI<->LI transfer | `results/phase3_features/classify/transfer/paired_differences.csv` | 12 | 6 | 0 | 6 |
+| synthetic hn-off_chords-default | `results/phase3_features/classify/synthetic/hn-off_chords-default/paired_differences.csv` | 18 | 6 | 6 | 6 |
+| synthetic hn-off_chords-off | `results/phase3_features/classify/synthetic/hn-off_chords-off/paired_differences.csv` | 18 | 6 | 6 | 6 |
+| synthetic hn-on_chords-default | `results/phase3_features/classify/synthetic/hn-on_chords-default/paired_differences.csv` | 12 | 4 | 4 | 4 |
+| synthetic hn-on_chords-off | `results/phase3_features/classify/synthetic/hn-on_chords-off/paired_differences.csv` | 12 | 4 | 4 | 4 |
+| synthetic per scenario hn-off_chords-default | `results/phase3_features/classify/synthetic/hn-off_chords-default/per_scenario_paired.csv` | 27 | 0 | 0 | 27 |
+| synthetic per scenario hn-off_chords-off | `results/phase3_features/classify/synthetic/hn-off_chords-off/per_scenario_paired.csv` | 27 | 0 | 0 | 27 |
+| synthetic per scenario hn-on_chords-default | `results/phase3_features/classify/synthetic/hn-on_chords-default/per_scenario_paired.csv` | 27 | 0 | 0 | 27 |
+| synthetic per scenario hn-on_chords-off | `results/phase3_features/classify/synthetic/hn-on_chords-off/per_scenario_paired.csv` | 27 | 0 | 0 | 27 |
+| cap sensitivity HI | `results/phase3_features/cap_sensitivity/ibm/paired_differences.csv` | 42 | 0 | 0 | 42 |
+| cap sensitivity synthetic | `results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv` | 42 | 0 | 0 | 42 |
+| severity (3 metrics) | `results/phase4_severity/paired_differences.csv` | 27 | 9 | 9 | 9 |
+| severity diagnostic (3 metrics) | `results/phase4_severity/diagnostic/paired_differences.csv` | 36 | 0 | 0 | 36 |
+| bandit vs comparators | `results/phase6_bandit/bandit_vs_comparators.csv` | 72 | 2 | 0 | 70 |
 
-Total paired rows over the project: 489; pre-specified primary rows: 35; secondary or exploratory: 454. Cap-sensitivity, per-scenario and diagnostic rows are counted as secondary or exploratory.
+Total paired rows over the project: 489; pre-specified primary: 55; pre-specified secondary: 47; exploratory or sensitivity: 387. Note: the primary count includes every variant (e.g. ambiguous-positive, strict-groups), so it counts rows, not independent tests; the headline test per dataset is the primary variant.
 
 
 ## 7. Limitations and caveats

@@ -696,30 +696,37 @@ else:
     md.append("not run (`results/phase4_cluster/` not found).\n")
 
 sec("6E. Comparisons made across the project (multiplicity note)")
-md.append("Each row of a paired-difference file is one comparison (model x variant x scope [x metric]) with its own CI; rows within a file are not independent. **Pre-specified primary** = `B+D+T minus B+D` in the primary variant, overall scope (classification, one row per model; transfer: both directions), the same comparison for severity (3 metrics x 3 models), and the bandit-vs-re-tuned (M = 5) comparison at lambda 1, d 2 (Phase 6); everything else (other variants, per-scenario rows, T_local / T_win ablations, cap variants, diagnostics, other lags) is secondary or exploratory. No multiplicity correction is applied anywhere.\n")
+md.append("Each row of a paired-difference file is one comparison (model x variant x scope [x metric]) with its own CI; rows within a file are not independent. "
+          "**Definition.** *Pre-specified primary* = rows with `comparison == 'B+D+T minus B+D'`, one row per model x dataset x variant, at overall scope: IBM HI (4 variants x 3 models), IBM LI (2 variants x 3 models), HI<->LI transfer (2 directions x 3 models), synthetic (per condition: primary and ambiguous-positive variants, overall scope), "
+          "severity (3 metrics x 3 models) and the Phase 6 bandit-vs-re-tuned (M = 5) comparison at lambda 1, d 2 (2 bandits). *Pre-specified secondary* = rows with `comparison == 'B+D minus B'` at the same scope. "
+          "Everything else is *exploratory or sensitivity*: the T_local / T_win ablation rows, per-scenario rows, cap-sensitivity rows (including its B+D+T minus B+D rows), diagnostics, bandit lags and lambdas other than the primary, and bandit-vs-ascent rows. No multiplicity correction is applied anywhere.\n")
 mult = []
-def _n(path, mask=None):
+def _n(path, mask=None, mask2=None):
     d = csv(path)
-    return (None, None) if d is None else (len(d), int(mask(d).sum()))
-for label, path, mk in (
-    ("IBM HI classification", HIP, lambda d: (d.comparison == "B+D+T minus B+D") & (d.variant == "primary")),
-    ("IBM LI classification", LIP, lambda d: (d.comparison == "B+D+T minus B+D") & (d.variant == "primary")),
-    ("HI<->LI transfer", TP, lambda d: d.comparison == "B+D+T minus B+D"),
-    *[(f"synthetic {c}", SYN / c / "paired_differences.csv", lambda d: (d.comparison == "B+D+T minus B+D") & (d.variant == "primary") & (d.scope == "overall")) for c in CONDS],
-    *[(f"synthetic per scenario {c}", SYN / c / "per_scenario_paired.csv", lambda d: d.comparison != d.comparison) for c in CONDS],
-    ("cap sensitivity HI", CAP / "ibm" / "paired_differences.csv", lambda d: d.comparison != d.comparison),
-    ("cap sensitivity synthetic", CAP / "synthetic" / "paired_differences.csv", lambda d: d.comparison != d.comparison),
-    ("severity (3 metrics)", PG, lambda d: (d.comparison == "B+D+T minus B+D")),
-    ("severity diagnostic (3 metrics)", DP, lambda d: d.comparison != d.comparison),
-    ("bandit vs comparators", BV, lambda d: (d.comparator == f"retune_M{b_cfg['config']['primary_retune_every']}") & (d["lambda"] == b_cfg["config"]["reward"]["primary_lambda"]) & (d.lag == b_cfg["config"]["primary_lag"])),
+    return (None, None, None) if d is None else (len(d), int(mask(d).sum()), int(mask2(d).sum()) if mask2 else 0)
+_P, _S = (lambda d: d.comparison == "B+D+T minus B+D"), (lambda d: d.comparison == "B+D minus B")
+_none = lambda d: d.comparison != d.comparison  # noqa: E731
+_ovr = lambda f: (lambda d: f(d) & (d.scope == "overall"))  # noqa: E731
+for label, path, mk, mk2 in (
+    ("IBM HI classification", HIP, _P, _S),
+    ("IBM LI classification", LIP, _P, _S),
+    ("HI<->LI transfer", TP, _P, _S),
+    *[(f"synthetic {c}", SYN / c / "paired_differences.csv", _ovr(_P), _ovr(_S)) for c in CONDS],
+    *[(f"synthetic per scenario {c}", SYN / c / "per_scenario_paired.csv", _none, _none) for c in CONDS],
+    ("cap sensitivity HI", CAP / "ibm" / "paired_differences.csv", _none, _none),
+    ("cap sensitivity synthetic", CAP / "synthetic" / "paired_differences.csv", _none, _none),
+    ("severity (3 metrics)", PG, _P, _S),
+    ("severity diagnostic (3 metrics)", DP, _none, _none),
+    ("bandit vs comparators", BV, lambda d: (d.comparator == f"retune_M{b_cfg['config']['primary_retune_every']}") & (d["lambda"] == b_cfg["config"]["reward"]["primary_lambda"]) & (d.lag == b_cfg["config"]["primary_lag"]), lambda d: d.bandit != d.bandit),
 ):
-    tot_, pr_ = _n(path, mk)
+    tot_, pr_, se_ = _n(path, mk, mk2)
     if tot_ is None:
         continue
-    mult.append([label, f"`{path}`", tot_, pr_, tot_ - pr_])
-    prov.append({"table": "6E", "text": f"{label}: {tot_} rows", "file": str(path), "where": "row count", "columns": "comparison"})
-md.append(mdtable(["study", "file", "paired rows", "of which pre-specified primary", "secondary / exploratory"], mult))
-md.append(f"Total paired rows over the project: {sum(m[2] for m in mult)}; pre-specified primary rows: {sum(m[3] for m in mult)}; secondary or exploratory: {sum(m[4] for m in mult)}. Cap-sensitivity, per-scenario and diagnostic rows are counted as secondary or exploratory.\n")
+    mult.append([label, f"`{path}`", tot_, pr_, se_, tot_ - pr_ - se_])
+    prov.append({"table": "6E", "text": f"{label}: {tot_} rows, {pr_} primary, {se_} secondary", "file": str(path), "where": "row count", "columns": "comparison"})
+md.append(mdtable(["study", "file", "paired rows", "pre-specified primary", "pre-specified secondary", "exploratory / sensitivity"], mult))
+md.append(f"Total paired rows over the project: {sum(m[2] for m in mult)}; pre-specified primary: {sum(m[3] for m in mult)}; pre-specified secondary: {sum(m[4] for m in mult)}; exploratory or sensitivity: {sum(m[5] for m in mult)}. "
+          "Note: the primary count includes every variant (e.g. ambiguous-positive, strict-groups), so it counts rows, not independent tests; the headline test per dataset is the primary variant.\n")
 
 # ====================================================================== helpers for sections 7-9
 def ci_excludes_zero(path, where_base, comp, models=MODELS):

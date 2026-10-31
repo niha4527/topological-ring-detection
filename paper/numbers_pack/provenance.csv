@@ -2791,22 +2791,22 @@ hn-on_chords-off,"+0.610 [+0.456, +0.700]",results/phase3_features/classify/synt
 6D,0.000,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",ari_type_random
 6D,0.504,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",purity_type_random
 6D,0.459,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""B+D+T_all"", ""k_mode"": ""silhouette""}",purity_majority
-6E,IBM HI classification: 60 rows,results/phase3_features/classify/HI_tau0.05/paired_differences.csv,row count,comparison
-6E,IBM LI classification: 30 rows,results/phase3_features/classify/LI_tau0.05/paired_differences.csv,row count,comparison
-6E,HI<->LI transfer: 12 rows,results/phase3_features/classify/transfer/paired_differences.csv,row count,comparison
-6E,synthetic hn-off_chords-default: 18 rows,results/phase3_features/classify/synthetic/hn-off_chords-default/paired_differences.csv,row count,comparison
-6E,synthetic hn-off_chords-off: 18 rows,results/phase3_features/classify/synthetic/hn-off_chords-off/paired_differences.csv,row count,comparison
-6E,synthetic hn-on_chords-default: 12 rows,results/phase3_features/classify/synthetic/hn-on_chords-default/paired_differences.csv,row count,comparison
-6E,synthetic hn-on_chords-off: 12 rows,results/phase3_features/classify/synthetic/hn-on_chords-off/paired_differences.csv,row count,comparison
-6E,synthetic per scenario hn-off_chords-default: 27 rows,results/phase3_features/classify/synthetic/hn-off_chords-default/per_scenario_paired.csv,row count,comparison
-6E,synthetic per scenario hn-off_chords-off: 27 rows,results/phase3_features/classify/synthetic/hn-off_chords-off/per_scenario_paired.csv,row count,comparison
-6E,synthetic per scenario hn-on_chords-default: 27 rows,results/phase3_features/classify/synthetic/hn-on_chords-default/per_scenario_paired.csv,row count,comparison
-6E,synthetic per scenario hn-on_chords-off: 27 rows,results/phase3_features/classify/synthetic/hn-on_chords-off/per_scenario_paired.csv,row count,comparison
-6E,cap sensitivity HI: 42 rows,results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,row count,comparison
-6E,cap sensitivity synthetic: 42 rows,results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,row count,comparison
-6E,severity (3 metrics): 27 rows,results/phase4_severity/paired_differences.csv,row count,comparison
-6E,severity diagnostic (3 metrics): 36 rows,results/phase4_severity/diagnostic/paired_differences.csv,row count,comparison
-6E,bandit vs comparators: 72 rows,results/phase6_bandit/bandit_vs_comparators.csv,row count,comparison
+6E,"IBM HI classification: 60 rows, 12 primary, 12 secondary",results/phase3_features/classify/HI_tau0.05/paired_differences.csv,row count,comparison
+6E,"IBM LI classification: 30 rows, 6 primary, 6 secondary",results/phase3_features/classify/LI_tau0.05/paired_differences.csv,row count,comparison
+6E,"HI<->LI transfer: 12 rows, 6 primary, 0 secondary",results/phase3_features/classify/transfer/paired_differences.csv,row count,comparison
+6E,"synthetic hn-off_chords-default: 18 rows, 6 primary, 6 secondary",results/phase3_features/classify/synthetic/hn-off_chords-default/paired_differences.csv,row count,comparison
+6E,"synthetic hn-off_chords-off: 18 rows, 6 primary, 6 secondary",results/phase3_features/classify/synthetic/hn-off_chords-off/paired_differences.csv,row count,comparison
+6E,"synthetic hn-on_chords-default: 12 rows, 4 primary, 4 secondary",results/phase3_features/classify/synthetic/hn-on_chords-default/paired_differences.csv,row count,comparison
+6E,"synthetic hn-on_chords-off: 12 rows, 4 primary, 4 secondary",results/phase3_features/classify/synthetic/hn-on_chords-off/paired_differences.csv,row count,comparison
+6E,"synthetic per scenario hn-off_chords-default: 27 rows, 0 primary, 0 secondary",results/phase3_features/classify/synthetic/hn-off_chords-default/per_scenario_paired.csv,row count,comparison
+6E,"synthetic per scenario hn-off_chords-off: 27 rows, 0 primary, 0 secondary",results/phase3_features/classify/synthetic/hn-off_chords-off/per_scenario_paired.csv,row count,comparison
+6E,"synthetic per scenario hn-on_chords-default: 27 rows, 0 primary, 0 secondary",results/phase3_features/classify/synthetic/hn-on_chords-default/per_scenario_paired.csv,row count,comparison
+6E,"synthetic per scenario hn-on_chords-off: 27 rows, 0 primary, 0 secondary",results/phase3_features/classify/synthetic/hn-on_chords-off/per_scenario_paired.csv,row count,comparison
+6E,"cap sensitivity HI: 42 rows, 0 primary, 0 secondary",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,row count,comparison
+6E,"cap sensitivity synthetic: 42 rows, 0 primary, 0 secondary",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,row count,comparison
+6E,"severity (3 metrics): 27 rows, 9 primary, 9 secondary",results/phase4_severity/paired_differences.csv,row count,comparison
+6E,"severity diagnostic (3 metrics): 36 rows, 0 primary, 0 secondary",results/phase4_severity/diagnostic/paired_differences.csv,row count,comparison
+6E,"bandit vs comparators: 72 rows, 2 primary, 0 secondary",results/phase6_bandit/bandit_vs_comparators.csv,row count,comparison
 7-9,14,results/phase3_features/classify/HI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",n_pos_groups
 7-9,10,results/phase3_features/classify/LI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",n_pos_groups
 7-9,131,results/phase3_features/classify/HI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",n_pos
