@@ -1,0 +1,19 @@
+condition,variant,model,comparison,scope,diff,ci_low,ci_high,share_boot_positive,n_boot
+hn-off_chords-default,primary,logreg,B+D+T minus B+D,overall,0.017527948700099216,0.0019203247215213413,0.05746408159346194,0.986,1000
+hn-off_chords-default,primary,logreg,B+D+T_local minus B+D,overall,0.022271129348520602,0.005718366844638323,0.06424741131393603,0.998,1000
+hn-off_chords-default,primary,logreg,B+D minus B,overall,0.44045881412564636,0.3238956887219273,0.535362686312874,1.0,1000
+hn-off_chords-default,primary,rf,B+D+T minus B+D,overall,0.037522257183735586,0.0100195007501731,0.0954924521094227,1.0,1000
+hn-off_chords-default,primary,rf,B+D+T_local minus B+D,overall,0.03822135150936268,0.010196575833044084,0.09658112150910483,1.0,1000
+hn-off_chords-default,primary,rf,B+D minus B,overall,0.3828234537078603,0.26484550415255803,0.4765340017733188,1.0,1000
+hn-off_chords-default,primary,svm,B+D+T minus B+D,overall,0.07703330663611185,0.018589837481712772,0.17477505112544817,0.996,1000
+hn-off_chords-default,primary,svm,B+D+T_local minus B+D,overall,0.09439188636311979,0.032320789154412506,0.1943672130750201,1.0,1000
+hn-off_chords-default,primary,svm,B+D minus B,overall,0.4106600030209703,0.21317962777032204,0.5199761731630653,1.0,1000
+hn-off_chords-default,ambiguous_positive,logreg,B+D+T minus B+D,overall,-0.037254910414048714,-0.07551743049105057,0.00033305878246320524,0.276,1000
+hn-off_chords-default,ambiguous_positive,logreg,B+D+T_local minus B+D,overall,-0.03390839046952454,-0.06431366587985352,0.000510940206635782,0.36,1000
+hn-off_chords-default,ambiguous_positive,logreg,B+D minus B,overall,0.5407707486164681,0.4609664346943863,0.575155741607661,1.0,1000
+hn-off_chords-default,ambiguous_positive,rf,B+D+T minus B+D,overall,3.371546089192545e-05,-0.00033823874643090757,0.00039514628202692566,0.553,1000
+hn-off_chords-default,ambiguous_positive,rf,B+D+T_local minus B+D,overall,0.0001584396524627607,-1.6830942738910137e-05,0.0006396692211564385,0.962,1000
+hn-off_chords-default,ambiguous_positive,rf,B+D minus B,overall,0.5727213569003733,0.4870628939899987,0.6191793992272006,1.0,1000
+hn-off_chords-default,ambiguous_positive,svm,B+D+T minus B+D,overall,-0.04771591544885856,-0.13633943279971342,-0.0005185583498515309,0.018,1000
+hn-off_chords-default,ambiguous_positive,svm,B+D+T_local minus B+D,overall,-0.005720692436814723,-0.04026649679535417,0.0014279181120956889,0.269,1000
+hn-off_chords-default,ambiguous_positive,svm,B+D minus B,overall,0.5462853234120065,0.4808595356230311,0.573119465172775,1.0,1000

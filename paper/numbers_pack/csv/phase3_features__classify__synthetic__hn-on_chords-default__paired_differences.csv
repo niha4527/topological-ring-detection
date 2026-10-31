@@ -1,0 +1,13 @@
+condition,variant,model,comparison,scope,diff,ci_low,ci_high,share_boot_positive,n_boot
+hn-on_chords-default,primary,logreg,B+D+T minus B+D,overall,0.004534619768157944,-0.009373177520892173,0.021021334076145533,0.734,1000
+hn-on_chords-default,primary,logreg,B+D+T_local minus B+D,overall,0.009988824284654085,-0.00036129879851032397,0.023600292692009327,0.969,1000
+hn-on_chords-default,primary,logreg,B+D minus B,overall,0.5420149105675443,0.4181551402117829,0.6211262133812399,1.0,1000
+hn-on_chords-default,primary,rf,B+D+T minus B+D,overall,-0.0033576377862839513,-0.01246924135658833,0.004183466658837542,0.264,1000
+hn-on_chords-default,primary,rf,B+D+T_local minus B+D,overall,-0.0025616309030306317,-0.010657793728370264,0.004173471765616619,0.296,1000
+hn-on_chords-default,primary,rf,B+D minus B,overall,0.3891438356751292,0.25783508941062067,0.4942141550741956,1.0,1000
+hn-on_chords-default,primary,svm,B+D+T minus B+D,overall,0.038243362508234235,-0.004094589280505485,0.07970615287427776,0.963,1000
+hn-on_chords-default,primary,svm,B+D+T_local minus B+D,overall,0.04462070743037927,0.009019296521546706,0.08171818518397607,0.994,1000
+hn-on_chords-default,primary,svm,B+D minus B,overall,0.5981923381335291,0.45787554959581983,0.6759298488357717,1.0,1000
+hn-on_chords-default,ambiguous_positive,logreg,B+D+T minus B+D,overall,6.052432240388761e-06,-3.751165315155624e-05,2.051208344348576e-05,0.656,1000
+hn-on_chords-default,ambiguous_positive,logreg,B+D+T_local minus B+D,overall,-3.6398919384117434e-06,-7.814327441755248e-05,2.2048156196577397e-05,0.42,1000
+hn-on_chords-default,ambiguous_positive,logreg,B+D minus B,overall,0.00017897525940113734,5.6422772565320477e-05,0.0006717247182377565,1.0,1000

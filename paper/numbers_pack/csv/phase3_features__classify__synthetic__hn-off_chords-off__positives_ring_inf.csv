@@ -1,0 +1,4 @@
+condition,scenario,positive_candidates,with_ring_inf_0,frac_ring_inf_0,planted_rings_with_candidate,planted_rings_with_ring_inf_1
+hn-off_chords-off,chorded,25,0,0.0,12,12
+hn-off_chords-off,dense,24,6,0.25,24,18
+hn-off_chords-off,isolated,54,0,0.0,54,54

@@ -1,0 +1,175 @@
+{
+  "data": {
+    "train_jitter": [
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5,
+      0.55,
+      0.6
+    ],
+    "test_jitter": [
+      0.1,
+      0.19,
+      0.28,
+      0.37,
+      0.46,
+      0.55
+    ],
+    "train_windows": 12,
+    "test_windows": 6,
+    "train_candidates": 2235,
+    "test_candidates": 1370,
+    "train_by_kind": {
+      "background": 1960,
+      "market_maker": 120,
+      "wash_ring": 108,
+      "arbitrage_loop": 47
+    },
+    "test_by_kind": {
+      "background": 1234,
+      "market_maker": 60,
+      "wash_ring": 54,
+      "arbitrage_loop": 22
+    }
+  },
+  "problem_A": {
+    "lambda": 0.01,
+    "L": 6.887705869715905,
+    "eta_1_over_L": 0.14518622294788072,
+    "L_local_at_optimum": 0.2205079575528847,
+    "J_star_lbfgs": 0.042958848803096736,
+    "final_gap": {
+      "0.2/L": 0.007066348826610017,
+      "1/L": 0.00032581514866465017,
+      "1.9/L": 3.0540141188979686e-05,
+      "1/L_loc": -1.3780643293159756e-14,
+      "2.2/L_loc": 0.007405561651085031
+    },
+    "iters_to_1e-6": {
+      "0.2/L": null,
+      "1/L": null,
+      "1.9/L": null,
+      "1/L_loc": 322,
+      "2.2/L_loc": null
+    },
+    "max_abs_theta_diff_vs_lbfgs": 6.505325776950954e-07,
+    "test_AP": {
+      "D (behavioural)": 0.9984306340238543,
+      "D + T (behavioural + topological)": 0.9968660968660967
+    },
+    "coefficients_D+T": {
+      "min_reg": 1.084,
+      "topo_nbhd_edges": -0.802,
+      "mean_reg": 0.559,
+      "mean_rec": -0.415,
+      "topo_total_pers": -0.372,
+      "birth_eq": -0.368,
+      "topo_n_infinite": -0.364,
+      "mean_bal": 0.341,
+      "topo_max_pers": -0.332,
+      "min_bal": 0.306,
+      "topo_h1_count": -0.306,
+      "min_rec": -0.28,
+      "length": 0.157
+    }
+  },
+  "problem_B": {
+    "alpha_learned": [
+      0.0,
+      0.2067,
+      0.7933
+    ],
+    "c": 5.082687275467421,
+    "k": 9.818131894382558,
+    "loss_start": 0.882672265454568,
+    "loss_end": 0.0794075929695794,
+    "restarts": {
+      "equal": {
+        "alpha": [
+          0.0,
+          0.2067,
+          0.7933
+        ],
+        "loss": 0.0794075929695794
+      },
+      "rec vertex": {
+        "alpha": [
+          0.0,
+          0.2053,
+          0.7947
+        ],
+        "loss": 0.07948467189068216
+      },
+      "bal vertex": {
+        "alpha": [
+          0.0,
+          0.2073,
+          0.7927
+        ],
+        "loss": 0.07937311467627156
+      },
+      "reg vertex": {
+        "alpha": [
+          0.0,
+          0.2061,
+          0.7939
+        ],
+        "loss": 0.07944357842400052
+      }
+    },
+    "grad_check_max_abs_error": 9.317147053877761e-11,
+    "grad_alpha_at_solution": [
+      0.08476654878972688,
+      -0.05110694691236644,
+      -0.05045746186466852
+    ],
+    "test_AP_ring_birth_equal_alpha": 0.5675129878917745,
+    "test_AP_ring_birth_learned_alpha": 0.9996632996632996
+  },
+  "problem_C": {
+    "windows": 40,
+    "lambda": 1.0,
+    "delay": 2,
+    "cumulative_reward_after_warmup": {
+      "fixed": 71.0,
+      "retune": 258.0,
+      "ascent": 291.0,
+      "oracle": 300.0
+    },
+    "alpha_pre_drift": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "share_of_oracle": {
+      "fixed": 0.23666666666666666,
+      "retune": 0.86,
+      "ascent": 0.97,
+      "oracle": 1.0
+    },
+    "robust_detector_cumulative_reward": {
+      "fixed": 292.0,
+      "retune": 287.0,
+      "ascent": 291.0,
+      "oracle": 306.0
+    },
+    "robust_detector_share_of_oracle": {
+      "fixed": 0.954248366013072,
+      "retune": 0.9379084967320261,
+      "ascent": 0.9509803921568627,
+      "oracle": 1.0
+    },
+    "drift": "wash timing jitter 0.05 -> 0.60 and amount noise 0.01 -> 0.16 over 40 windows",
+    "candidate_recall_first5_last5": [
+      1.0,
+      1.0
+    ]
+  }
+}
