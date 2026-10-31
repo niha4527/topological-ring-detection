@@ -1,0 +1,29 @@
+# Per-candidate topological features (proposal v3 §3.4). Read by ringtda.topology.vectorize.
+local:
+  hops: 1                 # ring members + this many hops of in-/out-neighbours
+  backend: auto           # flagser | reference | auto
+  # Graph the neighbourhood is taken from. Checked on the generator's shortcut scenario
+  # (hard_negatives=False, seeds 0-2): the filling edges (weights 0.44-0.58) survive the default
+  # sparsification (tau_s ~ 0.70, the 25% quantile), so the sparsified graph keeps the shortcut
+  # visible and stays the default (§4.4: persistence on the sparsified graph). Use "full" if
+  # tau_s is lowered below the filler weights.
+  local_graph: sparsified # sparsified | full
+  # Size guard of the exact T_local_ring_inf test (Z/2 elimination). A larger neighbourhood falls
+  # back to the birth-match proxy (logged).
+  ring_inf_limits: {max_edges: 5000, max_triangles: 200000}
+
+candidates:
+  tau_quantile: 0.25      # sparsification cutoff tau_s = this quantile of the window's edge weights (§3.3)
+  max_len: 6              # longest candidate ring (§3.3)
+
+cap:
+  rule: window_max        # window_max | fixed | window_max_x
+  fixed: 1.0              # used by rule "fixed"
+  factor: 1.1             # used by rule "window_max_x" (window max * factor)
+
+landscape:
+  num_landscapes: 3
+  resolution: 50
+  # Shared by every candidate (never auto-fit per diagram). Edge weights lie in [0, 1]
+  # (1 - mean of rank-normalised scores), so [0, 1.1] also covers the window_max_x rule.
+  sample_range: [0.0, 1.1]
