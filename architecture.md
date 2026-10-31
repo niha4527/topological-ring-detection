@@ -23,7 +23,7 @@ One windowed, directed transaction graph feeds a seven-stage pipeline. Each stag
  [features]    features.py [done]: B, D and T tables per candidate (+ frozen legacy report path)
         |
  [5 models]    models/gd.py [done: logistic GD, simplex alpha learner]
-        |       classify.py cluster.py [done]   regress.py [todo]
+        |       classify.py cluster.py regress.py [done]
         |
  [6 threshold] threshold/ascent.py [done: online gradient ascent + comparators]
         |       bandit_sim.py (discounted UCB, sliding-window Thompson) [done]
@@ -102,7 +102,7 @@ Known property (Proposition 1): with equal weights, a multi-party ring has `z_re
 | `gd.py` | Problem A: class-weighted L2 logistic regression by gradient descent (`logistic_loss_grad`, `smoothness_constant`, `gradient_descent`). Problem B: `project_simplex` and `AlphaLearner`, which learns `alpha` on the simplex with log-sum-exp smooth ring birth. | done |
 | `classify.py` | scikit-learn logistic regression, random forest and RBF-SVM with fixed hyperparameters (`configs/classify.yaml`), feature-set registry (B, B+D, B+D+T, T, D, T_local, T_win, B+D+T_local, B+D+T_win), out-of-fold scoring, transfer scoring. | done |
 | `cluster.py` | Ward hierarchical clustering (Euclidean) on standardized vectors; ARI, purity, silhouette, permutation and majority baselines, grouped bootstrap over positive groups; used by `experiments/ibm_cluster.py` (`configs/cluster.yaml`, results in `results/phase4_cluster/`). | done |
-| `regress.py` | Ridge, random forest, gradient boosting for next-window wash volume. | todo |
+| `regress.py` | Next-window severity regression on SYNTHETIC rings: ring matching across consecutive windows by account set, ridge / random forest / gradient boosting, grouped folds by ring, grouped-bootstrap metrics; used by `experiments/synth_severity.py` (`configs/regress.yaml`, results in `results/phase4_severity/`). | done (synthetic only) |
 
 ### 3.7 `threshold/`
 `ascent.py`: `reward`, `smoothed_reward_grad`, `best_tau`, `run_policies`. Runs online gradient ascent with label delay `d`, plus the fixed, periodically re-tuned (same lag) and hindsight-oracle comparators. `bandit_sim.py` (Phase 6, additive; `ascent.py` is unchanged): `DiscountedUCB`, `SlidingWindowTS` (Beta-Bernoulli on the normalised reward), `arm_grid`, `reward_matrix`, `run_bandit` (bandit feedback: only the played arm's reward is observed, usable `max(d, 1)` windows later; a full-information warm start on the first windows). Configuration `configs/bandit.yaml`; benchmark `experiments/bandit_report.py` on the optimization report's drift stream, results in `results/phase6_bandit/`. [done for ascent, todo for bandit]
@@ -130,7 +130,7 @@ Phase 3 and 6 experiment scripts (`experiments/`): `ibm_split_report.py` (counts
 
 ## 5. Verified behaviours (engineering gates)
 
-200 tests pass (`pytest`, a few seconds). They cover:
+204 tests pass (`pytest`, a few seconds). They cover:
 - cyclic triangle gives one infinite H1 bar; transitive triangle gives none; shortcut-filled triangle dies at the fill weight; reciprocal pair gives an H1 class; `flagser` and `reference` agree (`test_directed_triangles.py`);
 - score and weight formulas and edge cases (`test_weights.py`);
 - candidate enumeration and dedup (`test_candidates.py`);
@@ -141,6 +141,7 @@ Phase 3 and 6 experiment scripts (`experiments/`): `ibm_split_report.py` (counts
 - IBM loader, window iterator and ring labels on toy fixtures (`test_ibm_aml.py`); groups, grouped CV, time-ordered and transfer splits (`test_splits.py`);
 - gradient correctness, simplex projection, GD vs SciPy (`test_gd.py`);
 - B and D features and the leakage guard (`test_baseline_features.py`, `test_direction_features.py`, `test_feature_leakage.py`); PR-AUC and grouped bootstrap (`test_metrics.py`); classifiers, group disjointness, transfer (`test_classify.py`); audit (`test_audit.py`); synthetic table and recall (`test_synthetic_table.py`);
+- severity target alignment, leakage guard and metrics (`test_regress.py`);
 - ring clustering metrics, baselines and bootstrap (`test_cluster.py`);
 - bandit policies: convergence to a known best arm, no reward used before its lag, sliding-window forgetting, determinism (`test_bandit_sim.py`).
 
@@ -173,4 +174,4 @@ Headline report numbers (synthetic only): learned weights raise test average pre
 4. (not done) Sensitivity sweeps over `tau_quantile` for classification, `max_len`, infinite-bar cap, label threshold X, window length (only candidate recall is swept).
 5. (done) Results numbers pack (`paper/numbers_pack.md`). Remaining: write-up (`paper/paper_content.md` is the content pack).
 
-Phase 6 (bandit policies and drift benchmark) is done (`threshold/bandit_sim.py`). Phase 4 clustering is done as an exploratory run (`models/cluster.py`). Future work (not planned for this iteration): Phase 4 severity regression (`regress.py`), Phase 5 NFT loader and label-provenance audit, the pump-and-dump track, and the undirected-complex ablation.
+Phase 6 (bandit policies and drift benchmark) is done (`threshold/bandit_sim.py`). Phase 4 clustering (`models/cluster.py`) and synthetic-only severity regression (`models/regress.py`) are done as exploratory runs; infinite-bar cap sensitivity is done (`experiments/cap_sensitivity.py`, `configs/cap_sensitivity.yaml`). Phase 5 (NFT) is cut: running Dune queries is blocked on the free tier. Future work (not planned for this iteration): Phase 5 NFT loader and label-provenance audit, the pump-and-dump track, and the undirected-complex ablation.

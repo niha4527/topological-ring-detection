@@ -89,8 +89,11 @@ results/       figures and metrics (git-ignored). results/report/ (+ the origina
       `results/phase6_bandit/`, git-ignored)
 - [x] Phase 4 (clustering only): Ward clustering of IBM positive rings against pattern types
       (`models/cluster.py`, `configs/cluster.yaml`, `experiments/ibm_cluster.py`; results in `results/phase4_cluster/`)
-- [ ] Write-up (paper). Severity regression and Phase 5 (NFT loader and label-provenance audit) are future work,
-      not part of this iteration
+- [x] Phase 4 severity regression on SYNTHETIC data only (`models/regress.py`, `configs/regress.yaml`,
+      `experiments/synth_severity.py`; IBM has no next-window wash volume) and infinite-bar cap sensitivity
+      (`experiments/cap_sensitivity.py`, `configs/cap_sensitivity.yaml`; results git-ignored)
+- [ ] Write-up (paper). Phase 5 (NFT loader and label-provenance audit) is cut: running Dune queries is blocked on
+      the free Dune tier
 
 ## Decisions and deviations from the proposal
 
