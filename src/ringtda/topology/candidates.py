@@ -53,7 +53,13 @@ def candidate_rings(
     """Enumerate candidate rings on the sparsified graph.
 
     dedupe_overlap: a cycle is dropped if >= this fraction of its edges are
-    already covered by a single kept cycle with lower (or equal) birth.
+    already covered by a single kept cycle that is shorter, or of equal length
+    with lower (or equal) birth. Shorter cycles go first so that a planted ring
+    is never replaced by a longer detour around it. (§3.3 says "keep the
+    lowest-birth one"; this deviation is noted in the README.)
+    Note: a k-cycle shares at most k-2 edges with any other cycle of length
+    <= k (k-1 shared edges would force the closing edge), so at the default 0.8
+    nothing is dropped unless max_len >= 10 (verified: none up to 9). Lower dedupe_overlap to merge more.
     max_cycles_per_scc: enumeration cap per SCC; capped SCCs are reported,
     never silently dropped.
     """
@@ -75,8 +81,13 @@ def candidate_rings(
             birth = max(H.edges[e][weight] for e in edges)
             cycles.append(Candidate(nodes, edges, birth))
 
-    # de-duplicate: lowest birth first, then shorter first
-    cycles.sort(key=lambda c: (c.birth, c.length, c.nodes))
+    # de-duplicate: shorter first, then lowest birth (§3.3, 80% shared edges). With
+    # dedupe_overlap=0.8 this removes nothing for max_len <= 9 (verified on dense windows; first
+    # removals at max_len 10): a distinct cycle shares at most L-2 edges with a length-L ring, a
+    # fraction <= 1 - 2/L, which reaches 0.8 only at L = 10
+    # (tests/test_candidates.py::test_dedup_removes_nothing_at_default_overlap). Near-duplicate rings
+    # therefore all stay candidates; Phase 3 CV must group by ring identity.
+    cycles.sort(key=lambda c: (c.length, c.birth, c.nodes))
     kept: list[Candidate] = []
     kept_sets: list[set] = []
     for c in cycles:
