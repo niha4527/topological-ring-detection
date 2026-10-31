@@ -63,7 +63,7 @@ Build a classical-ML pipeline that finds, scores, types and tracks coordinated m
 | FR9 | Classifiers (logistic regression, random forest, RBF-SVM) on B, B+D, B+D+T, T; results overall, per scenario, with and without hard negatives | 3 | done (HI-Small, LI-Small, HI<->LI transfer, synthetic per scenario with and without hard negatives) |
 | FR10 | Learn score-combination weights `alpha` on the simplex; online-ascent threshold with delay and comparators | opt. report | done |
 | FR11 | IBM AML loader, patterns-file inspection, pattern-behaviour audit of each score, ring-labeling rule, optional AML-specific weight variant | 3 | done (optional AML-specific weight variant not built) |
-| FR12 | Ward clustering of rings; ARI, purity, silhouette against IBM pattern types | 4 | not done (future work) |
+| FR12 | Ward clustering of rings; ARI, purity, silhouette against IBM pattern types | 4 | done as an exploratory run (HI-Small and LI-Small positives, four vector variants, grouped bootstrap, group-id check; `results/phase4_cluster/summary.md`) |
 | FR13 | Severity regression on next-window wash volume (ridge, random forest, gradient boosting); no input leakage | 4 | not done (future work) |
 | FR14 | NFT loader (Dune or BigQuery), proxy labels, label-provenance audit, results on the subset not flagged by cycle rules | 5 | not done (future work) |
 | FR15 | Bandit threshold policies (discounted UCB, sliding-window Thompson) in the drift benchmark; compare with fixed, re-tuned (same lag), hindsight oracle | 6 | done (discounted UCB and sliding-window Thompson run on the report's drift stream against fixed, re-tuned, online ascent and oracle; they do not beat the re-tuned comparator at the primary setting, see `results/phase6_bandit/summary.md`) |
@@ -136,7 +136,7 @@ Assumes a roughly 12-week semester; the project is already past the Phase 2 star
 
 ## 12. Success criteria
 
-- All engineering gates pass (`pytest` green; currently 196 tests).
+- All engineering gates pass (`pytest` green; currently 200 tests).
 - Every reporting checkpoint above has numbers with CIs, including null or negative results.
 - The report and paper state limitations from the design (length ≤ 6, synthetic IBM data, heuristic NFT labels, offline-only adaptation, hard negatives modelled).
 - Another person can reproduce the headline numbers from the documented commands.

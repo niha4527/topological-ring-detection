@@ -87,8 +87,10 @@ results/       figures and metrics (git-ignored). results/report/ (+ the origina
 - [x] Phase 6: bandit threshold policies (discounted UCB, sliding-window Thompson) and the drift benchmark
       (`threshold/bandit_sim.py`, `configs/bandit.yaml`, `experiments/bandit_report.py`; results in
       `results/phase6_bandit/`, git-ignored)
-- [ ] Write-up (paper). Phases 4 and 5 (clustering and severity regression; NFT loader and label-provenance
-      audit) are future work, not part of this iteration
+- [x] Phase 4 (clustering only): Ward clustering of IBM positive rings against pattern types
+      (`models/cluster.py`, `configs/cluster.yaml`, `experiments/ibm_cluster.py`; results in `results/phase4_cluster/`)
+- [ ] Write-up (paper). Severity regression and Phase 5 (NFT loader and label-provenance audit) are future work,
+      not part of this iteration
 
 ## Decisions and deviations from the proposal
 
