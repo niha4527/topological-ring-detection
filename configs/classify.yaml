@@ -15,3 +15,11 @@ bootstrap:
 model_seed: 0
 feature_sets: [B, B+D, B+D+T, T]                      # all variants
 control_sets: [D, T_local, T_win]                     # primary variant only (plus the D_birth-alone detector)
+# Added after the first HI run (existing rows are kept): topology ablation, see experiments/ibm_classify.py --append.
+ablation_sets: [B+D+T_local, B+D+T_win]
+paired:                                                # (a, b): a minus b, inside the same resamples
+  - [B+D+T, B+D]
+  - [B+D, B]
+  - [B+D+T_local, B+D]
+  - [B+D+T_win, B+D]
+  - [B+D+T, B+D+T_local]

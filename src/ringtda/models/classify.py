@@ -26,10 +26,12 @@ def load_config(path: str | Path | None = None) -> dict:
 
 
 def named_feature_sets(config: dict | None = None) -> dict[str, list[str]]:
-    """B, B+D, B+D+T, T plus the controls D, T_local, T_win (T_win is constant within a window)."""
+    """B, B+D, B+D+T, T plus the controls D, T_local, T_win (T_win is constant within a window) and the ablations B+D+T_local, B+D+T_win."""
     s = feature_sets(config)
     T = s["T"]
-    return {**s, "D": [c for c in s["B+D"] if c.startswith("D_")], "T_local": [c for c in T if c.startswith("T_local_")], "T_win": [c for c in T if c.startswith("T_win_")]}
+    T_local, T_win = [c for c in T if c.startswith("T_local_")], [c for c in T if c.startswith("T_win_")]
+    # B+D+T_local drops the window-constant T_win columns; B+D+T_win keeps only them (time-proxy check)
+    return {**s, "D": [c for c in s["B+D"] if c.startswith("D_")], "T_local": T_local, "T_win": T_win, "B+D+T_local": s["B+D"] + T_local, "B+D+T_win": s["B+D"] + T_win}
 
 
 def make_model(name: str, cfg: dict | None = None, seed: int = 0) -> Pipeline:
@@ -69,3 +71,19 @@ def oof_scores(X: np.ndarray, y: np.ndarray, groups: np.ndarray, fold: np.ndarra
         m.fit(X[~te], y[~te])
         out[te] = scores(m, X[te])
     return out
+
+
+def positive_group_support(groups: np.ndarray, y: np.ndarray, fold: np.ndarray) -> int:
+    """Smallest number of positive groups on either side (train or test) over all folds of one repeat."""
+    sides = []
+    for f in np.unique(fold):
+        te = fold == f
+        sides += [len(set(groups[te & (y == 1)])), len(set(groups[~te & (y == 1)]))]
+    return min(sides)
+
+
+def transfer_scores(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, name: str, cfg: dict | None = None, seed: int = 0) -> np.ndarray:
+    """Fit on one whole dataset (scaling included) and score another; nothing is fitted on the test side."""
+    m = make_model(name, cfg, seed)
+    m.fit(X_train, y_train)
+    return scores(m, X_test)

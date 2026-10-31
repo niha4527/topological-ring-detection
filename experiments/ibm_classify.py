@@ -25,7 +25,7 @@ import yaml
 
 from ringtda.eval.metrics import GroupedBootstrap, average_precision, ci, mean_ap_with_ci, paired_difference
 from ringtda.eval.splits import stratified_group_cv
-from ringtda.models.classify import MODELS, load_config, named_feature_sets, oof_scores
+from ringtda.models.classify import MODELS, load_config, named_feature_sets, oof_scores, positive_group_support
 
 ap_ = argparse.ArgumentParser()
 ap_.add_argument("--dataset", default="HI")
@@ -36,6 +36,8 @@ ap_.add_argument("--repeats", type=int, default=None)
 ap_.add_argument("--n-boot", type=int, default=None)
 ap_.add_argument("--rf-trees", type=int, default=None)
 ap_.add_argument("--out", default=None)
+ap_.add_argument("--append", action="store_true", help="run only the ablation sets and ADD their rows to the existing results in --out (existing rows untouched)")
+ap_.add_argument("--require-pos-groups", type=int, default=0, help="skip the cycle_only variant unless every train and test side has at least this many positive groups")
 args = ap_.parse_args()
 
 cfg = load_config()
@@ -63,8 +65,16 @@ for name, cols in SETS.items():
     assert not df[cols].isna().any().any(), name
 
 models = list(MODELS)
-feat_sets = [s for s in cfg["feature_sets"] if not args.only_sets or s in args.only_sets]
-ctrl_sets = [s for s in cfg["control_sets"] if not args.only_sets or s in args.only_sets]
+ablation = cfg.get("ablation_sets", [])
+base_sets = ablation if args.append else cfg["feature_sets"] + ablation
+feat_sets = [s for s in base_sets if not args.only_sets or s in args.only_sets]
+ctrl_sets = [] if args.append else [s for s in cfg["control_sets"] if not args.only_sets or s in args.only_sets]
+all_sets = [s for s in cfg["feature_sets"] + ablation + cfg["control_sets"]]
+old_R, old_P, unusable = None, None, []
+if args.append:
+    old_R, old_P = pd.read_csv(OUT / "results.csv"), pd.read_csv(OUT / "paired_differences.csv")
+    with np.load(OUT / "oof_scores.npz") as z:
+        old_oof = {k: z[k] for k in z.files}
 
 
 def variant(name):
@@ -81,7 +91,7 @@ def variant(name):
     return keep.to_numpy(), y, gcol
 
 
-rows, boots, oofs = [], {}, {}
+rows, boots, oofs = [], {}, (dict(old_oof) if args.append else {})
 for vname in args.variants:
     keep, yfull, gcol = variant(vname)
     sub = df[keep].reset_index(drop=True)
@@ -91,7 +101,21 @@ for vname in args.variants:
     runs = stratified_group_cv(groups, y.astype(float), cfg["cv"]["k"], cfg["cv"]["fallback_k"], cfg["cv"]["repeats"], cfg["cv"]["seed"])
     ks = [r["k"] for r in runs]
     nofold = [r["fold_without_positive"] for r in runs]
+    support = min(positive_group_support(groups, y, r["fold"]) for r in runs)
+    print(f"[{vname}] smallest number of positive groups on a train or test side over all folds: {support}", flush=True)
+    if vname == "cycle_only" and support < args.require_pos_groups:
+        print(f"[{vname}] UNUSABLE: a train or test side has {support} positive groups (< {args.require_pos_groups}); skipped", flush=True)
+        unusable.append({"variant": vname, "min_positive_groups_on_a_side": int(support), "positives": n_pos, "positive_groups": n_posg})
+        continue
     gb = GroupedBootstrap(groups, cfg["bootstrap"]["n_boot"], cfg["bootstrap"]["seed"])
+    if args.append:  # rebuild the bootstrap results of the stored out-of-fold scores (same resamples) for the paired rows
+        for sname in all_sets:
+            for mname in models:
+                key = f"{vname}|{mname}|{sname}"
+                if key in old_oof:
+                    boots[(vname, mname, sname)] = mean_ap_with_ci(y, list(old_oof[key]), gb)
+                    ref = old_R[(old_R.variant == vname) & (old_R.model == mname) & (old_R.feature_set == sname)].pr_auc.iloc[0]
+                    assert abs(boots[(vname, mname, sname)]["ap"] - ref) < 1e-9, f"stored scores do not reproduce results.csv for {key}"
     win_pos = [w for w in sub.window_id.unique() if y[(sub.window_id == w).to_numpy()].sum() > 0]
     print(f"[{vname}] rows {len(sub)}, positives {n_pos} in {n_posg} groups, k per repeat {ks}, folds without positive {nofold}", flush=True)
 
@@ -101,7 +125,7 @@ for vname in args.variants:
         boots[(vname, mname, sname)] = res
         rows.append(
             {"dataset": args.dataset, "tau": args.tau, "variant": vname, "feature_set": sname, "model": mname, "n_features": n_feat, "pr_auc": res["ap"], "ci_low": res["ci_low"], "ci_high": res["ci_high"],
-             "prevalence": n_pos / len(y), "n_rows": len(y), "n_pos": n_pos, "n_pos_groups": n_posg, "k_per_repeat": ",".join(map(str, ks)), "folds_without_positive": int(sum(nofold)),
+             "prevalence": n_pos / len(y), "n_rows": len(y), "n_pos": n_pos, "n_pos_groups": n_posg, "min_pos_groups_on_a_side": int(support), "k_per_repeat": ",".join(map(str, ks)), "folds_without_positive": int(sum(nofold)),
              "repeats": len(scores_by_repeat), "pr_auc_by_repeat": ",".join(f"{a:.4f}" for a in res["ap_by_repeat"]), "per_window_pr_auc": per_win, "n_windows_with_pos": len(win_pos),
              "n_boot": gb.n_boot, "n_boot_nan": res["n_boot_nan"], "cv_seed": cfg["cv"]["seed"], "model_seed": cfg["model_seed"], "boot_seed": cfg["bootstrap"]["seed"]}
         )  # fmt: skip
@@ -116,38 +140,44 @@ for vname in args.variants:
             record(sname, mname, sc, len(SETS[sname]))
             r_ = rows[-1]
             print(f"  {vname:18s} {sname:8s} {mname:6s} PR-AUC {r_['pr_auc']:.3f} [{r_['ci_low']:.3f}, {r_['ci_high']:.3f}] ({time.time() - t0:.0f}s)", flush=True)
-    if vname == "primary" and (not args.only_sets or "D" in args.only_sets):
+    if vname == "primary" and not args.append and (not args.only_sets or "D" in args.only_sets):
         s = -sub["D_birth"].to_numpy(float)
         record("D_birth_alone", "none", [s], 1)
         r_ = rows[-1]
         print(f"  primary            D_birth  none   PR-AUC {r_['pr_auc']:.3f} [{r_['ci_low']:.3f}, {r_['ci_high']:.3f}]", flush=True)
 
 R = pd.DataFrame(rows)
+if args.append:
+    R = pd.concat([old_R, R], ignore_index=True)
 R.to_csv(OUT / "results.csv", index=False)
 np.savez_compressed(OUT / "oof_scores.npz", **oofs)
 
 pairs = []
 for vname in args.variants:
     for mname in models:
-        for a, b in (("B+D+T", "B+D"), ("B+D", "B")):
+        for a, b in cfg["paired"]:
             if (vname, mname, a) in boots and (vname, mname, b) in boots:
                 d = paired_difference(boots[vname, mname, a], boots[vname, mname, b])
                 pairs.append({"dataset": args.dataset, "variant": vname, "model": mname, "comparison": f"{a} minus {b}", **d, "n_boot": cfg["bootstrap"]["n_boot"]})
 P = pd.DataFrame(pairs)
+if args.append:
+    done = set(zip(old_P.variant, old_P.model, old_P.comparison))
+    P = pd.concat([old_P, P[[(v, m, c) not in done for v, m, c in zip(P.variant, P.model, P.comparison)]]], ignore_index=True)
 P.to_csv(OUT / "paired_differences.csv", index=False)
 
 # ---- config and seeds stored with the results (NFR5)
-yaml.safe_dump({"config": cfg, "args": vars(args), "runtime_seconds": time.time() - t_start, "n_candidates": len(df)}, open(OUT / "config_used.yaml", "w"))
+cfg_file = OUT / ("config_used_ablation.yaml" if args.append else "config_used.yaml")
+yaml.safe_dump({"config": cfg, "args": vars(args), "runtime_seconds": time.time() - t_start, "n_candidates": len(df), "unusable_variants": unusable}, open(cfg_file, "w"))
 
 # ---- markdown summary: numbers only
 f3 = lambda r: f"{r.pr_auc:.3f} [{r.ci_low:.3f}, {r.ci_high:.3f}]"  # noqa: E731
 md = [f"# IBM {args.dataset}-Small classification, tau_quantile {args.tau}, max_len 6\n",
       f"Fixed hyperparameters (configs/classify.yaml, no search). Stratified group k-fold (k={cfg['cv']['k']}, fallback {cfg['cv']['fallback_k']}), {cfg['cv']['repeats']} repeats, "
       f"pooled out-of-fold PR-AUC (mean over repeats), grouped bootstrap 95% CI ({cfg['bootstrap']['n_boot']} resamples). Nothing is a pass/fail gate.\n"]  # fmt: skip
-for vname in args.variants:
+for vname in [v for v in args.variants if (R.variant == v).any()]:
     r0 = R[R.variant == vname].iloc[0]
     md.append(f"\n## {vname}: {r0.n_rows} candidates, {r0.n_pos} positives ({r0.prevalence:.4f}) in {r0.n_pos_groups} groups; k per repeat {r0.k_per_repeat}; folds without positive {r0.folds_without_positive}\n")
-    t = R[(R.variant == vname) & (R.model != "none")].pivot(index="feature_set", columns="model", values="pr_auc").reindex([s for s in feat_sets + ctrl_sets if s in set(R.feature_set)])
+    t = R[(R.variant == vname) & (R.model != "none")].pivot(index="feature_set", columns="model", values="pr_auc").reindex([s for s in all_sets if s in set(R.feature_set)])
     cell = {(r.feature_set, r.model): f3(r) for r in R[(R.variant == vname)].itertuples()}
     md.append("PR-AUC [95% CI] (mean over repeats), prevalence " + f"{r0.prevalence:.4f}:\n\n| feature set | " + " | ".join(models) + " |\n|---|" + "---|" * len(models))
     for s in t.index:
