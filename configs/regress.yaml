@@ -1,0 +1,21 @@
+# Phase 4 severity regression, SYNTHETIC data only (experiments/synth_severity.py). Fixed before the first run.
+data:
+  seeds: 6                    # SyntheticConfig(seed=0..5, hard_negatives=False, defaults otherwise)
+  window_length_days: 1.0     # consecutive non-overlapping windows of the generated week
+  n_windows: 7
+  tau_quantile: 0.25
+  max_len: 6
+target: log1p_wash_volume_next_window   # log1p(sum of the ring's own wash-ring transaction amounts in window t+1)
+exclude_columns:             # D columns that encode the ring's own current volume or activity level (v3 §3.5, no persistence shortcut)
+  - D_log_volume             # log total volume of the ring's edges in window t
+  - D_vol_ratio              # min/max edge volume
+  - D_vol_cv                 # edge volume dispersion
+  - D_log_count_mean         # log transaction counts per edge (rounds per window, i.e. activity level)
+models:
+  ridge: {alpha: 1.0}
+  rf: {n_estimators: 300, min_samples_leaf: 1, n_jobs: 2}
+  gbr: {n_estimators: 200, max_depth: 3, learning_rate: 0.05, subsample: 1.0}
+model_seed: 0
+cv: {k: 5, repeats: 5, seed: 0}          # grouped by ring identity (seed, planted id)
+bootstrap: {n_boot: 1000, seed: 12345}   # resample ring groups
+feature_sets: [B, B+D, B+D+T, T]         # B+D and B+D+T without the excluded columns
