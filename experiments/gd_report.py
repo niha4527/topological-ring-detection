@@ -1,13 +1,22 @@
 """Experiments for the optimization report (report §4). Run from the project root:
 
-    python experiments/gd_report.py
+    python experiments/gd_report.py --config report            # the numbers in the report
+    python experiments/gd_report.py --config full [--ambiguous exclude|negative]
 
-Writes figures to results/figures/ and numbers to results/gd_metrics.json.
-Takes a few minutes (the drift study generates 40 windows).
+Configs
+    report  The setup the report was written for: the generator without the dense,
+            chorded, shortcut-filled and hot-wallet scenarios, and ambiguous candidates
+            counted as negatives (report §2.4: y = 1 only for a planted wash ring).
+            Writes results/report/ and refuses to overwrite it unless --force.
+    full    Every generator scenario. Writes results/full/<ambiguous>/.
+
+Candidates are labelled by the §3.7 ring-labeling rule (ringtda.eval.labels).
+Takes a few seconds (report) to a few minutes (full; the drift study generates 40 windows).
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import time
 from pathlib import Path
@@ -32,7 +41,24 @@ from ringtda.models.gd import (
 )
 from ringtda.threshold.ascent import run_policies
 
-OUT = Path("results")
+ap_ = argparse.ArgumentParser()
+ap_.add_argument("--config", choices=("report", "full"), required=True)
+ap_.add_argument("--ambiguous", choices=("exclude", "negative"), help="full config only (default exclude)")
+ap_.add_argument("--force", action="store_true", help="allow overwriting results/report/")
+args = ap_.parse_args()
+if args.config == "report":
+    if args.ambiguous not in (None, "negative"):
+        ap_.error("--config report fixes --ambiguous negative")
+    AMBIGUOUS = "negative"
+    # pin the generator the report was written for (scenarios added later are switched off)
+    GEN = dict(dense_rings_per_size=0, n_chorded_rings=0, n_shortcut_filled=0, n_hot_wallets=0)
+    OUT = Path("results") / "report"
+    if (OUT / "gd_metrics.json").exists() and not args.force:
+        ap_.error(f"{OUT} holds the report's numbers; pass --force to overwrite")
+else:
+    AMBIGUOUS = args.ambiguous or "exclude"
+    GEN = {}
+    OUT = Path("results") / "full" / AMBIGUOUS
 FIG = OUT / "figures"
 FIG.mkdir(parents=True, exist_ok=True)
 plt.rcParams.update({"figure.dpi": 130, "font.size": 10, "axes.spines.top": False, "axes.spines.right": False})
@@ -41,16 +67,27 @@ GREY, BLUE, RED, GREEN, ORANGE = "#8c959f", "#1f6feb", "#cf222e", "#1a7f37", "#b
 D_FEATS = ["birth_eq", "length", "mean_rec", "mean_bal", "mean_reg", "min_rec", "min_bal", "min_reg"]
 T_FEATS = ["topo_h1_count", "topo_total_pers", "topo_max_pers", "topo_n_infinite", "topo_nbhd_edges"]
 TRAIN_SEEDS, TEST_SEEDS = range(0, 12), range(100, 106)
-metrics: dict = {}
+metrics: dict = {"config": args.config, "ambiguous_treatment": AMBIGUOUS, "generator_overrides": GEN}
 
 
-def build(seeds, jitters, topo=True):
+def treat(df, Z):
+    """Ambiguous candidates (§3.7 labelling rule): dropped, or kept as negatives."""
+    if AMBIGUOUS == "negative":
+        return df.assign(y=df.y.fillna(0.0)), Z
+    keep = (df.kind != "ambiguous").to_numpy()
+    return df[keep].reset_index(drop=True), [z for z, k in zip(Z, keep) if k]
+
+
+def build(seeds, jitters, topo=True, n_ambiguous=None):
     """One window per seed; wash-ring timing jitter (and amount noise) varies across windows,
     so that no single score separates wash rings from legitimate loops on its own."""
     tabs, Zs = [], []
     for s, j in zip(seeds, jitters):
-        tx, planted = generate(SyntheticConfig(seed=s, ring_jitter=j, amount_noise=0.01 + 0.25 * j))
+        tx, planted = generate(SyntheticConfig(seed=s, ring_jitter=j, amount_noise=0.01 + 0.25 * j, **GEN))
         df, Z = window_candidates(tx, planted, topo=topo)
+        if n_ambiguous is not None:
+            n_ambiguous.append(int((df.kind == "ambiguous").sum()))
+        df, Z = treat(df, Z)
         df["window"] = s
         tabs.append(df)
         Zs += Z
@@ -70,8 +107,9 @@ def design(df, cols, mu=None, sd=None):
 t0 = time.time()
 TRAIN_JIT = np.linspace(0.05, 0.6, len(TRAIN_SEEDS))
 TEST_JIT = np.linspace(0.1, 0.55, len(TEST_SEEDS))
-train, Ztr = build(TRAIN_SEEDS, TRAIN_JIT)
-test, Zte = build(TEST_SEEDS, TEST_JIT)
+amb_train, amb_test = [], []
+train, Ztr = build(TRAIN_SEEDS, TRAIN_JIT, n_ambiguous=amb_train)
+test, Zte = build(TEST_SEEDS, TEST_JIT, n_ambiguous=amb_test)
 ytr, yte = train.y.to_numpy(float), test.y.to_numpy(float)
 metrics["data"] = {
     "train_jitter": TRAIN_JIT.round(3).tolist(),
@@ -82,6 +120,7 @@ metrics["data"] = {
     "test_candidates": int(len(test)),
     "train_by_kind": train.kind.value_counts().to_dict(),
     "test_by_kind": test.kind.value_counts().to_dict(),
+    "ambiguous_per_window": {"train": amb_train, "test": amb_test},
 }
 print(f"data built in {time.time() - t0:.0f}s", metrics["data"])
 
@@ -258,14 +297,17 @@ plt.close(fig)
 
 # ------------------------------------------------------------------ Problem C
 # The deployed detector is learned on pre-drift data only (low timing noise), then tactics drift.
-pre, Zpre = build(range(300, 304), [0.05] * 4, topo=False)
+amb_pre = []
+pre, Zpre = build(range(300, 304), [0.05] * 4, topo=False, n_ambiguous=amb_pre)
 alpha_pre = AlphaLearner(Zpre, pre.y.to_numpy(float)).fit(eta=0.5, iters=1500).alpha
 N_WIN = 40
-drift_windows, robust_windows, recall_cand = [], [], []
+drift_windows, robust_windows, recall_cand, amb_drift = [], [], [], []
 for t in range(N_WIN):
     frac = t / (N_WIN - 1)
-    tx, planted = generate(SyntheticConfig(seed=500 + t, ring_jitter=0.05 + 0.55 * frac, amount_noise=0.01 + 0.15 * frac))
+    tx, planted = generate(SyntheticConfig(seed=500 + t, ring_jitter=0.05 + 0.55 * frac, amount_noise=0.01 + 0.15 * frac, **GEN))
     df, Z = window_candidates(tx, planted, topo=False)
+    amb_drift.append(int((df.kind == "ambiguous").sum()))
+    df, Z = treat(df, Z)
     al = AlphaLearner(Z, df.y.to_numpy(float))
     drift_windows.append((al.births(alpha_pre, smooth=False), df.y.to_numpy(float)))
     robust_windows.append((al.births(fitB.alpha, smooth=False), df.y.to_numpy(float)))
@@ -285,6 +327,8 @@ metrics["problem_C"] = {
     "robust_detector_share_of_oracle": {k: tot_r[k] / tot_r["oracle"] for k in tot_r},
     "drift": "wash timing jitter 0.05 -> 0.60 and amount noise 0.01 -> 0.16 over 40 windows",
     "candidate_recall_first5_last5": [float(np.mean(recall_cand[:5])), float(np.mean(recall_cand[-5:]))],
+    "ambiguous_per_window": amb_drift,
+    "ambiguous_per_pre_drift_window": amb_pre,
 }
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4))
 pcol = {"fixed": GREY, "retune": GREEN, "ascent": BLUE, "oracle": "k"}

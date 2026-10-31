@@ -32,23 +32,15 @@ def test_planted_ring_edges_in_lowest_weight_decile():
 
 
 def test_every_planted_ring_is_a_candidate():
-    """Phase 2 gate (candidate recall = 1 at tau = lowest decile).
-
-    Dense-neighbourhood rings are checked with de-duplication off: with it on,
-    a detour through a neighbour that shares >= 80% of the ring's edges and has
-    a slightly lower birth can replace the planted ring (§3.3 keeps the
-    lowest-birth one). That is a property of the dedupe rule, not of
-    enumeration, and is reported rather than gated.
-    """
+    """Phase 2 gate (candidate recall = 1 at tau = lowest decile), for every
+    positive scenario, including dense rings whose neighbours offer near-duplicate
+    detours (de-duplication keeps the shorter cycle, see candidates.py)."""
     for seed in range(3):
         _, planted, pairs, G = _one_window(seed, hard_negatives=False)
-        tau = pairs["weight"].quantile(0.10)
-        found = {frozenset(c.edges) for c in candidate_rings(G, tau=tau).candidates}
-        raw = {frozenset(c.edges) for c in candidate_rings(G, tau=tau, dedupe_overlap=1.01).candidates}
+        found = {frozenset(c.edges) for c in candidate_rings(G, tau=pairs["weight"].quantile(0.10)).candidates}
         for p in planted:
             if p.is_positive or p.pattern == "shortcut_filled":  # shortcut-filled: ring-like under enumeration
-                pool = raw if p.scenario == "dense" else found
-                assert frozenset(p.edges) in pool, f"seed {seed}: missed {p.scenario} ring {p.accounts}"
+                assert frozenset(p.edges) in found, f"seed {seed}: missed {p.scenario} ring {p.accounts}"
 
 
 def test_transitive_decoys_are_not_candidates():

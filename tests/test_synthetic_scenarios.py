@@ -7,6 +7,7 @@ cannot change the answer.
 
 import networkx as nx
 import numpy as np
+import pandas as pd
 import pytest
 
 from ringtda.data.synthetic import HARD_NEGATIVES, SyntheticConfig, generate
@@ -150,36 +151,37 @@ def test_shortcut_filled_ring_dies(window):
 # --- hard negatives ----------------------------------------------------------
 
 
-def test_market_maker_two_sided_regular_but_drifting(window):
+def test_market_maker_two_sided_and_regularity_knob(window):
     tx, planted, _ = window
     for p in _of(planted, "market_maker"):
         t = _own_rows(tx, p)
-        mm, cps = p.accounts[0], p.accounts[1:]
-        two_sided = [((t.src == mm) & (t.dst == c)).any() and ((t.src == c) & (t.dst == mm)).any() for c in cps]
-        assert np.mean(two_sided) >= 0.5  # a strong inventory bias can leave a few clients one-sided
-        cv = [_gap_cv(t.loc[(t.src == c) | (t.dst == c), "timestamp"].to_numpy()) for c in cps]
-        assert np.nanmedian(cv) < 0.7  # gamma shape 4 -> CV ~0.5; Poisson would be ~1
-        # inventory does not net to zero within a day
-        day = t.timestamp // 86400
-        o = t[t.src == mm].groupby(day).amount.sum()
-        i = t[t.dst == mm].groupby(day).amount.sum()
-        o, i = o.align(i, fill_value=0.0)
-        assert ((o - i).abs() / (o + i)).mean() > 0.1  # wash-ring members: < 0.05
+        hub, clients = p.accounts[0], p.accounts[1:]
+        two_sided = [((t.src == hub) & (t.dst == c)).any() and ((t.src == c) & (t.dst == hub)).any() for c in clients]
+        assert np.mean(two_sided) >= 0.6
+    # mm_regularity: 0 = random arrivals (gap CV ~1), near 1 = scheduled quoting (CV << 1)
+    def median_cv(reg):
+        tx, planted = generate(SyntheticConfig(seed=0, mm_regularity=reg))
+        cvs = []
+        for p in _of(planted, "market_maker"):
+            t = _own_rows(tx, p)
+            cvs += [_gap_cv(t.loc[(t.src == c) | (t.dst == c), "timestamp"].to_numpy()) for c in p.accounts[1:]]
+        return np.nanmedian(cvs)
+
+    assert median_cv(0.0) > 0.6
+    assert median_cv(0.9) < 0.3
 
 
-def test_arbitrage_bot_profits_in_bursts(window):
+def test_arbitrage_loop_profits_on_irregular_events(window):
     tx, planted, _ = window
-    for p in _of(planted, "arbitrage_bot"):
+    cfg = SyntheticConfig()
+    for p in _of(planted, "arbitrage_loop"):
         t = _own_rows(tx, p)
-        bot = p.accounts[0]
-        sent, got = t.loc[t.src == bot, "amount"].sum(), t.loc[t.dst == bot, "amount"].sum()
-        assert got > sent  # net profit, not net zero
-        assert got / sent < 1.05  # but a small margin
-        assert _gap_cv(t.loc[t.src == bot, "timestamp"].to_numpy()) > 1.0  # bursty, not clocked
-        # every cycle is bot -> venue -> venue -> bot
-        assert len(t) % 3 == 0
-        for (u, v) in p.edges:
-            assert bot in (u, v) or {u, v} <= set(p.accounts[1:])
+        first, last = p.edges[0], p.edges[-1]
+        v_first = t.loc[(t.src == first[0]) & (t.dst == first[1]), "amount"].sum()
+        v_last = t.loc[(t.src == last[0]) & (t.dst == last[1]), "amount"].sum()
+        assert np.isclose(v_last / v_first, (1 + cfg.arb_profit) ** 2, rtol=0.05)  # value grows, not net zero
+        starts = t.loc[(t.src == first[0]) & (t.dst == first[1]), "timestamp"].to_numpy()
+        assert _gap_cv(starts) > 0.6  # price-triggered, not clocked (wash rings: ~0.05)
 
 
 def test_hot_wallet_is_balanced_hub(window):
@@ -191,3 +193,70 @@ def test_hot_wallet_is_balanced_hub(window):
         i, o = t.loc[t.dst == h, "amount"].sum(), t.loc[t.src == h, "amount"].sum()
         assert 1 - abs(i - o) / (i + o) > 0.95
         assert deg[h] >= deg.quantile(0.98)  # among the highest-degree accounts
+
+
+# ---- dense_internal_chords (opt-in; the default must reproduce earlier windows exactly) ----
+
+# sha256 prefixes of (transactions, planted) produced BEFORE the flag existed (default generator)
+_PRE_FLAG_DIGESTS = {
+    ((), 0): "2f5a1b7ef84558f7",
+    ((), 1): "ba12666f8273253e",
+    ((("hard_negatives", False),), 0): "ea381f0d7b005c74",
+    ((("hard_negatives", False),), 1): "fecda2eee395edaf",
+    ((("dense_neighbours", 12), ("dense_rings_per_size", 3)), 0): "8c6108209a4ee751",
+    ((("dense_neighbours", 12), ("dense_rings_per_size", 3)), 7): "c1f1922a517406af",
+}
+
+
+def _digest(tx, planted):
+    import hashlib
+
+    h = hashlib.sha256(pd.util.hash_pandas_object(tx, index=True).values.tobytes())
+    h.update(
+        repr([(p.pattern_id, p.pattern, p.accounts, p.edges, p.scenario, p.context_edges, p.context_accounts) for p in planted]).encode()
+    )
+    return h.hexdigest()[:16]
+
+
+def test_default_generator_unchanged_by_dense_internal_chords_flag():
+    for (kw, seed), want in _PRE_FLAG_DIGESTS.items():
+        assert SyntheticConfig().dense_internal_chords is True
+        assert _digest(*generate(SyntheticConfig(seed=seed, **dict(kw)))) == want, (kw, seed)
+
+
+def test_no_internal_chords_changes_only_internal_dense_context_edges():
+    on = generate(SyntheticConfig(seed=0, hard_negatives=False))
+    off = generate(SyntheticConfig(seed=0, hard_negatives=False, dense_internal_chords=False))
+    (tx_on, pl_on), (tx_off, pl_off) = on, off
+    members = {p.pattern_id: set(p.accounts) for p in pl_on if p.scenario == "dense"}
+    internal = np.array(
+        [p == "context" and s in members.get(i, ()) and d in members.get(i, ()) for s, d, i, p in zip(tx_on.src, tx_on.dst, tx_on.pattern_id, tx_on.pattern)]
+    )
+    assert internal.any()
+    assert tx_on[~internal].reset_index(drop=True).equals(tx_off)  # same random stream elsewhere
+    for a, b in zip(pl_on, pl_off):
+        assert (a.pattern_id, a.accounts, a.edges) == (b.pattern_id, b.accounts, b.edges)
+        if a.scenario == "dense":
+            assert set(b.context_edges) == {e for e in a.context_edges if not (e[0] in a.accounts and e[1] in a.accounts)}
+        else:
+            assert a.context_edges == b.context_edges
+
+
+def test_no_internal_chords_means_no_inside_only_filling_of_dense_rings():
+    from ringtda.features import window_graphs
+    from ringtda.topology.vectorize import ring_survives
+
+    def inside_filled(seed, **kw):
+        tx, planted = generate(SyntheticConfig(seed=seed, hard_negatives=False, **kw))
+        _, _, Gs, _ = window_graphs(tx)
+        out = []
+        for p in planted:
+            if p.scenario == "dense":
+                members = set(p.accounts)
+                out.append(not ring_survives(Gs.subgraph(members).copy(), p.edges))
+        return out
+
+    default = [f for s in range(4) for f in inside_filled(s)]
+    off = [f for s in range(4) for f in inside_filled(s, dense_internal_chords=False)]
+    assert any(default)  # the default does fill dense rings from inside (so the check is not vacuous)
+    assert not any(off)  # outside fillers are still allowed, inside-only fillers are gone
