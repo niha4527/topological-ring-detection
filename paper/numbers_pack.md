@@ -1349,7 +1349,7 @@ Paired differences (same resamples):
 
 ## 6D. Phase 4: Ward clustering of positive rings against pattern type (exploratory)
 
-Ward linkage, Euclidean, vectors standardized on the population; population = positives of the primary variant for pattern types with at least 3 positive groups; k = number of types (fixed) or best silhouette over 2..8 (exploratory). CIs: grouped bootstrap over positive groups (500 resamples, recluster each). Baselines: mean over 1000 permutations of the cluster labels, and majority-class purity. Config `results/phase4_cluster/config_used.yaml`. The percentile CIs of this bootstrap are biased upward (resampled duplicate rings): several do not contain their own point estimate.
+Ward linkage, Euclidean, vectors standardized on the population; population = positives of the primary variant for pattern types with at least 3 positive groups; k = number of types (fixed) or best silhouette over 2..8 (exploratory). CIs: grouped bootstrap over positive groups (500 resamples, recluster each). Baselines: mean over 1000 permutations of the cluster labels, and majority-class purity. Config `results/phase4_cluster/config_used.yaml`. **The grouped-bootstrap percentile CIs of this study are biased (resampled duplicate rings inflate agreement and compactness) and 1 of 16 rows have at least one CI that excludes its own point estimate, so they are not used as CIs: read the point estimates against the random-permutation and majority baselines.** Read ARI against pattern type *next to* ARI against group id: where the group-id ARI is larger, the clusters track attempts more than pattern types (HI, D+T_local landscape, fixed k: 0.398 against group id vs 0.097 against type). LI (T_local landscape, fixed k = 3, 9 groups, 3 to 5 groups per type): ARI 0.260, purity 0.730 against random 0.536: a small-sample point estimate with its caveat, not evidence of type recovery.
 
 | dataset | type | rings | groups | in population |
 |---|---|---|---|---|
@@ -1414,7 +1414,7 @@ Each row of a paired-difference file is one comparison (model x variant x scope 
 | severity diagnostic (3 metrics) | `results/phase4_severity/diagnostic/paired_differences.csv` | 36 | 0 | 0 | 36 |
 | bandit vs comparators | `results/phase6_bandit/bandit_vs_comparators.csv` | 72 | 2 | 0 | 70 |
 
-Total paired rows over the project: 489; pre-specified primary: 55; pre-specified secondary: 47; exploratory or sensitivity: 387. Note: the primary count includes every variant (e.g. ambiguous-positive, strict-groups), so it counts rows, not independent tests; the headline test per dataset is the primary variant.
+Total paired rows over the project: 489; pre-specified primary: 55; pre-specified secondary: 47; exploratory or sensitivity: 387. **The pre-specified primary rows are not independent tests**: they include every variant (e.g. ambiguous-positive, strict-groups), the same candidates and resamples recur across models and variants, and the count is of rows. The headline test per dataset is `B+D+T minus B+D` on the primary variant, one row per model.
 
 
 ## 7. Limitations and caveats
@@ -1423,8 +1423,8 @@ Total paired rows over the project: 489; pre-specified primary: 55; pre-specifie
 2. LI has 3 cycle positives in 3 groups: the cycle-only variant is unusable there (fewest positive groups on a train or test side: 1); LI primary has 1 on its thinnest side.
 3. LI contradicts HI on the ring-birth signal: `-D_birth` alone scores 0.006 on LI (prevalence 0.0039) against 0.314 on HI (prevalence 0.0173).
 4. `T_win` alone on HI: PR-AUC 0.121 (logreg) and 0.130 (rf) at prevalence 0.0173: window-constant features rank well above chance (consistent with a time proxy, not tested directly); on LI the same sets score 0.006 / 0.004 at prevalence 0.0039.
-5. The synthetic generator is near-separable by D: D alone scores 0.952 to 0.996 (logreg and rf, four conditions), so there is little room for B+D+T to add; the other models and `-D_birth` alone are in section 5.
-6. Imputed timing: on HI, 0.685 to 0.966 of each laundering group's pairs have fewer than 3 transactions (`gap_cv` imputed), against 0.467 for background pairs, so the timing-regularity score of most laundering pairs is the imputed constant.
+5. The synthetic generator is near-separable by D: D alone scores logreg 0.956-0.983; rf 0.952-0.996; svm 0.932-0.955 over the four conditions (range per model), so there is little room for B+D+T to add.
+6. Imputed timing: on HI, 0.685 to 0.966 of each laundering group's pairs have fewer than 3 transactions (`gap_cv` needs at least 2 gaps; the code imputes pairs with 1 or 2 transactions, whereas v3 section 3.1 says a pair with a single transaction), against 0.467 for background pairs, so the timing-regularity score of most laundering pairs is the imputed constant.
 7. Betweenness is sampled (k=100) on IBM windows: 0.1594 of the 404,273 nodes of HI window 0 have non-zero betweenness; B is exact only up to 3000 nodes (synthetic).
 8. Recall caps: HI days 0-5 has 15 complete CYCLE attempts, only 11 with at most 6 accounts (12 at max_len 8); 8 recovered by account set but 6 also labelled positive. LI days 0-5 has 1 complete attempt (not a usable rate).
 9. Synthetic recall with hard negatives on falls at large tau, where the enumeration cap (20000 cycles per SCC) is hit: rows with a truncated SCC recover 0.13 of planted rings (465 ring-cells), untruncated rows at tau >= 0.15 recover 1.00; at tau 0.05 untruncated recall is 0.43.
@@ -1434,9 +1434,9 @@ Total paired rows over the project: 489; pre-specified primary: 55; pre-specifie
 13. Exploratory comparisons (T_local / T_win ablations) were added after the first HI run; 36 such paired rows exist in the HI file and 18 in the LI file; no multiplicity correction.
 14. The RBF SVM (fixed C=1, gamma=scale, untuned) is weaker than rf on HI: B+D 0.326 vs 0.652, B+D+T 0.329 vs 0.676.
 15. Currencies are mixed (`Amount Paid` as is); the IBM data are synthetic AML data, not market transactions; the optimisation report numbers come from the pinned report generator (section 2).
-16. Severity (synthetic only, the generator decides persistence): B+D without volume columns reaches rf RMSE 0.141 against 0.221 for a fair persistence fit and 0.132 for `D_length` alone; the top rf importance is `D_length` (0.796). This is recovery of generator structure, not forecasting skill.
+16. Severity (synthetic only, the generator decides persistence): B+D without volume columns reaches rf RMSE 0.141 against 0.221 for a fair persistence fit and 0.132 for `D_length` alone; the top rf importance is `D_length` (0.796). This is recovery of generator structure, not forecasting skill; T adds nothing.
 17. Bandit benchmark: at lambda 1, d 2 the bandits lose to the re-tuned comparator (discounted UCB -1.245 share of oracle, 0 of 6 seeds better; sliding-window Thompson -0.771, 2 of 6); exploring the flag-everything arm is very costly and its size is hidden by the reward clipping.
-18. Clustering (exploratory): on HI with k = 4, ARI against pattern type is 0.059 (D) to 0.097 (D + T_local landscape), purity 0.489 against a majority purity of 0.336; 4 to 12 groups per type, and the bootstrap CIs are biased upward.
+18. Clustering (exploratory): HI, k = 4, D + T_local landscape: ARI against type 0.097 (random 0.000), ARI against group id 0.398, purity 0.489 against random 0.365 and majority 0.336; 4 to 12 groups per type; the grouped-bootstrap percentile CIs are biased (resampled duplicate rings) and several exclude their own point estimate, so they are not used as CIs.
 19. Cap sensitivity: on HI, `ring_local_max` changes the svm B+D+T PR-AUC by +0.190 (post hoc, one model, uncorrected for multiplicity).
 
 
@@ -1446,24 +1446,29 @@ Total paired rows over the project: 489; pre-specified primary: 55; pre-specifie
 
 - Adding D to B raises PR-AUC on HI: the paired CI excludes 0 in 3 of 3 models (logreg +0.399, rf +0.572, svm +0.233).
 - On LI, adding D to B: the paired CI excludes 0 in 2 of 3 models (logreg +0.072 [+0.020, +0.173], rf +0.132 [+0.045, +0.283], svm +0.105 [-0.060, +0.276]).
-- On synthetic data B+D+T improves on B+D by a paired CI above 0 in 7 of 12 condition-model cells (hn-off_chords-default: 3/3; hn-off_chords-off: 3/3; hn-on_chords-default: 0/3; hn-on_chords-off: 1/3); B+D itself scores 0.960 to 0.997 (logreg minimum, rf maximum over the four conditions).
+- On synthetic data B+D+T improves on B+D by a paired CI above 0 in 7 of 12 condition-model cells (hn-off_chords-default: 3/3; hn-off_chords-off: 3/3; hn-on_chords-default: 0/3; hn-on_chords-off: 1/3); B+D itself scores logreg 0.960-0.983; rf 0.956-0.997; svm 0.874-0.937 over the four conditions (range per model).
 - Exploratory: the local topology columns alone (B+D+T_local) add to B+D on HI for logreg only (CI excludes 0 in 1 of 3 models: logreg +0.141, rf +0.041, svm +0.037); this is one of the exploratory comparisons and is not corrected for multiplicity.
 - Candidate recall is partial and tau-dependent (section 6): HI days 0-5, tau 0.05, max_len 6 recovers 8 of 11 reachable complete CYCLE attempts (15 complete); synthetic recall is 1.00 with hard negatives off at every tau tested.
 - T_local / T_win cap choice among window_max, fixed 1.0 and 1.1 x window max barely changes HI B+D+T PR-AUC: largest absolute paired difference to window_max 0.024 (all models, both sets); `ring_local_max` is a post hoc variant (svm cell single-model, uncorrected).
-- On synthetic severity data B+D (no volume columns) predicts better than the mean predictor and than a fair persistence fit (rf RMSE 0.141 vs 0.385 and 0.221); topology does not change it (B+D+T minus B+D rf RMSE -0.001).
+
+**No detectable effect (the data neither show nor exclude a small effect):**
+
+- IBM HI-Small: no detectable topological lift (B+D+T minus B+D, pre-specified primary): the CI includes 0 in 3 of 3 models (logreg +0.104 [-0.002, +0.171], rf +0.025 [-0.050, +0.102], svm +0.003 [-0.111, +0.077]). With 14 positive groups the CIs cannot rule out a small effect either way.
+- IBM LI-Small: no detectable topological lift (B+D+T minus B+D): the CI includes 0 in 3 of 3 models (logreg +0.033 [-0.007, +0.097], rf -0.012 [-0.119, +0.077], svm -0.044 [-0.181, +0.091]). With 10 positive groups the CIs cannot rule out a small effect either way.
+- Transfer HI->LI: no detectable lift of B+D+T over B+D (CI above 0 in 0, below 0 in 1 of 3 models; the CIs cannot rule out a small effect either way: logreg -0.017, rf -0.066, svm -0.050).
+- Transfer LI->HI: no detectable lift of B+D+T over B+D (CI above 0 in 0, below 0 in 1 of 3 models; the CIs cannot rule out a small effect either way: logreg -0.276, rf -0.019, svm -0.056).
+
+**Descriptive findings, not claims:**
+
+- Severity regression (synthetic only; the generator decides that rings persist): `D_length` alone reaches rf RMSE 0.132 and gbr RMSE 0.132, against 0.141 and 0.144 for B+D, so the model recovers generator structure (top rf importance `D_length` 0.796), not forecasting skill; T adds nothing (B+D+T minus B+D rf RMSE -0.001).
 
 **Not supported:**
 
-- Topology adds to B+D on IBM HI (pre-specified primary comparison): the CI excludes 0 in 0 of 3 models (logreg +0.104 [-0.002, +0.171], rf +0.025 [-0.050, +0.102], svm +0.003 [-0.111, +0.077]).
-- Topology adds to B+D on IBM LI: the CI excludes 0 in 0 of 3 models (logreg +0.033, rf -0.012, svm -0.044).
-- Transfer HI->LI: B+D+T does not beat B+D (CI above 0 in 0, below 0 in 1 of 3 models: logreg -0.017, rf -0.066, svm -0.050).
-- Transfer LI->HI: B+D+T does not beat B+D (CI above 0 in 0, below 0 in 1 of 3 models: logreg -0.276, rf -0.019, svm -0.056).
 - That the ring-birth signal carries over from HI to LI: `-D_birth` alone is 0.006 on LI at prevalence 0.0039 (HI: 0.314).
 - That the synthetic topology gains predict IBM results: B+D+T minus B+D has a CI above 0 in 7 of 12 synthetic cells and in 0 IBM cells (HI primary, LI primary); IBM has few positive groups, so absence of a detected gain is not evidence of no gain.
 - That the `T_win` contribution on HI is topological: `T_win` columns are constant within a window; alone they score 0.121 (logreg) on HI at prevalence 0.0173 and 0.006 on LI at prevalence 0.0039; a time proxy is consistent with this but was not tested directly.
 - That the bandits beat periodic re-tuning at the same lag: at lambda 1, d 2 the paired share-of-oracle difference is -1.245 (discounted UCB) and -0.771 (sliding-window Thompson); the only positive cell is discounted UCB at d = 5 (+0.258); the online gradient ascent comparator is at 0.981 of oracle.
-- That the severity model forecasts a ring's next-window volume beyond what ring size gives: `D_length` alone reaches rf RMSE 0.132 against 0.141 for B+D; synthetic only.
-- That Ward clustering of positive rings recovers pattern types: HI ARI against type is at most 0.097 with k = 4 (exploratory, bootstrap CIs include values near 0).
+- That Ward clustering of positive rings recovers pattern types (exploratory): on HI, k = 4, ARI against type is 0.097 (D + T_local landscape; random 0.000) against 0.398 against group id: the clusters track attempts more than types. Purity 0.489 vs random 0.365 and majority 0.336. The bootstrap percentile CIs are biased and several exclude their own point estimate, so they are not used as CIs. LI (T_local landscape, k = 3, 9 groups): ARI 0.260, purity 0.730 vs random 0.536; with 9 groups and 3 to 5 groups per type this is a small-sample point estimate, not evidence of type recovery.
 
 
 ## 9. Deviations from the v3 proposal
@@ -1475,12 +1480,13 @@ Total paired rows over the project: 489; pre-specified primary: 55; pre-specifie
 5. Time-ordered evaluation was tried as specified and dropped: HI leaves 0 test candidates and LI 1 (`eval/splits.time_ordered_split` is kept, unused); grouped CV is primary and HI<->LI transfer the out-of-sample check.
 6. Cycle-only subset: positives are candidates labelled from CYCLE attempts; other-type positives and ambiguous candidates are removed, background kept (not defined in the proposal). Usable on HI only.
 7. Ambiguity: candidates whose laundering edges rest only on unattributed rows, or whose backing is split across structures, are `ambiguous`; results are reported with them excluded (primary) and counted positive.
-8. Hard-negative false-positive rate at 80% recall was replaced by the mean out-of-fold score rank percentile of each negative kind.
-9. Recall of complete cycle attempts uses the account-set definition (README measurement); the label-based count is reported next to it.
-10. Phase 4 clustering and severity regression, and Phase 6 (bandit policies and drift benchmark), were run as exploratory studies (sections 6A-6D); severity is synthetic only (IBM has no next-window wash volume) and the bandit benchmark uses the optimization report's synthetic drift stream.
-11. Phase 5 (NFT loader, proxy labels, label-provenance audit) is NOT done. Blocker: running queries on Dune is blocked on the free tier. BigQuery access was confirmed and the schemas were inspected: `nft.wash_trades` combines five filters, of which filters 2 and 3 are cycle-type rules, so the planned leakage-controlled subset would be filters 4 and 5 only.
-12. Not done: pump-and-dump temporal-motif track, undirected clique-complex ablation, persistence-image ablation, per-score classifier filtrations (classifiers on single-score filtrations), and the sensitivity sweeps over window length, stride, `max_len`-in-classification, tau (classification beyond IBM tau 0.05) and label threshold X.
-13. Learned-weight (Problem B), classifier (Problem A) and threshold (Problem C) results in section 2 come from the pinned report generator, not from IBM AML.
+8. Timing-regularity imputation: v3 section 3.1 says a pair with a single transaction receives the window's median s_reg; the code leaves the timing CV undefined for pairs with fewer than 3 transactions (it needs at least 2 gaps), so pairs with 1 or 2 transactions are imputed (weights: the window median of s_reg; D features: the window median of the defined gap CVs).
+9. Hard-negative false-positive rate at 80% recall was replaced by the mean out-of-fold score rank percentile of each negative kind.
+10. Recall of complete cycle attempts uses the account-set definition (README measurement); the label-based count is reported next to it.
+11. Phase 4 clustering and severity regression, and Phase 6 (bandit policies and drift benchmark), were run as exploratory studies (sections 6A-6D); severity is synthetic only (IBM has no next-window wash volume) and the bandit benchmark uses the optimization report's synthetic drift stream.
+12. Phase 5 (NFT loader, proxy labels, label-provenance audit) is NOT done. Blocker: running queries on Dune is blocked on the free tier. BigQuery access was confirmed and the schemas were inspected: `nft.wash_trades` combines five filters, of which filters 2 and 3 are cycle-type rules, so the planned leakage-controlled subset would be filters 4 and 5 only.
+13. Not done: pump-and-dump temporal-motif track, undirected clique-complex ablation, persistence-image ablation, per-score classifier filtrations (classifiers on single-score filtrations), and the sensitivity sweeps over window length, stride, `max_len`-in-classification, tau (classification beyond IBM tau 0.05) and label threshold X.
+14. Learned-weight (Problem B), classifier (Problem A) and threshold (Problem C) results in section 2 come from the pinned report generator, not from IBM AML.
 
 
 ## Expected files that were missing
