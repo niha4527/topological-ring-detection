@@ -1,0 +1,31 @@
+# Phase 6 bandit threshold benchmark (experiments/bandit_report.py). Every value below is FIXED before the first run;
+# nothing is tuned on the results. The only sweep over bandit hyperparameters is the small documented sensitivity table.
+stream:                     # the optimization report's drift stream (experiments/gd_report.py, Problem C)
+  n_windows: 40
+  base_seed: 500            # window t uses seed base_seed + t (+ seed_offset * k for stream seed k; k = 0 is the report stream)
+  pre_seeds: [300, 301, 302, 303]   # pre-drift windows the deployed detector (alpha) is learned on
+  pre_jitter: 0.05
+  jitter: [0.05, 0.60]      # wash timing jitter drift, linear over the stream
+  amount_noise: [0.01, 0.16]
+  seed_offset: 1000
+  n_seeds: 6
+arms:
+  K: 10
+  lo: 0.05                  # K evenly spaced thresholds on the classifier score (ring birth, lower = more suspicious)
+  hi: 0.95
+reward:
+  scale: 10.0               # R = TP - lambda*FP is clipped to [-scale, scale] and mapped to [0, 1] for the bandits
+  lambdas: [0.5, 1.0, 2.0]  # primary: 1.0 (the report)
+  primary_lambda: 1.0
+lags: [0, 1, 2, 5]          # labels of window s usable at t >= s + d (run_policies convention); primary: 2 (the report)
+primary_lag: 2
+warmup: 5                   # windows 0-4: the info that tunes the fixed comparator; the bandits get the same windows, all arms observed
+retune_every: [2, 5, 10]    # M; primary 5 (the report)
+primary_retune_every: 5
+ascent: {eta: 0.05, T: 0.02}
+ducb: {gamma: 0.9, c: 0.5}  # discounted UCB: observation weight gamma^(t - s); padding c * sqrt(ln(1 + n) / N)
+sw_ts: {window: 10}         # sliding-window Thompson (Beta-Bernoulli on the normalised reward, Bernoulli-trial trick): last `window` windows
+sensitivity:                # one small table, primary lag and lambda
+  gamma: [0.8, 0.9, 0.95]
+  window: [5, 10, 20]
+policy_seed: 12345
