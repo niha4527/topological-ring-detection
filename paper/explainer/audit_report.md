@@ -1,24 +1,24 @@
 # Explainer audit
 
-Words: 25512 including the copied pack tables; 14323 excluding table rows, figure lines and source lines. Numbers checked (outside code, URLs, references; integers up to 20 skipped: 832): 3382. Matched exactly as a token in the pack or a result file/config: 3350; matched only after rounding a source value: 29. Found only in project documents: 3. Unmatched: 0.
+Words: 26698 including the copied pack tables; 15082 excluding table rows, figure lines and source lines. Numbers checked (outside code, URLs, references; integers up to 20 skipped: 853): 3493. Matched exactly as a token in the pack or a result file/config: 3459; matched only after rounding a source value: 31. Found only in project documents: 3. Unmatched: 0.
 
 ## Words per section
 
 - front: 72
-- 1. One-page summary: 644
-- 2. Problem statement: 519
+- 1. One-page summary: 663
+- 2. Problem statement: 530
 - 3. Existing solutions and their limits: 904
 - 4. Our solution: the concept, from scratch: 1746
-- 5. Data: 966
-- 6. Implementation, stage by stage: 2836
+- 5. Data: 1093
+- 6. Implementation, stage by stage: 3000
 - 7. Evaluation protocol: why it looks the way it does: 483
-- 8. Results: 11769
-- 9. Conclusions: 607
+- 8. Results: 12299
+- 9. Conclusions: 635
 - 10. How this differs from other solutions: 379
-- 11. Limitations, deviations from v3, and what was not : 1686
-- 12. The story of how we got here: a decision log: 815
-- 13. Reproducibility: 423
-- 14. Glossary and FAQ: 1663
+- 11. Limitations, deviations from v3, and what was not : 1810
+- 12. The story of how we got here: a decision log: 897
+- 13. Reproducibility: 436
+- 14. Glossary and FAQ: 1751
 
 ## Numbers found only in project documents (README, CLAUDE.md, architecture.md, prd.md, paper_content.md, the generator's defaults in src/ringtda/data/synthetic.py)
 
@@ -52,11 +52,13 @@ Words: 25512 including the copied pack tables; 14323 excluding table rows, figur
 - `400` in: ...caching | Exact betweenness is infeasible on 400k-node windows; sampling ...
 - `3.11` in: ...**Environment.** Conda environment  , Python 3.11 (Python 3.13 is unsuppor...
 - `3.13` in: ....** Conda environment  , Python 3.11 (Python 3.13 is unsupported: pyflagse...
+- `204` in: ...use   and at most 2 jobs.  **Tests.**   runs 204 tests (a few seconds). E...
 - `2023` in: ...s for Anti-Money Laundering Models.* NeurIPS 2023 (Datasets and Benchmarks...
 - `2020` in: ...ected flag complexes.* Algorithms 13(1), 19, 2020 (flagser).   3. Garivier...
 - `2011` in: ...Policies for Switching Bandit Problems.* ALT 2011 (discounted and sliding-...
 - `2021` in: ...c Multilayer Blockchain Networks.* ECML PKDD 2021.   5. Bubenik. *Statisti...
 - `2015` in: ...ysis using Persistence Landscapes.* JMLR 16, 2015.    Claims left as **[ci...
+- `6.11` in: ...hms (3.4), sliding-window Thompson sampling (6.11). ...
 
 ## Unmatched numbers
 

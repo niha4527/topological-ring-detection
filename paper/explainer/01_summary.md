@@ -11,7 +11,7 @@
 2. Find candidate rings exactly: keep the most suspicious edges, take strongly connected components, enumerate directed simple cycles up to length 6; each cycle is an explicit set of accounts.
 3. For each candidate, compute persistent homology of a *directed flag complex* of the ring's neighbourhood (a circular triangle stays "open", a one-way triangle is "filled"), turn the result into fixed-length topological features (T), and put them next to graph baseline features (B) and direction/behaviour features (D, which include the ring's birth value).
 4. Train classical classifiers (logistic regression, random forest, RBF-SVM; fixed hyperparameters) with grouped cross-validation so that overlapping rings never sit in both train and test, and compare **B+D+T against B+D** with grouped-bootstrap confidence intervals.
-5. Around that, test an adaptive flagging threshold (online gradient ascent and two bandit policies) under simulated drift, and run exploratory clustering, a synthetic-only severity regression and a cap sensitivity study.
+5. Around that, test an adaptive flagging threshold (online gradient ascent and two bandit policies) under simulated drift, and run exploratory clustering, a synthetic-only severity regression, a cap sensitivity study and a small synthetic pump-and-dump track that contains no topology.
 
 **Six headline findings (positive and negative).**
 1. *Adding D to B helps on real-structure data.* On IBM HI-Small the paired gain of B+D over B has a CI excluding 0 for all three models; on LI-Small for two of three (section 8.3, 8.4).
@@ -21,6 +21,6 @@
 5. *The adaptive-threshold bandits lose to periodic re-tuning* at the primary setting (lambda 1, lag 2), while the existing online gradient ascent reaches 0.981 of the hindsight oracle (section 8.9).
 6. *Severity regression (synthetic only; the generator decides that rings persist) recovers generator structure, not forecasting skill:* ring size (`D_length`) alone matches or beats B+D for random forest and gradient boosting (rf importance of `D_length` 0.796), and T adds nothing (section 8.10). It is a descriptive finding, not a supported claim.
 
-**What was not done.** The NFT real-data experiment (Phase 5; Dune's free tier blocks running queries), the pump-and-dump motif track, the undirected-complex and persistence-image ablations, classifiers on single-score filtrations, and sweeps over window length, stride, label threshold and (for classification) tau (section 11.4).
+**What was not done.** The NFT real-data experiment (Phase 5; Dune's free tier blocks running queries), real-data pump-and-dump validation (the optional pump-and-dump track exists only as a synthetic, no-topology run), the undirected-complex and persistence-image ablations, classifiers on single-score filtrations, and sweeps over window length, stride, label threshold and (for classification) tau (section 11.4).
 
 **How to read this document.** Sections 2-4 explain the problem and the idea from scratch. Sections 5-7 explain the data, the implementation and the evaluation protocol. Section 8 gives each result with its setup, a table and a one-line honest conclusion. Sections 9-12 draw conclusions, compare with other work, list limitations and tell the story of the decisions. Sections 13-14 give reproduction commands, a glossary and a question-and-answer list for an examiner.

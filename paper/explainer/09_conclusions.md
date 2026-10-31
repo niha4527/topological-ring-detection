@@ -28,6 +28,7 @@ The goals G1 to G6 are those of `prd.md`. One line each, no spin.
 * A working, tested pipeline (windows, weights, exact candidate rings, directed flag persistence with two agreeing backends, an exact ring-survival test, B/D/T features, leakage guards, group-aware evaluation).
 * A documented, pre-specified comparison with a mostly null answer on IBM and the reasons the evidence is thin.
 * A set of exploratory and negative results (bandits, severity, clustering, cap sensitivity), each labelled.
+* A minor synthetic, no-topology pump-and-dump track showing that the harness runs on a second pattern type (section 8.14); it supports nothing about real pump-and-dump or about topology.
 
 It cannot claim: that topology improves real-world wash-trading detection, that the bandits improve on re-tuning, that rings are typed by their topology, or anything about NFT data.
 

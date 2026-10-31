@@ -5,7 +5,7 @@ Every number below was read by `experiments/make_numbers_pack.py` from the resul
 
 ## 1. Setup
 
-- Tests collected (`pytest --collect-only -q`): 204.
+- Tests collected (`pytest --collect-only -q`): 210.
 
 | dataset | transactions (self-loops dropped) | windows | window length / stride | tau_quantile | max_len | windows with candidates | candidates | negatives | positives (primary) | ambiguous | groups | positive groups |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -1412,9 +1412,59 @@ Each row of a paired-difference file is one comparison (model x variant x scope 
 | cap sensitivity synthetic | `results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv` | 42 | 0 | 0 | 42 |
 | severity (3 metrics) | `results/phase4_severity/paired_differences.csv` | 27 | 9 | 9 | 9 |
 | severity diagnostic (3 metrics) | `results/phase4_severity/diagnostic/paired_differences.csv` | 36 | 0 | 0 | 36 |
+| pump-and-dump (synthetic, no topology) | `results/phase7_pump_dump/paired_differences.csv` | 6 | 0 | 0 | 6 |
 | bandit vs comparators | `results/phase6_bandit/bandit_vs_comparators.csv` | 72 | 2 | 0 | 70 |
 
-Total paired rows over the project: 489; pre-specified primary: 55; pre-specified secondary: 47; exploratory or sensitivity: 387. **The pre-specified primary rows are not independent tests**: they include every variant (e.g. ambiguous-positive, strict-groups), the same candidates and resamples recur across models and variants, and the count is of rows. The headline test per dataset is `B+D+T minus B+D` on the primary variant, one row per model.
+Total paired rows over the project: 495; pre-specified primary: 55; pre-specified secondary: 47; exploratory or sensitivity: 393. **The pre-specified primary rows are not independent tests**: they include every variant (e.g. ambiguous-positive, strict-groups), the same candidates and resamples recur across models and variants, and the count is of rows. The headline test per dataset is `B+D+T minus B+D` on the primary variant, one row per model.
+
+
+## 6F. Phase 7 (optional): synthetic pump-and-dump track (SYNTHETIC ONLY, NO TOPOLOGY)
+
+**Synthetic only, no topology. The generator author decides how separable the classes are**; nothing here says real pump-and-dump schemes look like this. One asset with a noisy hourly price and account-level trades. Planted groups per seed: 8 pump-and-dump (positives: members accumulate in a 12 h band, then all sell around a common exit while the price runs up and falls back), 8 organic momentum groups (independent sell times over days) and 5 news-spike groups (unsynchronised sellers; hard negative), each of 5-8 accounts, placed in separate time slots of 40 h so their bands never overlap (slot and group size are code defaults of `PumpDumpConfig`, not stored in the run config); 300 accounts, 1344 h, 6 seeds; background trades are small and independent. Candidates are coordinated-accumulation windows found from trades only: a 12 h band (stride 6 h) in which at least 4 accounts each buy at least 300 (Jaccard 0.8 de-duplication). Labels: a candidate takes a planted group's kind if at least 0.8 of its accounts belong to it; y = 1 for pump-and-dump; groups = planted group (union-find over shared accounts, seed-prefixed). **M features (8):** `M_acc_conc`, `M_exit_spread_h`, `M_exit_frac_24h`, `M_exit_median_h`, `M_pos_cv`, `M_runup`, `M_drawdown`, `M_size`. **B_pd (3):** `B_pd_size`, `B_pd_vol_mean`, `B_pd_vol_max` (group size and per-account volume; no timing or price). They read only the trade table and the price series, never labels or planted ids (tested). The features use sells and prices after the accumulation band: this is **retrospective detection of a completed episode, not early warning**. The generator background amounts and thresholds were calibrated on candidate counts only, before any model run. Classifiers, folds and bootstrap are those of `configs/classify.yaml`; config and seeds stored in `results/phase7_pump_dump/config_used.yaml`; runtime 20 s.
+
+| condition | candidates | organic | pump_dump | news | ambiguous |
+|---|---|---|---|---|---|
+| default | 214 | 86 | 82 | 42 | 4 |
+| harder_exit | 214 | 86 | 82 | 42 | 4 |
+
+**Condition `default`** (exit-time spread sd 1.0 h): 210 candidates, 82 positives, prevalence 0.390, 47 positive groups. PR-AUC [95% grouped-bootstrap CI] (mean +- std of the per-seed PR-AUC):
+
+| feature set | logreg | rf | svm |
+|---|---|---|---|
+| M | 0.890 [0.803, 0.954] (0.902 +- 0.045) | 0.976 [0.957, 0.990] (0.980 +- 0.021) | 0.928 [0.866, 0.974] (0.945 +- 0.048) |
+| B_pd | 0.388 [0.290, 0.511] (0.424 +- 0.085) | 0.375 [0.279, 0.495] (0.414 +- 0.074) | 0.414 [0.308, 0.532] (0.440 +- 0.089) |
+
+`-M_exit_spread_h` alone (single feature, no model): 0.906 [0.860, 0.945].
+
+Paired M minus B_pd (same resamples):
+
+| comparison | logreg | rf | svm |
+|---|---|---|---|
+| M minus B_pd | +0.502 [+0.380, +0.601] | +0.602 [+0.486, +0.695] | +0.514 [+0.400, +0.618] |
+
+**Condition `harder_exit`** (exit-time spread sd 18.0 h): 210 candidates, 82 positives, prevalence 0.390, 47 positive groups. PR-AUC [95% grouped-bootstrap CI] (mean +- std of the per-seed PR-AUC):
+
+| feature set | logreg | rf | svm |
+|---|---|---|---|
+| M | 0.770 [0.651, 0.892] (0.794 +- 0.091) | 0.921 [0.857, 0.965] (0.932 +- 0.055) | 0.827 [0.723, 0.924] (0.868 +- 0.094) |
+| B_pd | 0.388 [0.290, 0.511] (0.424 +- 0.085) | 0.375 [0.279, 0.495] (0.414 +- 0.074) | 0.414 [0.308, 0.532] (0.440 +- 0.089) |
+
+`-M_exit_spread_h` alone (single feature, no model): 0.643 [0.513, 0.752].
+
+Paired M minus B_pd (same resamples):
+
+| comparison | logreg | rf | svm |
+|---|---|---|---|
+| M minus B_pd | +0.382 [+0.260, +0.497] | +0.547 [+0.437, +0.634] | +0.413 [+0.299, +0.533] |
+
+**Harder exits (descriptive).** The only difference between the conditions is the spread of the planted exit times; candidates, labels and groups are identical, so B_pd does not change. Change in point estimates of PR-AUC from `default` to `harder_exit` (difference of two separate runs, **no CI**):
+
+| feature set | logreg | rf | svm |
+|---|---|---|---|
+| M | -0.121 | -0.055 | -0.102 |
+| B_pd | +0.000 | +0.000 | +0.000 |
+
+*Source:* `results/phase7_pump_dump/results.csv`, `results/phase7_pump_dump/paired_differences.csv`, `results/phase7_pump_dump/candidate_kinds.csv`, `results/phase7_pump_dump/config_used.yaml`
 
 
 ## 7. Limitations and caveats
@@ -1438,6 +1488,7 @@ Total paired rows over the project: 489; pre-specified primary: 55; pre-specifie
 17. Bandit benchmark: at lambda 1, d 2 the bandits lose to the re-tuned comparator (discounted UCB -1.245 share of oracle, 0 of 6 seeds better; sliding-window Thompson -0.771, 2 of 6); exploring the flag-everything arm is very costly and its size is hidden by the reward clipping.
 18. Clustering (exploratory): HI, k = 4, D + T_local landscape: ARI against type 0.097 (random 0.000), ARI against group id 0.398, purity 0.489 against random 0.365 and majority 0.336; 4 to 12 groups per type; the grouped-bootstrap percentile CIs are biased (resampled duplicate rings) and several exclude their own point estimate, so they are not used as CIs.
 19. Cap sensitivity: on HI, `ring_local_max` changes the svm B+D+T PR-AUC by +0.190 (post hoc, one model, uncorrected for multiplicity).
+20. Pump-and-dump track (synthetic only, no topology; exploratory): a single feature, `-M_exit_spread_h`, scores 0.906 in the default condition (0.643 with wider exits), so the generator is near-separable by timing; B_pd is weak by construction (all groups are drawn from the same size and volume distributions: logistic regression 0.388 at prevalence 0.390); the features use post-accumulation sells and prices, so detection is retrospective, not early warning; no chance-coincidence candidates arose (every non-planted candidate is a planted organic or news group; ambiguous excluded); the generator was calibrated on candidate counts before any model run; only 47 positive groups.
 
 
 ## 8. Claims the data supports / does not support
@@ -1450,6 +1501,11 @@ Total paired rows over the project: 489; pre-specified primary: 55; pre-specifie
 - Exploratory: the local topology columns alone (B+D+T_local) add to B+D on HI for logreg only (CI excludes 0 in 1 of 3 models: logreg +0.141, rf +0.041, svm +0.037); this is one of the exploratory comparisons and is not corrected for multiplicity.
 - Candidate recall is partial and tau-dependent (section 6): HI days 0-5, tau 0.05, max_len 6 recovers 8 of 11 reachable complete CYCLE attempts (15 complete); synthetic recall is 1.00 with hard negatives off at every tau tested.
 - T_local / T_win cap choice among window_max, fixed 1.0 and 1.1 x window max barely changes HI B+D+T PR-AUC: largest absolute paired difference to window_max 0.024 (all models, both sets); `ring_local_max` is a post hoc variant (svm cell single-model, uncorrected).
+
+**Supported (synthetic, exploratory, no topology):**
+
+- Timing features separate the planted pump-and-dump groups from the group-size/volume baseline in the synthetic generator: paired M minus B_pd has a CI above 0 in 6 of 6 condition-model cells (default: logreg +0.502 [+0.380, +0.601], rf +0.602 [+0.486, +0.695], svm +0.514 [+0.400, +0.618]; 47 positive groups, prevalence 0.390); the generator author decides separability.
+- The classification harness (grouped CV, grouped bootstrap, paired differences) runs unchanged on a second pattern type that has no topology.
 
 **No detectable effect (the data neither show nor exclude a small effect):**
 
@@ -1469,6 +1525,8 @@ Total paired rows over the project: 489; pre-specified primary: 55; pre-specifie
 - That the `T_win` contribution on HI is topological: `T_win` columns are constant within a window; alone they score 0.121 (logreg) on HI at prevalence 0.0173 and 0.006 on LI at prevalence 0.0039; a time proxy is consistent with this but was not tested directly.
 - That the bandits beat periodic re-tuning at the same lag: at lambda 1, d 2 the paired share-of-oracle difference is -1.245 (discounted UCB) and -0.771 (sliding-window Thompson); the only positive cell is discounted UCB at d = 5 (+0.258); the online gradient ascent comparator is at 0.981 of oracle.
 - That Ward clustering of positive rings recovers pattern types (exploratory): on HI, k = 4, ARI against type is 0.097 (D + T_local landscape; random 0.000) against 0.398 against group id: the clusters track attempts more than types. Purity 0.489 vs random 0.365 and majority 0.336. The bootstrap percentile CIs are biased and several exclude their own point estimate, so they are not used as CIs. LI (T_local landscape, k = 3, 9 groups): ARI 0.260, purity 0.730 vs random 0.536; with 9 groups and 3 to 5 groups per type this is a small-sample point estimate, not evidence of type recovery.
+- That the pump-and-dump features detect real pump-and-dump: the data are synthetic and the generator decides separability (one feature, `-M_exit_spread_h`, alone reaches 0.906).
+- That anything about topology follows from the pump-and-dump track: it contains no topological feature.
 
 
 ## 9. Deviations from the v3 proposal
@@ -1485,8 +1543,9 @@ Total paired rows over the project: 489; pre-specified primary: 55; pre-specifie
 10. Recall of complete cycle attempts uses the account-set definition (README measurement); the label-based count is reported next to it.
 11. Phase 4 clustering and severity regression, and Phase 6 (bandit policies and drift benchmark), were run as exploratory studies (sections 6A-6D); severity is synthetic only (IBM has no next-window wash volume) and the bandit benchmark uses the optimization report's synthetic drift stream.
 12. Phase 5 (NFT loader, proxy labels, label-provenance audit) is NOT done. Blocker: running queries on Dune is blocked on the free tier. BigQuery access was confirmed and the schemas were inspected: `nft.wash_trades` combines five filters, of which filters 2 and 3 are cycle-type rules, so the planned leakage-controlled subset would be filters 4 and 5 only.
-13. Not done: pump-and-dump temporal-motif track, undirected clique-complex ablation, persistence-image ablation, per-score classifier filtrations (classifiers on single-score filtrations), and the sensitivity sweeps over window length, stride, `max_len`-in-classification, tau (classification beyond IBM tau 0.05) and label threshold X.
-14. Learned-weight (Problem B), classifier (Problem A) and threshold (Problem C) results in section 2 come from the pinned report generator, not from IBM AML.
+13. Pump-and-dump (v3 section 3.6, optional) was done as a synthetic-only, no-topology track with its own generator (section 6F); no real-data result exists.
+14. Not done: undirected clique-complex ablation, persistence-image ablation, per-score classifier filtrations (classifiers on single-score filtrations), and the sensitivity sweeps over window length, stride, `max_len`-in-classification, tau (classification beyond IBM tau 0.05) and label threshold X.
+15. Learned-weight (Problem B), classifier (Problem A) and threshold (Problem C) results in section 2 come from the pinned report generator, not from IBM AML.
 
 
 ## Expected files that were missing

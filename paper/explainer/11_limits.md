@@ -31,7 +31,7 @@ Two more limits belong in every discussion of the results.
 | Item | Why |
 |---|---|
 | **Phase 5: NFT experiment** | Running queries on Dune is blocked on the free tier. BigQuery access was confirmed and the schemas inspected. `nft.wash_trades` combines five filters; filters 2 and 3 are cycle-type rules, so the leakage-controlled subset would be filters 4 and 5 only. |
-| Pump-and-dump temporal-motif track | Optional stretch in v3; cut for time. |
+| Pump-and-dump on real data | Only a synthetic, no-topology track exists (section 8.14); no real pump-and-dump data were used. |
 | Undirected clique-complex ablation | Not run; the directed-versus-undirected difference is therefore argued, not measured. |
 | Persistence-image / vectorization ablations | Not run; only landscapes and scalar summaries exist. |
 | Classifiers on per-score filtrations | Not run. |

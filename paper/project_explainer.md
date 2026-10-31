@@ -11,7 +11,7 @@
 2. Find candidate rings exactly: keep the most suspicious edges, take strongly connected components, enumerate directed simple cycles up to length 6; each cycle is an explicit set of accounts.
 3. For each candidate, compute persistent homology of a *directed flag complex* of the ring's neighbourhood (a circular triangle stays "open", a one-way triangle is "filled"), turn the result into fixed-length topological features (T), and put them next to graph baseline features (B) and direction/behaviour features (D, which include the ring's birth value).
 4. Train classical classifiers (logistic regression, random forest, RBF-SVM; fixed hyperparameters) with grouped cross-validation so that overlapping rings never sit in both train and test, and compare **B+D+T against B+D** with grouped-bootstrap confidence intervals.
-5. Around that, test an adaptive flagging threshold (online gradient ascent and two bandit policies) under simulated drift, and run exploratory clustering, a synthetic-only severity regression and a cap sensitivity study.
+5. Around that, test an adaptive flagging threshold (online gradient ascent and two bandit policies) under simulated drift, and run exploratory clustering, a synthetic-only severity regression, a cap sensitivity study and a small synthetic pump-and-dump track that contains no topology.
 
 **Six headline findings (positive and negative).**
 1. *Adding D to B helps on real-structure data.* On IBM HI-Small the paired gain of B+D over B has a CI excluding 0 for all three models; on LI-Small for two of three (section 8.3, 8.4).
@@ -21,7 +21,7 @@
 5. *The adaptive-threshold bandits lose to periodic re-tuning* at the primary setting (lambda 1, lag 2), while the existing online gradient ascent reaches 0.981 of the hindsight oracle (section 8.9).
 6. *Severity regression (synthetic only; the generator decides that rings persist) recovers generator structure, not forecasting skill:* ring size (`D_length`) alone matches or beats B+D for random forest and gradient boosting (rf importance of `D_length` 0.796), and T adds nothing (section 8.10). It is a descriptive finding, not a supported claim.
 
-**What was not done.** The NFT real-data experiment (Phase 5; Dune's free tier blocks running queries), the pump-and-dump motif track, the undirected-complex and persistence-image ablations, classifiers on single-score filtrations, and sweeps over window length, stride, label threshold and (for classification) tau (section 11.4).
+**What was not done.** The NFT real-data experiment (Phase 5; Dune's free tier blocks running queries), real-data pump-and-dump validation (the optional pump-and-dump track exists only as a synthetic, no-topology run), the undirected-complex and persistence-image ablations, classifiers on single-score filtrations, and sweeps over window length, stride, label threshold and (for classification) tau (section 11.4).
 
 **How to read this document.** Sections 2-4 explain the problem and the idea from scratch. Sections 5-7 explain the data, the implementation and the evaluation protocol. Section 8 gives each result with its setup, a table and a one-line honest conclusion. Sections 9-12 draw conclusions, compare with other work, list limitations and tell the story of the decisions. Sections 13-14 give reproduction commands, a glossary and a question-and-answer list for an examiner.
 
@@ -51,7 +51,7 @@ The v3 proposal also notes prior persistent-homology work on blockchain networks
 | Pattern | Status in this project |
 |---|---|
 | Closed-cycle wash trading and laundering cycles | **In scope**, the load-bearing target |
-| Pump-and-dump coordination (a temporal motif, not a closed cycle) | Optional stretch track; **not done** |
+| Pump-and-dump coordination (a temporal motif, not a closed cycle) | Optional stretch track; done only as a **synthetic, no-topology** exploratory run (section 8.14); no real-data result |
 | Spoofing | **Out of scope**: it is an order-book phenomenon (orders placed and cancelled without executing); settled transaction data has no signal for it |
 
 ### 2.5 What "detect" means here
@@ -60,7 +60,7 @@ We do not try to label whole accounts. We (a) generate *candidate rings* exactly
 
 ## 3. Existing solutions and their limits
 
-This section describes method *families* in general terms. Where a specific paper is named, it was checked (URLs in the reference list at the end of section 14); where a claim about a family rests on common knowledge that we did not verify against a specific source, it is marked [citation needed]. We did not run any of these methods ourselves (section 10.2).
+This section describes method *families* in general terms. Where a specific paper is named, it was checked (URLs in the reference list at the end of section 14); where a claim about a family rests on common knowledge that we did not verify against a specific source, it is marked [citation needed]. We did not run any of these methods ourselves (section 10.3).
 
 ### 3.1 Density and community methods
 
@@ -250,6 +250,10 @@ Hard negatives can be switched off (`hard_negatives=False`) to give the "without
 
 **Plan.** Ethereum NFT trades from Dune or Google BigQuery, with proxy wash-trade labels from Dune's `nft.wash_trades`, and a label-provenance audit. **What was done.** BigQuery access was confirmed and the table schemas were inspected. **Why it was not run.** Running queries on Dune is blocked on the free tier. **Leakage design.** `nft.wash_trades` combines five filters; filters 2 and 3 are cycle-type rules, so labels from them would leak the very structure our method detects. The planned leakage-controlled subset was therefore filters 4 and 5 only. No NFT result exists, so **we make no claim beyond synthetic and IBM data**.
 
+### 5.4 The synthetic pump-and-dump generator (optional track; no topology)
+
+A separate generator (`data/pump_dump.py`; `synthetic.py` is untouched) makes one asset with a noisy hourly price and account-level buys and sells. Planted groups of 5 to 8 accounts: **pump-and-dump** groups accumulate in a 12-hour band, then all sell around a common exit time while the price runs up and falls back (the positives); **organic** momentum groups accumulate the same way but sell at independent times over days; **news** groups accumulate, then a price spike and unsynchronised sellers follow (a hard negative). Groups sit in separate time slots; background traders are independent with small trades. Hardness is set by the spread of the planted exit times. As with the ring generator, **the author decides how separable the classes are**.
+
 ## 6. Implementation, stage by stage
 
 ### 6.1 Repository map and data flow
@@ -394,6 +398,10 @@ The cap only enters when diagrams are vectorised, so each window's and each ring
 
 Recall asks how many true rings the *candidate generator* returns, separately from classification. IBM: a CYCLE attempt is **complete** in a window if all its transactions fall inside it and **recovered** if a candidate has exactly the attempt's account set (the README measurement); the label-based count (the candidate also carries a positive label) is reported next to it. Synthetic: a planted wash ring is recovered if some candidate is labelled as that ring. Recall needs no features.
 
+### 6.16 Pump-and-dump track (`motif/pump_dump.py`, `experiments/pump_dump_run.py`; synthetic only, no topology)
+
+**Candidates** are *accumulation windows* found from trades alone: a 12-hour band in which at least 4 accounts each buy at least a set volume. **M features** (8): accumulation concentration (share of buy volume in the busiest quarter of the band), **exit synchrony** (spread of the members' first-sell times after the band), share selling within 24 hours, median exit delay, position-size dispersion, price run-up, drawdown, and group size. **B_pd** (3): group size and per-account volume, with no timing or price. Features read only the trade table and the price series (a test scrambles labels and ids and checks nothing changes); they use sells and prices *after* the band, so this is retrospective detection, not early warning. The run reuses the classification harness unchanged (same fixed hyperparameters, grouped stratified CV, grouped bootstrap, paired differences). The generator thresholds were calibrated on candidate counts before any model run, and the configuration was fixed in `configs/pump_dump.yaml` before the run.
+
 
 ## 7. Evaluation protocol: why it looks the way it does
 
@@ -409,7 +417,7 @@ Recall asks how many true rings the *candidate generator* returns, separately fr
 
 **Pre-specified primary versus exploratory.** *Pre-specified primary:* `B+D+T minus B+D`, one row per model, dataset and variant (the v3 proposal's design); *pre-specified secondary:* `B+D minus B`. Everything else, notably the T_local and T_win ablations (added after the first HI run), per-scenario rows, cap-sensitivity rows, diagnostics and the post hoc `ring_local_max` finding, is **exploratory or sensitivity**.
 
-**Multiplicity note.** Across the project there are 489 paired-difference rows; 55 are pre-specified primary, 47 pre-specified secondary and 387 exploratory or sensitivity. No multiplicity correction is applied anywhere, the rows within a file are not independent, and the primary count includes every variant (e.g. ambiguous-positive, strict-groups), so it counts rows, not independent tests; the headline test per dataset is the primary variant. The full table is in the pack, section 6E, reproduced in section 8.12.
+**Multiplicity note.** Across the project there are 495 paired-difference rows; 55 are pre-specified primary, 47 pre-specified secondary and 393 exploratory or sensitivity. No multiplicity correction is applied anywhere, the rows within a file are not independent, and the primary count includes every variant (e.g. ambiguous-positive, strict-groups), so it counts rows, not independent tests; the headline test per dataset is the primary variant. The full table is in the pack, section 6E, reproduced in section 8.12.
 
 **Statistical reporting rule.** Synthetic results also carry mean +- std of per-seed PR-AUC over 6 seeds (the v3 requirement of at least 5 seeds); real-data results use bootstrap CIs.
 
@@ -1343,10 +1351,68 @@ Paired B+D+T minus B+D (RMSE and MAE: negative = B+D+T better):
 | cap sensitivity synthetic | `results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv` | 42 | 0 | 0 | 42 |
 | severity (3 metrics) | `results/phase4_severity/paired_differences.csv` | 27 | 9 | 9 | 9 |
 | severity diagnostic (3 metrics) | `results/phase4_severity/diagnostic/paired_differences.csv` | 36 | 0 | 0 | 36 |
+| pump-and-dump (synthetic, no topology) | `results/phase7_pump_dump/paired_differences.csv` | 6 | 0 | 0 | 6 |
 | bandit vs comparators | `results/phase6_bandit/bandit_vs_comparators.csv` | 72 | 2 | 0 | 70 |
 
 *Source: `paper/numbers_pack.md` section 6E.*
 
+
+### 8.14 Synthetic pump-and-dump track (minor, exploratory, no topology)
+
+*Question.* Does the harness work on a second pattern type, and do timing features separate planted pump-and-dump groups from a group-size baseline? *Setup.* 6 seeds, 8 pump / 8 organic / 5 news groups per seed, candidates and features as in section 6.16, fixed hyperparameters, grouped CV and bootstrap. **Synthetic only; no topology; the generator author decides separability.** Candidates (ambiguous excluded from the primary variant):
+
+| condition | candidates | organic | pump_dump | news | ambiguous |
+|---|---|---|---|---|---|
+| default | 214 | 86 | 82 | 42 | 4 |
+| harder_exit | 214 | 86 | 82 | 42 | 4 |
+
+*Source: `paper/numbers_pack.md` section 6F.*
+
+
+Default condition (prevalence 0.390, 47 positive groups):
+
+| feature set | logreg | rf | svm |
+|---|---|---|---|
+| M | 0.890 [0.803, 0.954] (0.902 +- 0.045) | 0.976 [0.957, 0.990] (0.980 +- 0.021) | 0.928 [0.866, 0.974] (0.945 +- 0.048) |
+| B_pd | 0.388 [0.290, 0.511] (0.424 +- 0.085) | 0.375 [0.279, 0.495] (0.414 +- 0.074) | 0.414 [0.308, 0.532] (0.440 +- 0.089) |
+
+*Source: `paper/numbers_pack.md` section 6F.*
+
+| comparison | logreg | rf | svm |
+|---|---|---|---|
+| M minus B_pd | +0.502 [+0.380, +0.601] | +0.602 [+0.486, +0.695] | +0.514 [+0.400, +0.618] |
+
+*Source: `paper/numbers_pack.md` section 6F.*
+
+
+Harder exits (a wider spread of the planted exit times; the candidates and groups are identical):
+
+| feature set | logreg | rf | svm |
+|---|---|---|---|
+| M | 0.770 [0.651, 0.892] (0.794 +- 0.091) | 0.921 [0.857, 0.965] (0.932 +- 0.055) | 0.827 [0.723, 0.924] (0.868 +- 0.094) |
+| B_pd | 0.388 [0.290, 0.511] (0.424 +- 0.085) | 0.375 [0.279, 0.495] (0.414 +- 0.074) | 0.414 [0.308, 0.532] (0.440 +- 0.089) |
+
+*Source: `paper/numbers_pack.md` section 6F.*
+
+| comparison | logreg | rf | svm |
+|---|---|---|---|
+| M minus B_pd | +0.382 [+0.260, +0.497] | +0.547 [+0.437, +0.634] | +0.413 [+0.299, +0.533] |
+
+*Source: `paper/numbers_pack.md` section 6F.*
+
+| feature set | logreg | rf | svm |
+|---|---|---|---|
+| M | -0.121 | -0.055 | -0.102 |
+| B_pd | +0.000 | +0.000 | +0.000 |
+
+*Source: `paper/numbers_pack.md` section 6F.*
+
+
+![Figure 8.11. Synthetic pump-and-dump (no topology): PR-AUC of M and B_pd features by model in the default and harder-exit conditions; prevalence 0.390 (dashed line), 47 positive groups. Error bars: 95% grouped-bootstrap CI.](numbers_pack/figures/pump_dump_pr_auc.png)
+
+*How to read it.* M beats B_pd for all three models in both conditions (paired differences with CIs above 0), and widening the exit spread lowers M's PR-AUC (the last table is a difference of two separate point estimates, with no CI). **One feature, `-M_exit_spread_h` alone, reaches 0.906 [0.860, 0.945] in the default condition and 0.643 [0.513, 0.752] with wider exits**: the generator is nearly separable by exit timing. B_pd is weak by construction, because every group is drawn from the same size and volume distributions, so the gain is large by design.
+
+*Conclusion.* The harness runs unchanged on a second pattern type and timing features separate the planted groups; this says nothing about real pump-and-dump data or about topology.
 
 ### 8.13 Where the planned figures and tables went
 
@@ -1402,6 +1468,7 @@ The goals G1 to G6 are those of `prd.md`. One line each, no spin.
 * A working, tested pipeline (windows, weights, exact candidate rings, directed flag persistence with two agreeing backends, an exact ring-survival test, B/D/T features, leakage guards, group-aware evaluation).
 * A documented, pre-specified comparison with a mostly null answer on IBM and the reasons the evidence is thin.
 * A set of exploratory and negative results (bandits, severity, clustering, cap sensitivity), each labelled.
+* A minor synthetic, no-topology pump-and-dump track showing that the harness runs on a second pattern type (section 8.14); it supports nothing about real pump-and-dump or about topology.
 
 It cannot claim: that topology improves real-world wash-trading detection, that the bandits improve on re-tuning, that rings are typed by their topology, or anything about NFT data.
 
@@ -1456,6 +1523,7 @@ It cannot claim: that topology improves real-world wash-trading detection, that 
 17. Bandit benchmark: at lambda 1, d 2 the bandits lose to the re-tuned comparator (discounted UCB -1.245 share of oracle, 0 of 6 seeds better; sliding-window Thompson -0.771, 2 of 6); exploring the flag-everything arm is very costly and its size is hidden by the reward clipping.
 18. Clustering (exploratory): HI, k = 4, D + T_local landscape: ARI against type 0.097 (random 0.000), ARI against group id 0.398, purity 0.489 against random 0.365 and majority 0.336; 4 to 12 groups per type; the grouped-bootstrap percentile CIs are biased (resampled duplicate rings) and several exclude their own point estimate, so they are not used as CIs.
 19. Cap sensitivity: on HI, `ring_local_max` changes the svm B+D+T PR-AUC by +0.190 (post hoc, one model, uncorrected for multiplicity).
+20. Pump-and-dump track (synthetic only, no topology; exploratory): a single feature, `-M_exit_spread_h`, scores 0.906 in the default condition (0.643 with wider exits), so the generator is near-separable by timing; B_pd is weak by construction (all groups are drawn from the same size and volume distributions: logistic regression 0.388 at prevalence 0.390); the features use post-accumulation sells and prices, so detection is retrospective, not early warning; no chance-coincidence candidates arose (every non-planted candidate is a planted organic or news group; ambiguous excluded); the generator was calibrated on candidate counts before any model run; only 47 positive groups.
 
 *Source: `paper/numbers_pack.md` section 7.*
 
@@ -1479,8 +1547,9 @@ Two more limits belong in every discussion of the results.
 10. Recall of complete cycle attempts uses the account-set definition (README measurement); the label-based count is reported next to it.
 11. Phase 4 clustering and severity regression, and Phase 6 (bandit policies and drift benchmark), were run as exploratory studies (sections 6A-6D); severity is synthetic only (IBM has no next-window wash volume) and the bandit benchmark uses the optimization report's synthetic drift stream.
 12. Phase 5 (NFT loader, proxy labels, label-provenance audit) is NOT done. Blocker: running queries on Dune is blocked on the free tier. BigQuery access was confirmed and the schemas were inspected: `nft.wash_trades` combines five filters, of which filters 2 and 3 are cycle-type rules, so the planned leakage-controlled subset would be filters 4 and 5 only.
-13. Not done: pump-and-dump temporal-motif track, undirected clique-complex ablation, persistence-image ablation, per-score classifier filtrations (classifiers on single-score filtrations), and the sensitivity sweeps over window length, stride, `max_len`-in-classification, tau (classification beyond IBM tau 0.05) and label threshold X.
-14. Learned-weight (Problem B), classifier (Problem A) and threshold (Problem C) results in section 2 come from the pinned report generator, not from IBM AML.
+13. Pump-and-dump (v3 section 3.6, optional) was done as a synthetic-only, no-topology track with its own generator (section 6F); no real-data result exists.
+14. Not done: undirected clique-complex ablation, persistence-image ablation, per-score classifier filtrations (classifiers on single-score filtrations), and the sensitivity sweeps over window length, stride, `max_len`-in-classification, tau (classification beyond IBM tau 0.05) and label threshold X.
+15. Learned-weight (Problem B), classifier (Problem A) and threshold (Problem C) results in section 2 come from the pinned report generator, not from IBM AML.
 
 *Source: `paper/numbers_pack.md` section 9.*
 
@@ -1502,7 +1571,7 @@ Two more limits belong in every discussion of the results.
 | Item | Why |
 |---|---|
 | **Phase 5: NFT experiment** | Running queries on Dune is blocked on the free tier. BigQuery access was confirmed and the schemas inspected. `nft.wash_trades` combines five filters; filters 2 and 3 are cycle-type rules, so the leakage-controlled subset would be filters 4 and 5 only. |
-| Pump-and-dump temporal-motif track | Optional stretch in v3; cut for time. |
+| Pump-and-dump on real data | Only a synthetic, no-topology track exists (section 8.14); no real pump-and-dump data were used. |
 | Undirected clique-complex ablation | Not run; the directed-versus-undirected difference is therefore argued, not measured. |
 | Persistence-image / vectorization ablations | Not run; only landscapes and scalar summaries exist. |
 | Classifiers on per-score filtrations | Not run. |
@@ -1534,6 +1603,7 @@ Git dates are from the repository history; almost all commits are dated 2026-10-
 | 15 | `a8fa571` | Severity diagnostic | B+D beat the persistence reference, which looked like skill. A fair persistence fit and structure-only predictors showed that ring size alone does as well: recovery of generator structure. |
 | 16 | `92e058c` | Comparison counts redefined | An earlier count of 115 "primary" rows counted per-scenario and cap rows; the definition was fixed (primary = B+D+T minus B+D) and recounted to 55 primary, 47 secondary and 387 exploratory or sensitivity rows. |
 | 17 | after the experiments | NFT experiment cut | Dune's free tier blocks running queries; schemas were inspected through BigQuery, and the planned leakage-controlled subset (filters 4 and 5) was never run. |
+| 18 | `11f5c53` | Optional pump-and-dump track (synthetic, no topology) | Dry runs on candidate counts (not model results) showed overlapping time slots and a heavy background tail, which were fixed in the generator and the config before any model run. Timing features separated the planted groups (a single exit-timing feature scores 0.906 in the default condition), so the track is a minor result; the pack's comparison count rose to 495 rows (393 exploratory or sensitivity, primary unchanged at 55). |
 
 **A pattern in the log.** Every entry where a number looked better than it should (the NaN bug, the persistence reference, the T_win proxy, gamma 0.95, `ring_local_max`) was resolved by checking for an artefact and not by adopting the better-looking number.
 
@@ -1562,6 +1632,7 @@ Git dates are from the repository history; almost all commits are dated 2026-10-
 | Severity and its diagnostic | `python experiments/synth_severity.py`, then `python experiments/severity_diagnostic.py` |
 | Cap sensitivity | `python experiments/cap_sensitivity.py --source synthetic` and `--source ibm` |
 | Figures from the CSVs | `experiments/ibm_classify_plot.py`, `synth_classify_plot.py`, `plot_lift_per_scenario.py`, `candidate_recall_plot.py`, `bandit_report_plot.py`, `ibm_cluster_plot.py` |
+| Pump-and-dump track (synthetic, no topology) | `python experiments/pump_dump_run.py`, then `python experiments/pump_dump_plot.py` |
 | Numbers pack, provenance, spot-check | `python experiments/make_numbers_pack.py --spot-check 10` |
 | This document and its audit | `python experiments/build_explainer.py` |
 
@@ -1576,6 +1647,7 @@ Git dates are from the repository history; almost all commits are dated 2026-10-
 
 ### 14.1 Glossary
 
+* **Accumulation window.** A time band in which at least m accounts each buy a large amount; the candidate unit of the pump-and-dump track.
 * **Ambiguous (candidate).** A candidate whose label cannot be decided by the 80% rule (split backing) or, on IBM, whose flagged edges rest only on laundering rows that belong to no attempt. Reported excluded and counted positive.
 * **ARI (adjusted Rand index).** Agreement between two partitions, 0 for random labelling, 1 for identical.
 * **Arm (bandit).** One selectable option; here a fixed flagging threshold.
@@ -1603,6 +1675,7 @@ Git dates are from the repository history; almost all commits are dated 2026-10-
 * **Edge weight.** One minus the mean of the three rank-normalised scores; low = suspicious.
 * **Enumeration cap.** The limit of 20000 cycles per strongly connected component.
 * **Filtration.** A nested family of graphs or complexes indexed by a rising threshold.
+* **Exit synchrony.** How tightly the members of a group sell at the same time (the spread of their first-sell times); the main feature of the pump-and-dump track.
 * **Fixed threshold.** A flagging cutoff tuned once and frozen.
 * **flagser.** The C++ engine (via pyflagser) computing persistent homology of directed flag complexes.
 * **Generator circularity.** The risk that a method looks good because it matches the data designer's assumptions.
@@ -1621,6 +1694,7 @@ Git dates are from the repository history; almost all commits are dated 2026-10-
 * **Oracle (hindsight).** The best threshold per window using that window's own labels; an upper bound.
 * **Out-of-fold score.** A prediction made by a model that did not see that candidate's group in training.
 * **Paired difference.** A difference between two feature sets computed on the same bootstrap resamples.
+* **Pump-and-dump.** A scheme in which a group accumulates an asset, pushes the price and sells together; a temporal coordination motif, not a closed cycle.
 * **Persistence diagram.** The set of (birth, death) bars of a filtration.
 * **Persistent homology.** Tracking holes along a filtration.
 * **Pooled out-of-fold PR-AUC.** Average precision of all out-of-fold scores taken together.
@@ -1671,7 +1745,7 @@ Git dates are from the repository history; almost all commits are dated 2026-10-
 15. **Did topology help anywhere?** Slightly on the synthetic generator (7 of 12 cells), which is nearly separable by D (section 8.6).
 16. **Is the severity result forecasting?** No: ring size alone does as well; synthetic, generator decides persistence (section 8.10).
 17. **Why did the bandits lose?** One exploratory play of the flag-everything arm costs about as much as the whole oracle total and is hidden by reward clipping; one stream, fixed hyperparameters (section 8.9).
-18. **What did you not do and why?** NFT (Dune free tier blocks running queries), pump-and-dump, undirected and persistence-image ablations, window and label-threshold sweeps (section 11.4).
+18. **What did you not do and why?** NFT (Dune free tier blocks running queries), real-data pump-and-dump (a synthetic, no-topology track was run), undirected and persistence-image ablations, window and label-threshold sweeps (section 11.4).
 19. **Where do you differ from published work, and where can you not claim to?** Direction and exact localisation are differences; no comparison with a GNN or the published clique method was run (section 10).
 20. **How do I reproduce it?** Section 13; every number is traceable through `paper/numbers_pack.md` and `paper/numbers_pack/provenance.csv`.
 
@@ -1685,4 +1759,4 @@ Verified by web search (URL given):
 4. Ofori-Boateng, Segovia Dominguez, Kantarcioglu, Akcora, Gel. *Topological Anomaly Detection in Dynamic Multilayer Blockchain Networks.* ECML PKDD 2021. https://arxiv.org/abs/2106.01806
 5. Bubenik. *Statistical Topological Data Analysis using Persistence Landscapes.* JMLR 16, 2015. https://www.jmlr.org/papers/v16/bubenik15a.html
 
-Claims left as **[citation needed]** in the text: community and density methods (3.1), centrality scores (3.2), the specific cycle-enumeration algorithms (3.4).
+Claims left as **[citation needed]** in the text: community and density methods (3.1), centrality scores (3.2), the specific cycle-enumeration algorithms (3.4), sliding-window Thompson sampling (6.11).

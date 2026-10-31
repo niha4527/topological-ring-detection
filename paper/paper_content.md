@@ -30,7 +30,7 @@ Wash trading hides in the shape of the transaction graph rather than in any sing
 6. **An evaluation protocol for this setting and a documented set of negative results.** Group-aware splits (the time-ordered split was unusable and dropped), a pre-specified primary comparison versus exploratory ones with a multiplicity count, candidate-recall reporting, and a label-ambiguity rule counted both ways.
 7. **Exploratory extras, not headline claims.** Ward clustering of positive IBM rings against pattern types (weak agreement, clusters track attempts more than types) and a synthetic-only severity regression (recovers generator structure, not forecasting skill).
 
-**Not done.** NFT transfer (Phase 5), pump-and-dump motif track, undirected-complex and persistence-image ablations, per-score classifier filtrations, and sweeps over window length, stride and label threshold.
+**Done as an optional extra.** A synthetic-only pump-and-dump temporal-motif track with no topology (§5.11; `paper/numbers_pack.md` section 6F). **Not done.** NFT transfer (Phase 5), real-data pump-and-dump validation, undirected-complex and persistence-image ablations, per-score classifier filtrations, and sweeps over window length, stride and label threshold.
 
 ---
 
@@ -274,6 +274,8 @@ Instead of fixing `α = (1/3,1/3,1/3)`, learn it so wash rings get low birth val
 **Drift model.** The generator shifts ring size, timing regularity, jitter, amount noise and decoy-trade rate mid-stream.
 
 ### 5.11 Pump-and-dump temporal-motif track (optional)
+**Status: done as a synthetic-only, no-topology exploratory track** (own generator `data/pump_dump.py`, features `motif/pump_dump.py`, run `experiments/pump_dump_run.py`; results in `paper/numbers_pack.md` section 6F). The generator author decides separability, detection is retrospective, and no real-data result exists. The text below is the original design.
+
 Not a closed cycle, so no topology stage. Candidates are coordinated-accumulation windows (multiple accounts raising position in the same asset in a short band) followed by coordinated-exit windows, scored by accumulation concentration, exit synchrony and price trajectory around the exit. It shares the classification harness but not the features. Attempted only after the main phases meet their gates.
 
 ### 5.12 Complexity and feasibility
@@ -444,7 +446,7 @@ Prompts only; no claims yet.
 Flagged rings are suspicion scores, not findings of guilt. Proxy labels are not regulator-confirmed. Describing the scores publicly lets adversaries tune to them; the limitations section notes this and the decoy-rate drift experiments address part of it. Add a data-use statement for NFT and AML data. `[VERIFY dataset licences]`
 
 ### 9.3 Future work
-Live deployment with real delayed feedback; the pump-and-dump motif track; cap-free or alternative treatments of infinite bars; larger ring lengths via local re-sparsification; richer filtrations (multi-parameter); real exchange data with regulator-confirmed labels.
+Live deployment with real delayed feedback; real-data pump-and-dump validation (a synthetic-only track is done); cap-free or alternative treatments of infinite bars; larger ring lengths via local re-sparsification; richer filtrations (multi-parameter); real exchange data with regulator-confirmed labels.
 
 ---
 
@@ -463,7 +465,7 @@ Live deployment with real delayed feedback; the pump-and-dump motif track; cap-f
 
 ## 11. Gaps to close before writing the final paper
 1. **Citations.** Every `[VERIFY]` item. The related-work table needs a real literature search, including the novelty claim for directed flag complexes in transaction graphs.
-2. **Unfinished code** (README status): the NFT loader and label-provenance audit (Phase 5, not done: running Dune queries is blocked on the free tier), the pump-and-dump track, the undirected-complex and persistence-image ablations, and per-score classifier filtrations. Done since this pack was drafted: landscapes, the infinite-bar cap and its sensitivity run, the full feature table, the IBM AML loader and audit, the evaluation harness, clustering (exploratory), severity regression (synthetic only) and the bandit policies.
+2. **Unfinished code** (README status): the NFT loader and label-provenance audit (Phase 5, not done: running Dune queries is blocked on the free tier), the undirected-complex and persistence-image ablations, and per-score classifier filtrations. Done since this pack was drafted: landscapes, the infinite-bar cap and its sensitivity run, the full feature table, the IBM AML loader and audit, the evaluation harness, clustering (exploratory), severity regression (synthetic only), the bandit policies and the synthetic-only pump-and-dump track.
 3. **Choice made:** the adaptive-threshold section reports both online gradient ascent and the discounted-UCB / sliding-window Thompson bandits; at the primary setting the bandits lose to the re-tuned comparator (`paper/numbers_pack.md` section 6A).
 4. **Sections of the optimization report not yet read in full:** the tail of §4.5 onward and any appendix. Check them for claims to carry over.
 5. **Notation clashes** (§8) to resolve.

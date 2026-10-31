@@ -23,6 +23,7 @@
 | Severity and its diagnostic | `python experiments/synth_severity.py`, then `python experiments/severity_diagnostic.py` |
 | Cap sensitivity | `python experiments/cap_sensitivity.py --source synthetic` and `--source ibm` |
 | Figures from the CSVs | `experiments/ibm_classify_plot.py`, `synth_classify_plot.py`, `plot_lift_per_scenario.py`, `candidate_recall_plot.py`, `bandit_report_plot.py`, `ibm_cluster_plot.py` |
+| Pump-and-dump track (synthetic, no topology) | `python experiments/pump_dump_run.py`, then `python experiments/pump_dump_plot.py` |
 | Numbers pack, provenance, spot-check | `python experiments/make_numbers_pack.py --spot-check 10` |
 | This document and its audit | `python experiments/build_explainer.py` |
 

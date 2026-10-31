@@ -3,6 +3,7 @@
 
 ### 14.1 Glossary
 
+* **Accumulation window.** A time band in which at least m accounts each buy a large amount; the candidate unit of the pump-and-dump track.
 * **Ambiguous (candidate).** A candidate whose label cannot be decided by the 80% rule (split backing) or, on IBM, whose flagged edges rest only on laundering rows that belong to no attempt. Reported excluded and counted positive.
 * **ARI (adjusted Rand index).** Agreement between two partitions, 0 for random labelling, 1 for identical.
 * **Arm (bandit).** One selectable option; here a fixed flagging threshold.
@@ -30,6 +31,7 @@
 * **Edge weight.** One minus the mean of the three rank-normalised scores; low = suspicious.
 * **Enumeration cap.** The limit of 20000 cycles per strongly connected component.
 * **Filtration.** A nested family of graphs or complexes indexed by a rising threshold.
+* **Exit synchrony.** How tightly the members of a group sell at the same time (the spread of their first-sell times); the main feature of the pump-and-dump track.
 * **Fixed threshold.** A flagging cutoff tuned once and frozen.
 * **flagser.** The C++ engine (via pyflagser) computing persistent homology of directed flag complexes.
 * **Generator circularity.** The risk that a method looks good because it matches the data designer's assumptions.
@@ -48,6 +50,7 @@
 * **Oracle (hindsight).** The best threshold per window using that window's own labels; an upper bound.
 * **Out-of-fold score.** A prediction made by a model that did not see that candidate's group in training.
 * **Paired difference.** A difference between two feature sets computed on the same bootstrap resamples.
+* **Pump-and-dump.** A scheme in which a group accumulates an asset, pushes the price and sells together; a temporal coordination motif, not a closed cycle.
 * **Persistence diagram.** The set of (birth, death) bars of a filtration.
 * **Persistent homology.** Tracking holes along a filtration.
 * **Pooled out-of-fold PR-AUC.** Average precision of all out-of-fold scores taken together.
@@ -98,7 +101,7 @@
 15. **Did topology help anywhere?** Slightly on the synthetic generator (7 of 12 cells), which is nearly separable by D (section 8.6).
 16. **Is the severity result forecasting?** No: ring size alone does as well; synthetic, generator decides persistence (section 8.10).
 17. **Why did the bandits lose?** One exploratory play of the flag-everything arm costs about as much as the whole oracle total and is hidden by reward clipping; one stream, fixed hyperparameters (section 8.9).
-18. **What did you not do and why?** NFT (Dune free tier blocks running queries), pump-and-dump, undirected and persistence-image ablations, window and label-threshold sweeps (section 11.4).
+18. **What did you not do and why?** NFT (Dune free tier blocks running queries), real-data pump-and-dump (a synthetic, no-topology track was run), undirected and persistence-image ablations, window and label-threshold sweeps (section 11.4).
 19. **Where do you differ from published work, and where can you not claim to?** Direction and exact localisation are differences; no comparison with a GNN or the published clique method was run (section 10).
 20. **How do I reproduce it?** Section 13; every number is traceable through `paper/numbers_pack.md` and `paper/numbers_pack/provenance.csv`.
 
@@ -112,4 +115,4 @@ Verified by web search (URL given):
 4. Ofori-Boateng, Segovia Dominguez, Kantarcioglu, Akcora, Gel. *Topological Anomaly Detection in Dynamic Multilayer Blockchain Networks.* ECML PKDD 2021. https://arxiv.org/abs/2106.01806
 5. Bubenik. *Statistical Topological Data Analysis using Persistence Landscapes.* JMLR 16, 2015. https://www.jmlr.org/papers/v16/bubenik15a.html
 
-Claims left as **[citation needed]** in the text: community and density methods (3.1), centrality scores (3.2), the specific cycle-enumeration algorithms (3.4).
+Claims left as **[citation needed]** in the text: community and density methods (3.1), centrality scores (3.2), the specific cycle-enumeration algorithms (3.4), sliding-window Thompson sampling (6.11).

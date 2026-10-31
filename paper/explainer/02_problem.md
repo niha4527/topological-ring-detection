@@ -24,7 +24,7 @@ The v3 proposal also notes prior persistent-homology work on blockchain networks
 | Pattern | Status in this project |
 |---|---|
 | Closed-cycle wash trading and laundering cycles | **In scope**, the load-bearing target |
-| Pump-and-dump coordination (a temporal motif, not a closed cycle) | Optional stretch track; **not done** |
+| Pump-and-dump coordination (a temporal motif, not a closed cycle) | Optional stretch track; done only as a **synthetic, no-topology** exploratory run (section 8.14); no real-data result |
 | Spoofing | **Out of scope**: it is an order-book phenomenon (orders placed and cancelled without executing); settled transaction data has no signal for it |
 
 ### 2.5 What "detect" means here

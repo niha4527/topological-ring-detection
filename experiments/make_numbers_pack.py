@@ -549,6 +549,7 @@ if sy is not None:
 HIR, HIP = CL / "HI_tau0.05" / "results.csv", CL / "HI_tau0.05" / "paired_differences.csv"
 LIR, LIP = CL / "LI_tau0.05" / "results.csv", CL / "LI_tau0.05" / "paired_differences.csv"
 P6 = Path("results/phase6_bandit")
+PDD = Path("results/phase7_pump_dump")
 SEV = Path("results/phase4_severity")
 CAP = P3 / "cap_sensitivity"
 CLU = Path("results/phase4_cluster")
@@ -717,6 +718,7 @@ for label, path, mk, mk2 in (
     ("cap sensitivity synthetic", CAP / "synthetic" / "paired_differences.csv", _none, _none),
     ("severity (3 metrics)", PG, _P, _S),
     ("severity diagnostic (3 metrics)", DP, _none, _none),
+    ("pump-and-dump (synthetic, no topology)", PDD / "paired_differences.csv", _none, _none),
     ("bandit vs comparators", BV, lambda d: (d.comparator == f"retune_M{b_cfg['config']['primary_retune_every']}") & (d["lambda"] == b_cfg["config"]["reward"]["primary_lambda"]) & (d.lag == b_cfg["config"]["primary_lag"]), lambda d: d.bandit != d.bandit),
 ):
     tot_, pr_, se_ = _n(path, mk, mk2)
@@ -727,6 +729,47 @@ for label, path, mk, mk2 in (
 md.append(mdtable(["study", "file", "paired rows", "pre-specified primary", "pre-specified secondary", "exploratory / sensitivity"], mult))
 md.append(f"Total paired rows over the project: {sum(m[2] for m in mult)}; pre-specified primary: {sum(m[3] for m in mult)}; pre-specified secondary: {sum(m[4] for m in mult)}; exploratory or sensitivity: {sum(m[5] for m in mult)}. "
           "**The pre-specified primary rows are not independent tests**: they include every variant (e.g. ambiguous-positive, strict-groups), the same candidates and resamples recur across models and variants, and the count is of rows. The headline test per dataset is `B+D+T minus B+D` on the primary variant, one row per model.\n")
+
+# ====================================================================== 6F. Phase 7 optional: synthetic pump-and-dump
+sec("6F. Phase 7 (optional): synthetic pump-and-dump track (SYNTHETIC ONLY, NO TOPOLOGY)")
+PDR, PDP, PDK, PDC = PDD / "results.csv", PDD / "paired_differences.csv", PDD / "candidate_kinds.csv", PDD / "config_used.yaml"
+pd_cfg = yml(PDC)
+if pd_cfg and csv(PDR) is not None:
+    from ringtda.data.pump_dump import PumpDumpConfig
+    from ringtda.motif.pump_dump import BPD_NAMES, M_NAMES
+
+    gc, cc_, cond = pd_cfg["pump_dump_config"]["generator"], pd_cfg["pump_dump_config"]["candidates"], pd_cfg["pump_dump_config"]["conditions"]
+    dflt = PumpDumpConfig()
+    md.append("**Synthetic only, no topology. The generator author decides how separable the classes are**; nothing here says real pump-and-dump schemes look like this. "
+              f"One asset with a noisy hourly price and account-level trades. Planted groups per seed: {gc['n_pump']} pump-and-dump (positives: members accumulate in a {gc['accum_band_h']:.0f} h band, then all sell around a common exit while the price runs up and falls back), "
+              f"{gc['n_organic']} organic momentum groups (independent sell times over days) and {gc['n_news']} news-spike groups (unsynchronised sellers; hard negative), each of {dflt.group_size[0]}-{dflt.group_size[1]} accounts, placed in separate time slots of {dflt.slot_h:.0f} h so their bands never overlap "
+              f"(slot and group size are code defaults of `PumpDumpConfig`, not stored in the run config); {gc['n_accounts']} accounts, {gc['duration_h']:.0f} h, {pd_cfg['pump_dump_config']['seeds']} seeds; background trades are small and independent. "
+              f"Candidates are coordinated-accumulation windows found from trades only: a {cc_['band_h']:.0f} h band (stride {cc_['stride_h']:.0f} h) in which at least {cc_['m_min']} accounts each buy at least {cc_['acc_min']:.0f} (Jaccard {cc_['jaccard']} de-duplication). "
+              f"Labels: a candidate takes a planted group's kind if at least {pd_cfg['pump_dump_config']['label_x']} of its accounts belong to it; y = 1 for pump-and-dump; groups = planted group (union-find over shared accounts, seed-prefixed). "
+              f"**M features ({len(M_NAMES)}):** {', '.join(f'`{n}`' for n in M_NAMES)}. **B_pd ({len(BPD_NAMES)}):** {', '.join(f'`{n}`' for n in BPD_NAMES)} (group size and per-account volume; no timing or price). They read only the trade table and the price series, never labels or planted ids (tested). "
+              "The features use sells and prices after the accumulation band: this is **retrospective detection of a completed episode, not early warning**. "
+              f"The generator background amounts and thresholds were calibrated on candidate counts only, before any model run. Classifiers, folds and bootstrap are those of `configs/classify.yaml`; config and seeds stored in `{PDC}`; runtime {pd_cfg['runtime_seconds']:.0f} s.\n")
+    kk = csv(PDK)
+    md.append(mdtable(["condition", "candidates", "organic", "pump_dump", "news", "ambiguous"], [[r.condition, int(r.candidates), int(r.organic), int(r.pump_dump), int(r.news), int(r.ambiguous)] for r in kk.itertuples()]))
+    for cn, cv in cond.items():
+        w0 = {"condition": cn, "feature_set": "M", "model": "logreg"}
+        md.append(f"**Condition `{cn}`** (exit-time spread sd {get(PDR, w0, 'exit_spread_sd_h', '{:.1f}', '6F')} h): {get(PDR, w0, 'n_rows', '{:.0f}', '6F')} candidates, {get(PDR, w0, 'n_pos', '{:.0f}', '6F')} positives, prevalence {get(PDR, w0, 'prevalence', '{:.3f}', '6F')}, {get(PDR, w0, 'n_pos_groups', '{:.0f}', '6F')} positive groups. "
+                  "PR-AUC [95% grouped-bootstrap CI] (mean +- std of the per-seed PR-AUC):\n")
+        cell = lambda s, m, cn=cn: ci_cell(PDR, {"condition": cn, "feature_set": s, "model": m}, "6F") + f" ({get(PDR, {'condition': cn, 'feature_set': s, 'model': m}, 'seed_mean', '{:.3f}', '6F')} +- {get(PDR, {'condition': cn, 'feature_set': s, 'model': m}, 'seed_std', '{:.3f}', '6F')})"  # noqa: E731
+        md.append(mdtable(["feature set", *MODELS], [[s] + [cell(s, m) for m in MODELS] for s in ("M", "B_pd")]))
+        md.append(f"`-M_exit_spread_h` alone (single feature, no model): {ci_cell(PDR, {'condition': cn, 'feature_set': 'exit_spread_alone', 'model': 'none'}, '6F')}.\n")
+        md.append("Paired M minus B_pd (same resamples):\n")
+        md.append(mdtable(["comparison", *MODELS], [["M minus B_pd"] + [diff_cell(PDP, {"condition": cn, "model": m, "comparison": "M minus B_pd"}, "6F") for m in MODELS]]))
+    md.append("**Harder exits (descriptive).** The only difference between the conditions is the spread of the planted exit times; candidates, labels and groups are identical, so B_pd does not change. Change in point estimates of PR-AUC from `default` to `harder_exit` (difference of two separate runs, **no CI**):\n")
+    rows = []
+    for s in ("M", "B_pd"):
+        rows.append([s] + [f"{float(sel(csv(PDR), {'condition': 'harder_exit', 'feature_set': s, 'model': m}).pr_auc.iloc[0]) - float(sel(csv(PDR), {'condition': 'default', 'feature_set': s, 'model': m}).pr_auc.iloc[0]):+.3f}" for m in MODELS])
+        for m in MODELS:
+            prov.append({"table": "6F", "text": f"change {s} {m}", "file": str(PDR), "where": json.dumps({"feature_set": s, "model": m}), "columns": "pr_auc harder_exit minus default"})
+    md.append(mdtable(["feature set", *MODELS], rows))
+    src(PDR, PDP, PDK, PDC)
+else:
+    md.append("`results/phase7_pump_dump/` not found.\n")
 
 # ====================================================================== helpers for sections 7-9
 def ci_excludes_zero(path, where_base, comp, models=MODELS):
@@ -798,6 +841,7 @@ L.append(f"Severity (synthetic only, the generator decides persistence): B+D wit
 L.append(f"Bandit benchmark: at lambda 1, d 2 the bandits lose to the re-tuned comparator (discounted UCB {get(BV, {'lambda': 1.0, 'lag': 2, 'bandit': 'ducb', 'comparator': 'retune_M5'}, 'diff_share_mean', '{:+.3f}', '7')} share of oracle, {get(BV, {'lambda': 1.0, 'lag': 2, 'bandit': 'ducb', 'comparator': 'retune_M5'}, 'seeds_bandit_better', '{:.0f}', '7')} of 6 seeds better; sliding-window Thompson {get(BV, {'lambda': 1.0, 'lag': 2, 'bandit': 'swts', 'comparator': 'retune_M5'}, 'diff_share_mean', '{:+.3f}', '7')}, {get(BV, {'lambda': 1.0, 'lag': 2, 'bandit': 'swts', 'comparator': 'retune_M5'}, 'seeds_bandit_better', '{:.0f}', '7')} of 6); exploring the flag-everything arm is very costly and its size is hidden by the reward clipping.")
 L.append(f"Clustering (exploratory): HI, k = 4, D + T_local landscape: ARI against type {get(CLR, {'dataset': 'HI', 'vector': 'D+T_local_landscape', 'k_mode': 'fixed'}, 'ari_type', '{:.3f}', '7')} (random {get(CLR, {'dataset': 'HI', 'vector': 'D+T_local_landscape', 'k_mode': 'fixed'}, 'ari_type_random', '{:.3f}', '7')}), ARI against group id {get(CLR, {'dataset': 'HI', 'vector': 'D+T_local_landscape', 'k_mode': 'fixed'}, 'ari_group', '{:.3f}', '7')}, purity {get(CLR, {'dataset': 'HI', 'vector': 'D+T_local_landscape', 'k_mode': 'fixed'}, 'purity_type', '{:.3f}', '7')} against random {get(CLR, {'dataset': 'HI', 'vector': 'D+T_local_landscape', 'k_mode': 'fixed'}, 'purity_type_random', '{:.3f}', '7')} and majority {get(CLR, {'dataset': 'HI', 'vector': 'D', 'k_mode': 'fixed'}, 'purity_majority', '{:.3f}', '7')}; 4 to 12 groups per type; the grouped-bootstrap percentile CIs are biased (resampled duplicate rings) and several exclude their own point estimate, so they are not used as CIs.")
 L.append(f"Cap sensitivity: on HI, `ring_local_max` changes the svm B+D+T PR-AUC by {get(CAP / 'ibm' / 'paired_differences.csv', {'variant': 'ring_local_max', 'feature_set': 'B+D+T', 'model': 'svm', 'comparison': 'B+D+T under this cap minus B+D+T under window_max'}, 'diff', '{:+.3f}', '7')} (post hoc, one model, uncorrected for multiplicity).")
+L.append(f"Pump-and-dump track (synthetic only, no topology; exploratory): a single feature, `-M_exit_spread_h`, scores {get(PDR, {'condition': 'default', 'feature_set': 'exit_spread_alone', 'model': 'none'}, 'pr_auc', '{:.3f}', '7')} in the default condition ({get(PDR, {'condition': 'harder_exit', 'feature_set': 'exit_spread_alone', 'model': 'none'}, 'pr_auc', '{:.3f}', '7')} with wider exits), so the generator is near-separable by timing; B_pd is weak by construction (all groups are drawn from the same size and volume distributions: logistic regression {get(PDR, {'condition': 'default', 'feature_set': 'B_pd', 'model': 'logreg'}, 'pr_auc', '{:.3f}', '7')} at prevalence {get(PDR, {'condition': 'default', 'feature_set': 'B_pd', 'model': 'logreg'}, 'prevalence', '{:.3f}', '7')}); the features use post-accumulation sells and prices, so detection is retrospective, not early warning; no chance-coincidence candidates arose (every non-planted candidate is a planted organic or news group; ambiguous excluded); the generator was calibrated on candidate counts before any model run; only {get(PDR, {'condition': 'default', 'feature_set': 'M', 'model': 'logreg'}, 'n_pos_groups', '{:.0f}', '7')} positive groups.")
 md.append("\n".join(f"{i + 1}. {x}" for i, x in enumerate(L)) + "\n")
 
 # ====================================================================== 8. claims
@@ -835,7 +879,10 @@ claims_yes.append(f"T_local / T_win cap choice among window_max, fixed 1.0 and 1
 claims_no.append(f"That the bandits beat periodic re-tuning at the same lag: at lambda 1, d 2 the paired share-of-oracle difference is {v(BV, {'lambda': 1.0, 'lag': 2, 'bandit': 'ducb', 'comparator': 'retune_M5'}, 'diff_share_mean', '{:+.3f}')} (discounted UCB) and {v(BV, {'lambda': 1.0, 'lag': 2, 'bandit': 'swts', 'comparator': 'retune_M5'}, 'diff_share_mean', '{:+.3f}')} (sliding-window Thompson); the only positive cell is discounted UCB at d = 5 ({v(BV, {'lambda': 1.0, 'lag': 5, 'bandit': 'ducb', 'comparator': 'retune_M5'}, 'diff_share_mean', '{:+.3f}')}); the online gradient ascent comparator is at {v(SM, {'lambda': 1.0, 'lag': 2, 'policy': 'ascent'}, 'share_mean', '{:.3f}')} of oracle.")
 claims_desc.append(f"Severity regression (synthetic only; the generator decides that rings persist): `D_length` alone reaches rf RMSE {v(_sv / 'results.csv', {'predictor': 'D_length', 'model': 'rf'}, 'rmse', '{:.3f}')} and gbr RMSE {v(_sv / 'results.csv', {'predictor': 'D_length', 'model': 'gbr'}, 'rmse', '{:.3f}')}, against {v(RG, {'feature_set': 'B+D', 'model': 'rf'}, 'rmse', '{:.3f}')} and {v(RG, {'feature_set': 'B+D', 'model': 'gbr'}, 'rmse', '{:.3f}')} for B+D, so the model recovers generator structure (top rf importance `D_length` {v(_sv / 'rf_importance_BD.csv', {'column': 'D_length'}, 'rf_impurity_importance', '{:.3f}')}), not forecasting skill; T adds nothing (B+D+T minus B+D rf RMSE {v(PG, {'model': 'rf', 'comparison': 'B+D+T minus B+D', 'metric': 'rmse'}, 'diff', '{:+.3f}')}).")
 claims_no.append(f"That Ward clustering of positive rings recovers pattern types (exploratory): on HI, k = 4, ARI against type is {get(CLR, {'dataset': 'HI', 'vector': 'D+T_local_landscape', 'k_mode': 'fixed'}, 'ari_type', '{:.3f}', '8')} (D + T_local landscape; random {get(CLR, {'dataset': 'HI', 'vector': 'D+T_local_landscape', 'k_mode': 'fixed'}, 'ari_type_random', '{:.3f}', '8')}) against {get(CLR, {'dataset': 'HI', 'vector': 'D+T_local_landscape', 'k_mode': 'fixed'}, 'ari_group', '{:.3f}', '8')} against group id: the clusters track attempts more than types. Purity {get(CLR, {'dataset': 'HI', 'vector': 'D+T_local_landscape', 'k_mode': 'fixed'}, 'purity_type', '{:.3f}', '8')} vs random {get(CLR, {'dataset': 'HI', 'vector': 'D+T_local_landscape', 'k_mode': 'fixed'}, 'purity_type_random', '{:.3f}', '8')} and majority {get(CLR, {'dataset': 'HI', 'vector': 'D+T_local_landscape', 'k_mode': 'fixed'}, 'purity_majority', '{:.3f}', '8')}. The bootstrap percentile CIs are biased and several exclude their own point estimate, so they are not used as CIs. LI (T_local landscape, k = 3, 9 groups): ARI {get(CLR, {'dataset': 'LI', 'vector': 'T_local_landscape', 'k_mode': 'fixed'}, 'ari_type', '{:.3f}', '8')}, purity {get(CLR, {'dataset': 'LI', 'vector': 'T_local_landscape', 'k_mode': 'fixed'}, 'purity_type', '{:.3f}', '8')} vs random {get(CLR, {'dataset': 'LI', 'vector': 'T_local_landscape', 'k_mode': 'fixed'}, 'purity_type_random', '{:.3f}', '8')}; with 9 groups and 3 to 5 groups per type this is a small-sample point estimate, not evidence of type recovery.")
-md.append("**Supported:**\n\n" + "\n".join(f"- {x}" for x in claims_yes) + "\n\n**No detectable effect (the data neither show nor exclude a small effect):**\n\n" + "\n".join(f"- {x}" for x in claims_none) + "\n\n**Descriptive findings, not claims:**\n\n" + "\n".join(f"- {x}" for x in claims_desc) + "\n\n**Not supported:**\n\n" + "\n".join(f"- {x}" for x in claims_no) + "\n")
+_pp = csv(PDP)
+claims_pd = [f"Timing features separate the planted pump-and-dump groups from the group-size/volume baseline in the synthetic generator: paired M minus B_pd has a CI above 0 in {int((_pp.ci_low > 0).sum())} of {len(_pp)} condition-model cells (default: logreg {diff_cell(PDP, {'condition': 'default', 'model': 'logreg', 'comparison': 'M minus B_pd'}, '8')}, rf {diff_cell(PDP, {'condition': 'default', 'model': 'rf', 'comparison': 'M minus B_pd'}, '8')}, svm {diff_cell(PDP, {'condition': 'default', 'model': 'svm', 'comparison': 'M minus B_pd'}, '8')}; {get(PDR, {'condition': 'default', 'feature_set': 'M', 'model': 'rf'}, 'n_pos_groups', '{:.0f}', '8')} positive groups, prevalence {get(PDR, {'condition': 'default', 'feature_set': 'M', 'model': 'rf'}, 'prevalence', '{:.3f}', '8')}); the generator author decides separability.", "The classification harness (grouped CV, grouped bootstrap, paired differences) runs unchanged on a second pattern type that has no topology."]
+claims_no += ["That the pump-and-dump features detect real pump-and-dump: the data are synthetic and the generator decides separability (one feature, `-M_exit_spread_h`, alone reaches " + v(PDR, {'condition': 'default', 'feature_set': 'exit_spread_alone', 'model': 'none'}, 'pr_auc', '{:.3f}') + ").", "That anything about topology follows from the pump-and-dump track: it contains no topological feature."]
+md.append("**Supported:**\n\n" + "\n".join(f"- {x}" for x in claims_yes) + "\n\n**Supported (synthetic, exploratory, no topology):**\n\n" + "\n".join(f"- {x}" for x in claims_pd) + "\n\n**No detectable effect (the data neither show nor exclude a small effect):**\n\n" + "\n".join(f"- {x}" for x in claims_none) + "\n\n**Descriptive findings, not claims:**\n\n" + "\n".join(f"- {x}" for x in claims_desc) + "\n\n**Not supported:**\n\n" + "\n".join(f"- {x}" for x in claims_no) + "\n")
 
 # ====================================================================== 9. deviations
 sec("9. Deviations from the v3 proposal")
@@ -855,7 +902,8 @@ dev = [
     "Recall of complete cycle attempts uses the account-set definition (README measurement); the label-based count is reported next to it.",
     "Phase 4 clustering and severity regression, and Phase 6 (bandit policies and drift benchmark), were run as exploratory studies (sections 6A-6D); severity is synthetic only (IBM has no next-window wash volume) and the bandit benchmark uses the optimization report's synthetic drift stream.",
     "Phase 5 (NFT loader, proxy labels, label-provenance audit) is NOT done. Blocker: running queries on Dune is blocked on the free tier. BigQuery access was confirmed and the schemas were inspected: `nft.wash_trades` combines five filters, of which filters 2 and 3 are cycle-type rules, so the planned leakage-controlled subset would be filters 4 and 5 only.",
-    "Not done: pump-and-dump temporal-motif track, undirected clique-complex ablation, persistence-image ablation, per-score classifier filtrations (classifiers on single-score filtrations), and the sensitivity sweeps over window length, stride, `max_len`-in-classification, tau (classification beyond IBM tau 0.05) and label threshold X.",
+    "Pump-and-dump (v3 section 3.6, optional) was done as a synthetic-only, no-topology track with its own generator (section 6F); no real-data result exists.",
+    "Not done: undirected clique-complex ablation, persistence-image ablation, per-score classifier filtrations (classifiers on single-score filtrations), and the sensitivity sweeps over window length, stride, `max_len`-in-classification, tau (classification beyond IBM tau 0.05) and label threshold X.",
     "Learned-weight (Problem B), classifier (Problem A) and threshold (Problem C) results in section 2 come from the pinned report generator, not from IBM AML.",
 ]
 md.append("\n".join(f"{i + 1}. {x}" for i, x in enumerate(dev)) + "\n")
@@ -877,6 +925,7 @@ figs = [
     (P6 / "bandit_drift.png", "bandit_drift.png"),
     (CLU / "pca_HI.png", "cluster_pca_HI.png"),
     (CLU / "pca_LI.png", "cluster_pca_LI.png"),
+    (PDD / "pump_dump_pr_auc.png", "pump_dump_pr_auc.png"),
 ] + [(f, f.name) for f in sorted((RES / "figures").glob("*.png"))]
 stale = []
 for s, d in figs:
@@ -904,6 +953,7 @@ cap = [
     ("cluster_pca_LI.png", "Phase 4 (exploratory), IBM LI-Small positive rings ({} rings, {} positive groups, {} types in the population): same layout as the HI figure, k = {}. Descriptive: no CI.".format(
         get(CLR, {"dataset": "LI", "vector": "D", "k_mode": "fixed"}, "n_rings", "{:.0f}", "figures"), get(CLR, {"dataset": "LI", "vector": "D", "k_mode": "fixed"}, "n_groups", "{:.0f}", "figures"),
         get(CLR, {"dataset": "LI", "vector": "D", "k_mode": "fixed"}, "n_types", "{:.0f}", "figures"), get(CLR, {"dataset": "LI", "vector": "D", "k_mode": "fixed"}, "k", "{:.0f}", "figures"))),
+    ("pump_dump_pr_auc.png", "Phase 7 (optional, SYNTHETIC ONLY, no topology), PR-AUC of M (temporal-motif) and B_pd (group size and volume) features by model, default and harder-exit conditions; prevalence {} in the title of each panel (dashed line), {} positive groups. Error bars: 95% grouped-bootstrap CI. The generator author decides separability.".format(get(PDR, {"condition": "default", "feature_set": "M", "model": "rf"}, "prevalence", "{:.3f}", "figures"), get(PDR, {"condition": "default", "feature_set": "M", "model": "rf"}, "n_pos_groups", "{:.0f}", "figures"))),
     ("recall_ibm.png", "Candidate recall of complete CYCLE attempts (reachable ones, at most max_len accounts) against tau_quantile on HI and LI, days 0-5 and whole data, max_len 6 and 8. Counts, not a sample: no CI; prevalence not applicable. LI days 0-5 has one complete attempt."),
     ("recall_synthetic.png", "Recall of planted wash rings (isolated, dense, chorded) against tau_quantile, six seeds, hard negatives off and on. Mean over rings, no CI. With hard negatives on, the cells where the enumeration cap is hit (daggers in section 6.2, from tau 0.25 or 0.30) are limited by the cap."),
     ("hi_audit_scores.png", "IBM HI-Small pattern-behaviour audit: box plots of the rank-normalised s_rec, s_bal, s_reg and the combined weight (low = suspicious) by pattern group and background pairs, pooled over the audited windows. Descriptive: no CI, no class prevalence (pair counts in section 3.5)."),

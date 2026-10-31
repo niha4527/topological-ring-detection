@@ -2812,7 +2812,68 @@ hn-on_chords-off,"+0.610 [+0.456, +0.700]",results/phase3_features/classify/synt
 6E,"cap sensitivity synthetic: 42 rows, 0 primary, 0 secondary",results/phase3_features/cap_sensitivity/synthetic/paired_differences.csv,row count,comparison
 6E,"severity (3 metrics): 27 rows, 9 primary, 9 secondary",results/phase4_severity/paired_differences.csv,row count,comparison
 6E,"severity diagnostic (3 metrics): 36 rows, 0 primary, 0 secondary",results/phase4_severity/diagnostic/paired_differences.csv,row count,comparison
+6E,"pump-and-dump (synthetic, no topology): 6 rows, 0 primary, 0 secondary",results/phase7_pump_dump/paired_differences.csv,row count,comparison
 6E,"bandit vs comparators: 72 rows, 2 primary, 0 secondary",results/phase6_bandit/bandit_vs_comparators.csv,row count,comparison
+6F,1.0,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""logreg""}",exit_spread_sd_h
+6F,210,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""logreg""}",n_rows
+6F,82,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""logreg""}",n_pos
+6F,0.390,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""logreg""}",prevalence
+6F,47,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""logreg""}",n_pos_groups
+6F,"0.890 [0.803, 0.954]",results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6F,0.902,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""logreg""}",seed_mean
+6F,0.045,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""logreg""}",seed_std
+6F,"0.976 [0.957, 0.990]",results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6F,0.980,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""rf""}",seed_mean
+6F,0.021,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""rf""}",seed_std
+6F,"0.928 [0.866, 0.974]",results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6F,0.945,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""svm""}",seed_mean
+6F,0.048,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""svm""}",seed_std
+6F,"0.388 [0.290, 0.511]",results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""B_pd"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6F,0.424,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""B_pd"", ""model"": ""logreg""}",seed_mean
+6F,0.085,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""B_pd"", ""model"": ""logreg""}",seed_std
+6F,"0.375 [0.279, 0.495]",results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""B_pd"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6F,0.414,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""B_pd"", ""model"": ""rf""}",seed_mean
+6F,0.074,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""B_pd"", ""model"": ""rf""}",seed_std
+6F,"0.414 [0.308, 0.532]",results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""B_pd"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6F,0.440,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""B_pd"", ""model"": ""svm""}",seed_mean
+6F,0.089,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""B_pd"", ""model"": ""svm""}",seed_std
+6F,"0.906 [0.860, 0.945]",results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""exit_spread_alone"", ""model"": ""none""}","pr_auc,ci_low,ci_high"
+6F,"+0.502 [+0.380, +0.601]",results/phase7_pump_dump/paired_differences.csv,"{""condition"": ""default"", ""model"": ""logreg"", ""comparison"": ""M minus B_pd""}","diff,ci_low,ci_high"
+6F,"+0.602 [+0.486, +0.695]",results/phase7_pump_dump/paired_differences.csv,"{""condition"": ""default"", ""model"": ""rf"", ""comparison"": ""M minus B_pd""}","diff,ci_low,ci_high"
+6F,"+0.514 [+0.400, +0.618]",results/phase7_pump_dump/paired_differences.csv,"{""condition"": ""default"", ""model"": ""svm"", ""comparison"": ""M minus B_pd""}","diff,ci_low,ci_high"
+6F,18.0,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""M"", ""model"": ""logreg""}",exit_spread_sd_h
+6F,210,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""M"", ""model"": ""logreg""}",n_rows
+6F,82,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""M"", ""model"": ""logreg""}",n_pos
+6F,0.390,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""M"", ""model"": ""logreg""}",prevalence
+6F,47,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""M"", ""model"": ""logreg""}",n_pos_groups
+6F,"0.770 [0.651, 0.892]",results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""M"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6F,0.794,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""M"", ""model"": ""logreg""}",seed_mean
+6F,0.091,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""M"", ""model"": ""logreg""}",seed_std
+6F,"0.921 [0.857, 0.965]",results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""M"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6F,0.932,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""M"", ""model"": ""rf""}",seed_mean
+6F,0.055,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""M"", ""model"": ""rf""}",seed_std
+6F,"0.827 [0.723, 0.924]",results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""M"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6F,0.868,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""M"", ""model"": ""svm""}",seed_mean
+6F,0.094,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""M"", ""model"": ""svm""}",seed_std
+6F,"0.388 [0.290, 0.511]",results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""B_pd"", ""model"": ""logreg""}","pr_auc,ci_low,ci_high"
+6F,0.424,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""B_pd"", ""model"": ""logreg""}",seed_mean
+6F,0.085,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""B_pd"", ""model"": ""logreg""}",seed_std
+6F,"0.375 [0.279, 0.495]",results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""B_pd"", ""model"": ""rf""}","pr_auc,ci_low,ci_high"
+6F,0.414,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""B_pd"", ""model"": ""rf""}",seed_mean
+6F,0.074,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""B_pd"", ""model"": ""rf""}",seed_std
+6F,"0.414 [0.308, 0.532]",results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""B_pd"", ""model"": ""svm""}","pr_auc,ci_low,ci_high"
+6F,0.440,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""B_pd"", ""model"": ""svm""}",seed_mean
+6F,0.089,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""B_pd"", ""model"": ""svm""}",seed_std
+6F,"0.643 [0.513, 0.752]",results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""exit_spread_alone"", ""model"": ""none""}","pr_auc,ci_low,ci_high"
+6F,"+0.382 [+0.260, +0.497]",results/phase7_pump_dump/paired_differences.csv,"{""condition"": ""harder_exit"", ""model"": ""logreg"", ""comparison"": ""M minus B_pd""}","diff,ci_low,ci_high"
+6F,"+0.547 [+0.437, +0.634]",results/phase7_pump_dump/paired_differences.csv,"{""condition"": ""harder_exit"", ""model"": ""rf"", ""comparison"": ""M minus B_pd""}","diff,ci_low,ci_high"
+6F,"+0.413 [+0.299, +0.533]",results/phase7_pump_dump/paired_differences.csv,"{""condition"": ""harder_exit"", ""model"": ""svm"", ""comparison"": ""M minus B_pd""}","diff,ci_low,ci_high"
+6F,change M logreg,results/phase7_pump_dump/results.csv,"{""feature_set"": ""M"", ""model"": ""logreg""}",pr_auc harder_exit minus default
+6F,change M rf,results/phase7_pump_dump/results.csv,"{""feature_set"": ""M"", ""model"": ""rf""}",pr_auc harder_exit minus default
+6F,change M svm,results/phase7_pump_dump/results.csv,"{""feature_set"": ""M"", ""model"": ""svm""}",pr_auc harder_exit minus default
+6F,change B_pd logreg,results/phase7_pump_dump/results.csv,"{""feature_set"": ""B_pd"", ""model"": ""logreg""}",pr_auc harder_exit minus default
+6F,change B_pd rf,results/phase7_pump_dump/results.csv,"{""feature_set"": ""B_pd"", ""model"": ""rf""}",pr_auc harder_exit minus default
+6F,change B_pd svm,results/phase7_pump_dump/results.csv,"{""feature_set"": ""B_pd"", ""model"": ""svm""}",pr_auc harder_exit minus default
 7-9,14,results/phase3_features/classify/HI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",n_pos_groups
 7-9,10,results/phase3_features/classify/LI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",n_pos_groups
 7-9,131,results/phase3_features/classify/HI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",n_pos
@@ -2861,6 +2922,11 @@ hn-on_chords-off,"+0.610 [+0.456, +0.700]",results/phase3_features/classify/synt
 7,0.365,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D+T_local_landscape"", ""k_mode"": ""fixed""}",purity_type_random
 7,0.336,results/phase4_cluster/results.csv,"{""dataset"": ""HI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",purity_majority
 7,+0.190,results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}",diff
+7,0.906,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""exit_spread_alone"", ""model"": ""none""}",pr_auc
+7,0.643,results/phase7_pump_dump/results.csv,"{""condition"": ""harder_exit"", ""feature_set"": ""exit_spread_alone"", ""model"": ""none""}",pr_auc
+7,0.388,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""B_pd"", ""model"": ""logreg""}",pr_auc
+7,0.390,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""B_pd"", ""model"": ""logreg""}",prevalence
+7,47,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""logreg""}",n_pos_groups
 7-9,0.006,results/phase3_features/classify/LI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""D_birth_alone"", ""model"": ""none""}",pr_auc
 7-9,0.0039,results/phase3_features/classify/LI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
 7-9,0.314,results/phase3_features/classify/HI_tau0.05/results.csv,"{""variant"": ""primary"", ""feature_set"": ""D_birth_alone"", ""model"": ""none""}",pr_auc
@@ -2890,6 +2956,12 @@ hn-on_chords-off,"+0.610 [+0.456, +0.700]",results/phase3_features/classify/synt
 8,0.260,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",ari_type
 8,0.730,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",purity_type
 8,0.536,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""T_local_landscape"", ""k_mode"": ""fixed""}",purity_type_random
+8,"+0.502 [+0.380, +0.601]",results/phase7_pump_dump/paired_differences.csv,"{""condition"": ""default"", ""model"": ""logreg"", ""comparison"": ""M minus B_pd""}","diff,ci_low,ci_high"
+8,"+0.602 [+0.486, +0.695]",results/phase7_pump_dump/paired_differences.csv,"{""condition"": ""default"", ""model"": ""rf"", ""comparison"": ""M minus B_pd""}","diff,ci_low,ci_high"
+8,"+0.514 [+0.400, +0.618]",results/phase7_pump_dump/paired_differences.csv,"{""condition"": ""default"", ""model"": ""svm"", ""comparison"": ""M minus B_pd""}","diff,ci_low,ci_high"
+8,47,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""rf""}",n_pos_groups
+8,0.390,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""rf""}",prevalence
+7-9,0.906,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""exit_spread_alone"", ""model"": ""none""}",pr_auc
 dev,0,results/phase3_features/ibm_split_counts.csv,"{""dataset"": ""HI"", ""tau_quantile"": 0.05, ""scheme"": ""time_ordered"", ""part"": ""test""}",candidates
 dev,1,results/phase3_features/ibm_split_counts.csv,"{""dataset"": ""LI"", ""tau_quantile"": 0.05, ""scheme"": ""time_ordered"", ""part"": ""test""}",candidates
 figures,0.010753,results/phase3_features/classify/synthetic/hn-off_chords-default/per_scenario.csv,"{""scenario"": ""isolated"", ""feature_set"": ""B"", ""model"": ""logreg""}",prevalence
@@ -2925,3 +2997,5 @@ figures,37,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"":
 figures,9,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",n_groups
 figures,3,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",n_types
 figures,3,results/phase4_cluster/results.csv,"{""dataset"": ""LI"", ""vector"": ""D"", ""k_mode"": ""fixed""}",k
+figures,0.390,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""rf""}",prevalence
+figures,47,results/phase7_pump_dump/results.csv,"{""condition"": ""default"", ""feature_set"": ""M"", ""model"": ""rf""}",n_pos_groups

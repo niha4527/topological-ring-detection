@@ -164,6 +164,29 @@ Paired B+D+T minus B+D (RMSE and MAE: negative = B+D+T better):
 
 <<TABLE 6E|1>>
 
+### 8.14 Synthetic pump-and-dump track (minor, exploratory, no topology)
+
+*Question.* Does the harness work on a second pattern type, and do timing features separate planted pump-and-dump groups from a group-size baseline? *Setup.* 6 seeds, 8 pump / 8 organic / 5 news groups per seed, candidates and features as in section 6.16, fixed hyperparameters, grouped CV and bootstrap. **Synthetic only; no topology; the generator author decides separability.** Candidates (ambiguous excluded from the primary variant):
+
+<<TABLE 6F|1>>
+
+Default condition (prevalence 0.390, 47 positive groups):
+
+<<TABLE 6F|2>>
+<<TABLE 6F|3>>
+
+Harder exits (a wider spread of the planted exit times; the candidates and groups are identical):
+
+<<TABLE 6F|4>>
+<<TABLE 6F|5>>
+<<TABLE 6F|6>>
+
+![Figure 8.11. Synthetic pump-and-dump (no topology): PR-AUC of M and B_pd features by model in the default and harder-exit conditions; prevalence 0.390 (dashed line), 47 positive groups. Error bars: 95% grouped-bootstrap CI.](numbers_pack/figures/pump_dump_pr_auc.png)
+
+*How to read it.* M beats B_pd for all three models in both conditions (paired differences with CIs above 0), and widening the exit spread lowers M's PR-AUC (the last table is a difference of two separate point estimates, with no CI). **One feature, `-M_exit_spread_h` alone, reaches 0.906 [0.860, 0.945] in the default condition and 0.643 [0.513, 0.752] with wider exits**: the generator is nearly separable by exit timing. B_pd is weak by construction, because every group is drawn from the same size and volume distributions, so the gain is large by design.
+
+*Conclusion.* The harness runs unchanged on a second pattern type and timing features separate the planted groups; this says nothing about real pump-and-dump data or about topology.
+
 ### 8.13 Where the planned figures and tables went
 
 Planned in `paper/paper_content.md` section 7 versus what exists: **F6 (PR curves per feature set) was not made; PR-AUC bars with CIs (Figures 8.3 and 8.4) are used instead.** **F10 is a PCA scatter (Figures 8.9, 8.10), not a dendrogram.**

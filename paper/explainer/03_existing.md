@@ -1,6 +1,6 @@
 ## 3. Existing solutions and their limits
 
-This section describes method *families* in general terms. Where a specific paper is named, it was checked (URLs in the reference list at the end of section 14); where a claim about a family rests on common knowledge that we did not verify against a specific source, it is marked [citation needed]. We did not run any of these methods ourselves (section 10.2).
+This section describes method *families* in general terms. Where a specific paper is named, it was checked (URLs in the reference list at the end of section 14); where a claim about a family rests on common knowledge that we did not verify against a specific source, it is marked [citation needed]. We did not run any of these methods ourselves (section 10.3).
 
 ### 3.1 Density and community methods
 
