@@ -14,6 +14,7 @@ computed once per window (`window_baseline`) and shared by all candidates (confi
 
 from __future__ import annotations
 
+import pickle
 from pathlib import Path
 
 import networkx as nx
@@ -37,10 +38,22 @@ def load_config(path: str | Path | None = None) -> dict:
 class WindowBaseline:
     """Per-window cache: betweenness (computed once) and lazily computed local clustering."""
 
-    def __init__(self, G: nx.DiGraph, config: dict | None = None):
+    def __init__(self, G: nx.DiGraph, config: dict | None = None, cache_path: str | Path | None = None):
+        """cache_path: optional file caching the betweenness of this window across runs (e.g. another
+        tau_quantile on the same window). The cache stores the settings and the graph size and is only
+        used if they match; the cached values are the ones the computation would produce."""
         bc = (config or load_config())["betweenness"]
         self.G = G
         self.Gu = G.to_undirected(as_view=True)
+        self._clust: dict = {}
+        stamp = {"bc": dict(bc), "n_nodes": G.number_of_nodes(), "n_edges": G.number_of_edges()}
+        if cache_path is not None and Path(cache_path).exists():
+            with open(cache_path, "rb") as f:
+                hit = pickle.load(f)
+            if hit["stamp"] == stamp:
+                self.betweenness, self.betweenness_exact, self.from_cache = hit["betweenness"], hit["exact"], True
+                return
+        self.from_cache = False
         BG = G
         if bc["graph"] == "sparsified":
             w = np.array([d["weight"] for _, _, d in G.edges(data=True)])
@@ -48,7 +61,12 @@ class WindowBaseline:
         exact = BG.number_of_nodes() <= bc["exact_max_nodes"]
         self.betweenness = nx.betweenness_centrality(BG, k=None if exact else bc["k"], seed=bc["seed"], normalized=True)
         self.betweenness_exact = exact
-        self._clust: dict = {}
+        if cache_path is not None:
+            Path(cache_path).parent.mkdir(parents=True, exist_ok=True)
+            tmp = Path(str(cache_path) + ".tmp")
+            with open(tmp, "wb") as f:
+                pickle.dump({"stamp": stamp, "betweenness": self.betweenness, "exact": exact}, f)
+            tmp.replace(cache_path)
 
     def clustering(self, v) -> float:
         if v not in self._clust:

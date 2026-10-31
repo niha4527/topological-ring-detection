@@ -52,3 +52,30 @@ def test_ring_members_missing_from_betweenness_graph_get_zero():
     ctx = WindowBaseline(G, cfg)
     f = baseline_features(G, c, ctx)
     assert np.isfinite(list(f.values())).all()
+
+
+def test_cached_betweenness_equals_uncached_and_is_reused(tmp_path, monkeypatch):
+    import ringtda.graph.baseline_features as bf
+
+    G = nx.gnp_random_graph(60, 0.08, seed=1, directed=True)
+    for u, v in G.edges:
+        G.edges[u, v]["weight"] = 0.5
+    cfg = {"betweenness": {"exact_max_nodes": 10, "k": 15, "seed": 3, "graph": "full", "sparsify_quantile": 0.25}}
+    plain = WindowBaseline(G, cfg)
+    path = tmp_path / "w.pkl"
+    first = WindowBaseline(G, cfg, cache_path=path)  # computes and writes
+    assert path.exists() and not first.from_cache and first.betweenness == plain.betweenness
+
+    def boom(*a, **k):
+        raise AssertionError("betweenness recomputed instead of read from the cache")
+
+    monkeypatch.setattr(bf.nx, "betweenness_centrality", boom)
+    second = WindowBaseline(G, cfg, cache_path=path)  # reads
+    assert second.from_cache and second.betweenness == plain.betweenness
+    # different settings or a different graph never reuse the cache
+    monkeypatch.undo()
+    other = {"betweenness": {**cfg["betweenness"], "seed": 4}}
+    assert not WindowBaseline(G, other, cache_path=path).from_cache
+    G2 = G.copy()
+    G2.add_edge(0, 59, weight=0.5)
+    assert not WindowBaseline(G2, cfg, cache_path=path).from_cache

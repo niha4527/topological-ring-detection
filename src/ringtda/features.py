@@ -16,6 +16,8 @@ T feature table (landscapes + scalars, local and window level) with the configur
 
 from __future__ import annotations
 
+import time
+
 import numpy as np
 import pandas as pd
 
@@ -96,10 +98,14 @@ def window_candidates(
 KEYS = ["window_id", "candidate_id"]
 
 
-def _feature_table(windows, parts, tau_quantile, max_len, cfg, backend, return_candidates):
+def _feature_table(windows, parts, tau_quantile, max_len, cfg, backend, return_candidates, betweenness_cache=None, timings=None):
     """Shared loop of the B / D / T tables: same windows, graphs, candidates and (window_id,
     candidate_id) keys for every part. parts: subset of {"B", "D", "T"}; columns are
-    keys + B + D + T_local + T_win in that order."""
+    keys + B + D + T_local + T_win in that order.
+
+    betweenness_cache: optional file path for the (single) window's cached betweenness (B only).
+    timings: optional dict filled with accumulated seconds per part ("graph_candidates", "B", "D", "T").
+    """
     if tau_quantile is None:
         tau_quantile = cfg["candidates"]["tau_quantile"]
     names = (
@@ -107,30 +113,45 @@ def _feature_table(windows, parts, tau_quantile, max_len, cfg, backend, return_c
         + (D_NAMES if "D" in parts else [])
         + (feature_names(cfg, "T_local") + feature_names(cfg, "T_win") if "T" in parts else [])
     )
+    tm = timings if timings is not None else {}
+    for k in ("graph_candidates", "B", "D", "T"):
+        tm.setdefault(k, 0.0)
     rows, cands = [], {}
     for wid, tx in enumerate(windows):
+        t0 = time.perf_counter()
         _, G, Gs, tau = window_graphs(tx, tau_quantile)
         res = candidate_rings(G, tau=tau, max_len=max_len)
         cands[wid] = res.candidates
+        tm["graph_candidates"] += time.perf_counter() - t0
         if not res.candidates:
             continue
         if "T" in parts:
+            t0 = time.perf_counter()
             wmax = float(max(d["weight"] for _, _, d in G.edges(data=True)))
             win = window_topology_features(Gs, wmax, cfg, backend)  # once per window
             LG = local_graph(G, Gs, cfg)
+            tm["T"] += time.perf_counter() - t0
         if "B" in parts:
-            ctx = WindowBaseline(G, load_features_config())  # betweenness once per window
+            t0 = time.perf_counter()
+            ctx = WindowBaseline(G, load_features_config(), betweenness_cache)  # betweenness once per window
+            tm["B"] += time.perf_counter() - t0
         if "D" in parts:
             fill = gap_cv_fill(G)
         for cid, c in enumerate(res.candidates):
             row = {"window_id": wid, "candidate_id": cid}
             if "B" in parts:
+                t0 = time.perf_counter()
                 row.update(baseline_features(G, c, ctx, cfg["local"]["hops"]))
+                tm["B"] += time.perf_counter() - t0
             if "D" in parts:
+                t0 = time.perf_counter()
                 row.update(direction_features(G, c, fill))
+                tm["D"] += time.perf_counter() - t0
             if "T" in parts:
+                t0 = time.perf_counter()
                 row.update(local_topology_features(LG, c, wmax, cfg, backend))
                 row.update(win)
+                tm["T"] += time.perf_counter() - t0
             rows.append(row)
     df = pd.DataFrame(rows, columns=KEYS + names)
     return (df, cands) if return_candidates else df
@@ -153,18 +174,21 @@ def t_feature_table(
     return _feature_table(windows, {"T"}, tau_quantile, max_len, config or load_config(), backend, return_candidates)
 
 
-def bd_feature_table(windows, tau_quantile: float | None = None, max_len: int = 6, config: dict | None = None, return_candidates: bool = False):
+def bd_feature_table(
+    windows, tau_quantile: float | None = None, max_len: int = 6, config: dict | None = None, return_candidates: bool = False,
+    betweenness_cache=None, timings=None,
+):
     """B + D table with the same keys, windows and candidates as `t_feature_table` (B: graph baseline
     on the full window graph; D: direction/behaviour incl. ring birth). Label-free by signature."""
-    return _feature_table(windows, {"B", "D"}, tau_quantile, max_len, config or load_config(), None, return_candidates)
+    return _feature_table(windows, {"B", "D"}, tau_quantile, max_len, config or load_config(), None, return_candidates, betweenness_cache, timings)
 
 
 def full_feature_table(
     windows, tau_quantile: float | None = None, max_len: int = 6, config: dict | None = None, backend: str | None = None,
-    return_candidates: bool = False,
+    return_candidates: bool = False, betweenness_cache=None, timings=None,
 ):
     """B + D + T joined on (window_id, candidate_id), computing windows and candidates once."""
-    return _feature_table(windows, {"B", "D", "T"}, tau_quantile, max_len, config or load_config(), backend, return_candidates)
+    return _feature_table(windows, {"B", "D", "T"}, tau_quantile, max_len, config or load_config(), backend, return_candidates, betweenness_cache, timings)
 
 
 def feature_sets(config: dict | None = None) -> dict[str, list[str]]:
