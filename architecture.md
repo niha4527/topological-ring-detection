@@ -30,7 +30,7 @@ One windowed, directed transaction graph feeds a seven-stage pipeline. Each stag
         |
  [7 eval]      eval/labels.py splits.py metrics.py audit.py recall.py [done]   ablations.py [todo]
 
- [4 motif]     pump-and-dump track, optional stretch [todo]
+ [4 motif]     pump-and-dump track, optional stretch, synthetic only, no topology [done]
 ```
 
 Rules that shape the design (from `CLAUDE.md`):
@@ -175,4 +175,4 @@ Headline report numbers (synthetic only): learned weights raise test average pre
 4. (not done) Sensitivity sweeps over `tau_quantile` for classification, `max_len`, infinite-bar cap, label threshold X, window length (only candidate recall is swept).
 5. (done) Results numbers pack (`paper/numbers_pack.md`). Remaining: write-up (`paper/paper_content.md` is the content pack).
 
-Phase 6 (bandit policies and drift benchmark) is done (`threshold/bandit_sim.py`). Phase 4 clustering (`models/cluster.py`) and synthetic-only severity regression (`models/regress.py`) are done as exploratory runs; infinite-bar cap sensitivity is done (`experiments/cap_sensitivity.py`, `configs/cap_sensitivity.yaml`). Phase 5 (NFT) is cut: running Dune queries is blocked on the free tier. Future work (not planned for this iteration): Phase 5 NFT loader and label-provenance audit, the pump-and-dump track, and the undirected-complex ablation.
+Phase 6 (bandit policies and drift benchmark) is done (`threshold/bandit_sim.py`). Phase 4 clustering (`models/cluster.py`) and synthetic-only severity regression (`models/regress.py`) are done as exploratory runs; infinite-bar cap sensitivity is done (`experiments/cap_sensitivity.py`, `configs/cap_sensitivity.yaml`). Phase 5 (NFT) is cut: running Dune queries is blocked on the free tier. The synthetic-only pump-and-dump track (no topology) is done (`motif/pump_dump.py`). Future work (not planned for this iteration): Phase 5 NFT loader and label-provenance audit, and the undirected-complex ablation.
