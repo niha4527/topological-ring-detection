@@ -104,7 +104,7 @@ Engineering gates are hard tests. Reporting checkpoints are reported whatever th
 | 2 Topology pipeline | 3–4 | Candidates, persistence, landscapes, feature table | Gate: planted rings are candidates; cyclic persists, transitive dies, shortcut-filled dies | gates pass; landscapes, cap, feature table open |
 | Optimization report | (extra) | GD, PGD on simplex, online ascent | Report numbers reproducible | done (`report/Optimization_Report`) |
 | 3 IBM AML | 5–6 | Audit, labels, classifiers, ablations | Report: B+D+T vs B+D with CIs; candidate recall | done |
-| 4 Typing + severity | 7 | Clustering, regression | Report: ARI/purity, RMSE with CIs | done (exploratory clustering on IBM positives; severity regression synthetic only) |
+| 4 Typing + severity | 7 | Clustering, regression | Report: ARI/purity, RMSE with CIs | partial: exploratory clustering, synthetic-only severity |
 | 5 NFT transfer | 8–9 | Loader, provenance audit | Report with caveats | NOT done: running Dune queries is blocked on the free tier; BigQuery access confirmed and schemas inspected; planned leakage-controlled subset = filters 4/5 only |
 | 6 Adaptive threshold | 10 | Bandit vs fixed vs re-tuned vs oracle | Report | done (ascent and bandits run; the bandits lose to the re-tuned comparator at the primary setting) |
 | 7 Stretch + write-up | 11–12 | Pump-and-dump if time; paper | none | pump-and-dump cut; numbers pack done, write-up remaining |
