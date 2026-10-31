@@ -1,0 +1,25 @@
+# Phase 7 synthetic pump-and-dump track (experiments/pump_dump_run.py). Fixed before the first run; exploratory, nothing is a gate.
+# THE GENERATOR AUTHOR DECIDES SEPARABILITY. No topology in this track.
+generator:                  # PumpDumpConfig fields (src/ringtda/data/pump_dump.py); everything else uses the dataclass defaults
+  n_accounts: 300
+  duration_h: 1344.0
+  n_pump: 8
+  n_organic: 8
+  n_news: 5
+  accum_band_h: 12.0
+  exit_gap_h: 4.0
+  bg_amount_logmean: 3.0    # background trades are small so that chance accumulation is rare (calibrated on candidate counts only, before any model run)
+  bg_amount_logsd: 0.8
+seeds: 6
+candidates:
+  band_h: 12.0
+  stride_h: 6.0
+  acc_min: 300.0            # buy volume in a band for an account to count as accumulating
+  m_min: 4                  # at least this many accumulating accounts
+  jaccard: 0.8
+  horizon_h: 120.0          # how long after the band the exits and price fall are read
+label_x: 0.8                # a candidate takes a planted group's kind if >= this share of its accounts belong to it
+conditions:                 # the only difference is the hardness knob: sd (hours) of planted exit times
+  default: {exit_spread_sd_h: 1.0}
+  harder_exit: {exit_spread_sd_h: 18.0}
+feature_sets: [M, B_pd]
