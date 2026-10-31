@@ -1,0 +1,17 @@
+# Phase 4 ring clustering (experiments/ibm_cluster.py). Fixed before the first run; exploratory, nothing is a gate.
+dataset_tau: "0.05"
+population:
+  datasets: [HI, LI]          # run separately
+  min_groups_per_type: 3      # a pattern type enters the population only with at least this many positive groups (HI: all four; LI: three)
+  min_types_for_dataset: 2    # a dataset is usable only with at least this many such types
+clustering:
+  linkage: ward               # Euclidean
+  k: n_types                  # fixed: number of pattern types in the population
+  k_range: [2, 8]             # one extra row: k chosen by best silhouette (exploratory)
+vectors:                      # standardized on the population (scaling fitted on all rows of the population)
+  D: [D]
+  T_local_landscape: [T_local_land]
+  D+T_local_landscape: [D, T_local_land]
+  B+D+T_all: [B, D, T_local, T_win]
+bootstrap: {n_boot: 500, seed: 12345}   # resample positive GROUPS with replacement, recluster
+baseline: {n_permutations: 1000, seed: 0}
