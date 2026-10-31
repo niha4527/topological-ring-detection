@@ -167,3 +167,19 @@ aggregate + weights + graph 5.7 s, candidate enumeration <= 0.8 s, `t_feature_ta
 accounts. In that window 15 attempts are complete, 11 of them with <= 6 accounts (the recall cap at
 `max_len` 6) and 12 with <= 8 (cap at 8). Recovered as candidates: 8 for `tau_quantile` 0.02-0.10 and 9
 at 0.15, identical at `max_len` 6 and 8. IBM `tau_quantile` sweep range: about 0.02 to 0.15.
+
+## Feature sets B, D, T (Phase 3)
+
+`features.full_feature_table` builds B, D and T on the same windows and candidates, keyed by
+`(window_id, candidate_id)`; `features.feature_sets()` lists the columns of B, B+D, B+D+T and T. The
+builders take only graphs, pairs and candidates (never labels, planted structures or attempt ids).
+- **D** (`graph/direction_features.py`, 17 columns): ring birth (`D_birth`), length, edge weights, mean/min
+  of each rank-normalised score, member degree imbalance, volume and timing statistics.
+- **B** (`graph/baseline_features.py`, 12 columns): member degrees, betweenness, clustering, neighbourhood
+  weight variance, density and size, on the FULL window graph with the same 1-hop neighbourhood as T. T takes
+  its neighbourhood from the sparsified graph by default, so B sees at least as much of the graph as T.
+- **Betweenness.** Exact for windows with <= 3000 nodes (synthetic), otherwise k = 100 sampled sources with a
+  fixed seed on the full window graph, cached per window (`configs/features.yaml`). Timing on an IBM HI-Small
+  5-day window (404k nodes, 554k edges): 17.8 s for k = 50 and 34.8 s for k = 100; k = 50 gave non-zero values
+  for only 166 nodes, so k = 100 is used. The whole B step for that window is about 82 s (betweenness plus
+  neighbourhood extraction and clustering around hubs).

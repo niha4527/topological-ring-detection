@@ -58,7 +58,7 @@ Rules that shape the design (from `CLAUDE.md`):
 | `synthetic.py` | `SyntheticConfig` and `generate(cfg)`. Heavy-tailed background plus planted structures. Positives: isolated, dense-neighbourhood and chorded wash rings. Topology-sensitive negatives: transitive decoys, shortcut-filled pseudo-rings. Hard negatives: arbitrage loops, market makers, hot wallets. Knobs: `hard_negatives`, `wash_decoy_frac`, `mm_regularity`, jitter. | done |
 | `toy.py` | Hand-built graphs for gate tests: cyclic triangle, transitive triangle, reciprocal pair, shortcut-filled triangle, square. | done |
 | `ibm_aml.py` | AMLworld loader (`load_ibm`, `load_ibm_files`): joins laundering attempts to transactions on (timestamp, banks, accounts, amount paid) with deterministic handling of duplicate keys, attaches attempt id and pattern type, drops and counts self-loops, accounts keyed by (bank, account), time in days; `iter_ibm_windows` (5-day windows, 1-day stride) feeds the existing aggregation. Settings in `configs/ibm.yaml`. | done |
-| `ibm_table.py` (package root) | `ibm_candidate_tables`: candidates, ring labels and first-seen day per (window, `tau_quantile`), reusing `aggregate_pairs`, `edge_weights` and `candidate_rings`. No features yet. | done |
+| `src/ringtda/ibm_table.py` (package root, not in `data/`) | `ibm_candidate_tables`: candidates, ring labels and first-seen day per (window, `tau_quantile`), reusing `aggregate_pairs`, `edge_weights` and `candidate_rings`. No features yet. | done |
 | `nft_trades.py` | Dune / BigQuery export loader. | todo |
 
 ### 3.2 `graph/`
@@ -66,7 +66,8 @@ Rules that shape the design (from `CLAUDE.md`):
 |---|---|---|
 | `windows.py` | `iter_windows`, `aggregate_pairs`, `_gap_cv`. | done |
 | `weights.py` | `compute_scores`, `rank_normalize`, `edge_weights(pairs, scores)`, `to_digraph`. Per-score ablations via the `scores` argument. | done |
-| `baseline_features.py` | B set: member degree and betweenness, local clustering, edge-weight variance, neighbourhood density. | todo |
+| `baseline_features.py` | B set (12 columns) on the full window graph: member degrees, betweenness (exact up to 3000 nodes, else k = 100 sampled, cached per window), clustering, neighbourhood weight variance, density, size. | done |
+| `direction_features.py` | D set (17 columns): ring birth, length, weights, rank-normalised score mean/min, degree imbalance, volume and timing statistics. Label-free by signature. | done |
 
 Known property (Proposition 1): with equal weights, a multi-party ring has `z_rec = 0` on every edge, so its edge weight cannot fall below 1/3. This is why `alpha` is learned.
 
@@ -83,7 +84,7 @@ Known property (Proposition 1): with equal weights, a multi-party ring has `z_re
 - `t_feature_table(windows, tau_quantile=None, max_len=6, ...)` is the Phase 3 T table: one row per candidate keyed by `(window_id, candidate_id)`, 311 T columns (`T_local_*` from `vectorize.py`, `T_win_*` computed once per window), fixed width, no NaNs, T only. `T_local_inf_h1` counts all infinite H1 bars in the neighbourhood; `T_local_ring_inf` is exact: 1 if the ring's cycle (Z/2 vector over the directed edges of its local graph) is NOT in the column space of the Z/2 boundary matrix of the directed 2-simplices, i.e. the loop is never filled. Ring membership only picks the cycle; ring birth is not used. It ignores filtration values, is backend-independent, and falls back to a birth-match proxy (logged) if a neighbourhood exceeds `local.ring_inf_limits`.
 - `window_candidates(tx, planted, tau_quantile=0.25, max_len=5, topo=True, label_x=0.8)` is the **report path**. Its D-like columns are `length`, `birth_eq`, mean and min scores. Its `topo_*` columns are **legacy: report-only, fixed cap 1.0, superseded by the window-max cap** in `vectorize.py`. They ignore `configs/topology.yaml`. New code must not use them.
 
-Missing: B and D feature code (D currently lives only in `window_candidates`).
+`bd_feature_table` and `full_feature_table` build B, D and T on the same windows and candidates (keys `(window_id, candidate_id)`, shared loop with `t_feature_table`); `feature_sets()` gives the column lists for B, B+D, B+D+T and T. Leakage guard: `tests/test_feature_leakage.py`.
 
 ### 3.5 `eval/`
 | File | Role | Status |
@@ -125,7 +126,7 @@ Pump-and-dump features: accumulation concentration, exit synchrony, price trajec
 
 ## 5. Verified behaviours (engineering gates)
 
-147 tests pass (`pytest`, a few seconds). They cover:
+163 tests pass (`pytest`, a few seconds). They cover:
 - cyclic triangle gives one infinite H1 bar; transitive triangle gives none; shortcut-filled triangle dies at the fill weight; reciprocal pair gives an H1 class; `flagser` and `reference` agree (`test_directed_triangles.py`);
 - score and weight formulas and edge cases (`test_weights.py`);
 - candidate enumeration and dedup (`test_candidates.py`);
@@ -150,7 +151,7 @@ Headline report numbers (synthetic only): learned weights raise test average pre
 | Infinite-bar cap | window max filtration value | window max in the T table (configurable); fixed 1.0 in the legacy `topo_*` columns (report only) |
 | Sparsification | swept `tau_s` | quantile, default 0.25, a parameter of `t_feature_table` and the config; sweep not run yet |
 | Landscapes, window features | primary vectorization | done (`vectorize.py`) |
-| B features | required | not implemented |
+| B features | required | done (`baseline_features.py`; sampled betweenness on large windows) |
 | Dedup rule | lowest birth | shortest first, then birth (documented) |
 | Dedup overlap | 80% edge overlap | removes nothing for `max_len` <= 9; first removals at 10 (verified on dense windows, tests in `test_candidates.py`), so near-duplicate rings all stay; Phase 3 CV must group by ring identity |
 | Ring-specific infinite bar | n/a | `T_local_ring_inf`, exact Z/2 test (`ring_survives`); birth-match proxy only as an oversize fallback |
@@ -159,7 +160,7 @@ Headline report numbers (synthetic only): learned weights raise test average pre
 
 ## 8. Remaining build order
 
-1. D and B feature code for IBM and synthetic windows (ring birth stays in D); a combined B / D / T feature table.
+1. (done) D and B feature code and the combined B / D / T table; next, the same tables for all IBM windows and tau values.
 2. IBM AML pattern-behaviour audit of `s_rec`, `s_bal`, `s_reg` per pattern type; AML-specific weight variant if needed.
 3. Classification harness: `eval/metrics.py` (PR-AUC, grouped bootstrap CIs), `models/classify.py`; B / B+D / B+D+T / T on grouped CV, per scenario and with/without hard negatives, plus HI<->LI transfer. Evidence is thin by construction (10-16 positive groups): report group counts and prevalence, do not tune to narrow CIs.
 4. Sensitivity sweeps: `tau_quantile`, `max_len`, infinite-bar cap, label threshold X, window length.
