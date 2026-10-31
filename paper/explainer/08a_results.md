@@ -31,7 +31,7 @@ Each subsection gives the **question**, the **setup**, the table(s), **how to re
 
 *Conclusion.* The wash-trading weights describe IBM cycles only partly (the balance score does most of the work), and the timing score is mostly an imputed constant for laundering pairs. This is why IBM is used to validate the machinery, not the wash-trading weights.
 
-### 8.3 IBM HI-Small classification (the main real-structure result)
+### 8.3 IBM HI-Small classification (the main result on IBM AML data, itself synthetic)
 
 *Question.* Does B+D+T beat B+D? *Setup.* `tau_quantile` 0.05, `max_len` 6, 5-day windows with a 1-day stride; primary variant (ambiguous excluded); grouped CV (5 folds, 5 repeats), fixed hyperparameters, 1000 bootstrap resamples. **Candidates and labels:**
 

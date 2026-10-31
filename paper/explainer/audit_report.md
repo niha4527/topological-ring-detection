@@ -1,20 +1,20 @@
 # Explainer audit
 
-Words: 27239 including the copied pack tables; 15623 excluding table rows, figure lines and source lines. Numbers checked (outside code, URLs, references; integers up to 20 skipped: 881): 3528. Matched exactly as a token in the pack or a result file/config: 3483; matched only after rounding a source value: 42. Found only in project documents: 3. Unmatched: 0.
+Words: 27615 including the copied pack tables; 15883 excluding table rows, figure lines and source lines. Numbers checked (outside code, URLs, references; integers up to 20 skipped: 926): 3549. Matched exactly as a token in the pack or a result file/config: 3504; matched only after rounding a source value: 42. Found only in project documents: 3. Unmatched: 0.
 
 ## Words per section
 
 - front: 72
-- 1. One-page summary: 663
+- 1. One-page summary: 680
 - 2. Problem statement: 530
-- 3. Existing solutions and their limits: 1006
+- 3. Existing solutions and their limits: 1032
 - 4. Our solution: the concept, from scratch: 1746
 - 5. Data: 1093
 - 6. Implementation, stage by stage: 3075
 - 7. Evaluation protocol: why it looks the way it does: 483
-- 8. Results: 12363
-- 9. Conclusions: 635
-- 10. How this differs from other solutions: 379
+- 8. Results: 12441
+- 9. Conclusions: 846
+- 10. How this differs from other solutions: 423
 - 11. Limitations, deviations from v3, and what was not : 1877
 - 12. The story of how we got here: a decision log: 897
 - 13. Reproducibility: 436
