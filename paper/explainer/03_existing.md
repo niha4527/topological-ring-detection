@@ -4,7 +4,7 @@ This section describes method *families* in general terms. Where a specific pape
 
 ### 3.1 Density and community methods
 
-*What they do.* Partition the graph into communities or find dense subgraphs, then score groups that are unusually tightly connected, on the idea that colluding accounts trade mostly with each other. [citation needed]
+*What they do.* Partition the graph into communities [citation needed] or find dense subgraphs, then score groups that are unusually tightly connected, on the idea that colluding accounts trade mostly with each other. A verified example of dense-subgraph fraud detection is Fraudar (Hooi et al., KDD 2016, extended in ACM TKDD 2017, ref. 6), which searches for dense subgraphs while resisting camouflage.
 
 *What they miss and why.* A ring of three accounts has three edges: it is not dense in any useful sense, and a ring spread across a heavy-tailed graph is not a community. Density is a statement about how many edges exist among a set of nodes; a loop is a statement about the *direction* in which the few edges point. A dense blob of one-way traffic scores high and is harmless; a sparse loop scores low and is the target.
 
@@ -16,13 +16,13 @@ This section describes method *families* in general terms. Where a specific pape
 
 ### 3.3 Graph neural networks (GNNs)
 
-*What they do.* Learn node, edge or subgraph representations by passing messages along edges and train a classifier on labelled data. The AMLworld paper (Altman et al., NeurIPS 2023, Datasets and Benchmarks track) released the IBM data we use and ran baselines with graph neural networks and gradient-boosted trees (section 5.2).
+*What they do.* Learn node, edge or subgraph representations by passing messages along edges and train a classifier on labelled data. The AMLworld paper (Altman et al., NeurIPS 2023, Datasets and Benchmarks track, ref. 1) released the IBM data we use and ran baselines with graph neural networks and gradient-boosted trees (section 5.2). Weber et al. (KDD 2019 workshop, ref. 7) compared logistic regression, random forest, multilayer perceptrons and graph convolutional networks on the Elliptic Bitcoin transaction graph and reported that random forest performed best.
 
 *What they miss and why.* This is not a defect of GNNs in general, but of using them here: they need substantial labelled data and tuning, are hard to interpret ("which loop, how strong?"), and our design rules out deep learning (classical methods only), so **we did not compare against a GNN**. We cannot claim to beat one (section 10.3).
 
 ### 3.4 Cycle enumeration and strongly connected components
 
-*What they do.* Find strongly connected components (groups where every node can reach every other) and list simple directed cycles up to a length bound. Every account-level ring is found exactly. [citation needed for the specific enumeration algorithms]
+*What they do.* Find strongly connected components (groups where every node can reach every other) and list simple directed cycles up to a length bound. Every account-level ring is found exactly. According to the networkx documentation (ref. 13), `simple_cycles` uses a nonrecursive, iterator version of Johnson's algorithm (Johnson 1975, ref. 12) when no length bound is given, and a version of the algorithm of Gupta and Suzumura (ref. 10) when `length_bound` is given, which is our case.
 
 *What they miss and why.* The answer is **binary**: a cycle either exists or it does not. There is no measure of how strong it is (how suspicious are its edges), how stable it is as thresholds change, or whether its neighbourhood fills, splits or crowds it. Lots of benign loops exist too (arbitrage, market making, exchange hot wallets), so enumeration alone has a false-positive problem. In *our* pipeline cycle enumeration is kept as the localiser (section 4.7) and the new information we test is what persistence adds on top.
 

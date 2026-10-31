@@ -64,7 +64,7 @@ This section describes method *families* in general terms. Where a specific pape
 
 ### 3.1 Density and community methods
 
-*What they do.* Partition the graph into communities or find dense subgraphs, then score groups that are unusually tightly connected, on the idea that colluding accounts trade mostly with each other. [citation needed]
+*What they do.* Partition the graph into communities [citation needed] or find dense subgraphs, then score groups that are unusually tightly connected, on the idea that colluding accounts trade mostly with each other. A verified example of dense-subgraph fraud detection is Fraudar (Hooi et al., KDD 2016, extended in ACM TKDD 2017, ref. 6), which searches for dense subgraphs while resisting camouflage.
 
 *What they miss and why.* A ring of three accounts has three edges: it is not dense in any useful sense, and a ring spread across a heavy-tailed graph is not a community. Density is a statement about how many edges exist among a set of nodes; a loop is a statement about the *direction* in which the few edges point. A dense blob of one-way traffic scores high and is harmless; a sparse loop scores low and is the target.
 
@@ -76,13 +76,13 @@ This section describes method *families* in general terms. Where a specific pape
 
 ### 3.3 Graph neural networks (GNNs)
 
-*What they do.* Learn node, edge or subgraph representations by passing messages along edges and train a classifier on labelled data. The AMLworld paper (Altman et al., NeurIPS 2023, Datasets and Benchmarks track) released the IBM data we use and ran baselines with graph neural networks and gradient-boosted trees (section 5.2).
+*What they do.* Learn node, edge or subgraph representations by passing messages along edges and train a classifier on labelled data. The AMLworld paper (Altman et al., NeurIPS 2023, Datasets and Benchmarks track, ref. 1) released the IBM data we use and ran baselines with graph neural networks and gradient-boosted trees (section 5.2). Weber et al. (KDD 2019 workshop, ref. 7) compared logistic regression, random forest, multilayer perceptrons and graph convolutional networks on the Elliptic Bitcoin transaction graph and reported that random forest performed best.
 
 *What they miss and why.* This is not a defect of GNNs in general, but of using them here: they need substantial labelled data and tuning, are hard to interpret ("which loop, how strong?"), and our design rules out deep learning (classical methods only), so **we did not compare against a GNN**. We cannot claim to beat one (section 10.3).
 
 ### 3.4 Cycle enumeration and strongly connected components
 
-*What they do.* Find strongly connected components (groups where every node can reach every other) and list simple directed cycles up to a length bound. Every account-level ring is found exactly. [citation needed for the specific enumeration algorithms]
+*What they do.* Find strongly connected components (groups where every node can reach every other) and list simple directed cycles up to a length bound. Every account-level ring is found exactly. According to the networkx documentation (ref. 13), `simple_cycles` uses a nonrecursive, iterator version of Johnson's algorithm (Johnson 1975, ref. 12) when no length bound is given, and a version of the algorithm of Gupta and Suzumura (ref. 10) when `length_bound` is given, which is our case.
 
 *What they miss and why.* The answer is **binary**: a cycle either exists or it does not. There is no measure of how strong it is (how suspicious are its edges), how stable it is as thresholds change, or whether its neighbourhood fills, splits or crowds it. Lots of benign loops exist too (arbitrage, market making, exchange hot wallets), so enumeration alone has a false-positive problem. In *our* pipeline cycle enumeration is kept as the localiser (section 4.7) and the new information we test is what persistence adds on top.
 
@@ -306,7 +306,7 @@ Scores (all in [0, 1], higher = more suspicious), with V_ab the volume from a to
 
 ### 6.3 Sparsification, candidates and de-duplication (`topology/candidates.py`)
 
-`sparsify(G, tau)` keeps edges with weight at most tau. In the table builders tau is a *quantile* of the window's edge weights (default 0.25 on synthetic data; **0.05 on IBM**, so only the most suspicious 5% of edges survive). `candidate_rings` then finds SCCs with at least 2 nodes, enumerates simple directed cycles up to `max_len` = 6 (networkx), caps enumeration at 20000 cycles per SCC and records capped components in `truncated_sccs`. Each cycle becomes a **Candidate**: its accounts in canonical order, its edges, and its **birth** (maximum edge weight on the ring).
+`sparsify(G, tau)` keeps edges with weight at most tau. In the table builders tau is a *quantile* of the window's edge weights (default 0.25 on synthetic data; **0.05 on IBM**, so only the most suspicious 5% of edges survive). `candidate_rings` then finds SCCs with at least 2 nodes, enumerates simple directed cycles (networkx `simple_cycles` with `length_bound`, refs. 10 and 13) up to `max_len` = 6 (networkx), caps enumeration at 20000 cycles per SCC and records capped components in `truncated_sccs`. Each cycle becomes a **Candidate**: its accounts in canonical order, its edges, and its **birth** (maximum edge weight on the ring).
 
 **De-duplication, and what the code really does.** The proposal says to keep the lowest-birth cycle among near-duplicates; the code sorts shorter first, then by birth, and drops a cycle when at least 80% of its edges are covered by a kept cycle. **A k-cycle shares at most k-2 edges with any cycle of length at most k, so at 80% overlap nothing is removed for `max_len` at most 9** (first removals at 10; checked in `tests/test_candidates.py`). Dedup is therefore effectively off, near-duplicate rings all stay candidates, and cross-validation must group by ring identity (section 6.8).
 
@@ -330,7 +330,7 @@ Scores (all in [0, 1], higher = more suspicious), with V_ab the volume from a to
 
 **B (12).** Member degrees (mean and max of total, in and out), betweenness (mean, max), mean clustering, variance of weights in the neighbourhood, density, neighbourhood size, all on the **full** window graph, so B sees at least as much of the graph as T (T uses the sparsified one).
 
-**Betweenness and its sparsity.** Exact betweenness is infeasible on IBM windows (about 400k nodes), so windows with more than 3000 nodes use **k = 100 sampled sources** with a fixed seed, computed once per window and cached. Sampling leaves most nodes at exactly 0: in HI window 0 only a minority of nodes have non-zero betweenness (section 11.2).
+**Betweenness and its sparsity.** Exact betweenness is infeasible on IBM windows (about 400k nodes), so windows with more than 3000 nodes use **k = 100 sampled sources** with a fixed seed, computed once per window and cached. The networkx implementation estimates betweenness from k sampled source nodes and, per its documentation (ref. 14), follows Brandes and Pich (2007; the paper itself was not located, so it is not listed as verified); related sampling-based approximation work is Bader et al. 2007 (ref. 15). Sampling leaves most nodes at exactly 0: in HI window 0 only a minority of nodes have non-zero betweenness (section 11.2).
 
 **Leakage guard.** The feature builders take only the weighted window graph and a Candidate. They never receive planted structures, labels, attempt ids or scenario names; `tests/test_feature_leakage.py` and the feature-set tests check that no label, key, group or scenario column enters a feature set.
 
@@ -378,7 +378,7 @@ This is the earlier, self-contained part of the project: three small optimizatio
 Reuses the report's drift stream and reward. Arms are K = 10 evenly spaced thresholds on the score (0.05 to 0.95). **Bandit feedback:** only the played arm's reward is observed, and it becomes usable `max(d, 1)` windows after its window. **Warm start:** the first 5 windows are observed for all arms (the same windows that tune the fixed comparator).
 
 * **Discounted UCB** (Garivier and Moulines, ALT 2011): an observation from window s counts with weight gamma^(t - s); index = mean + c * sqrt(ln(1 + n) / N), with gamma = 0.9, c = 0.5.
-* **Sliding-window Thompson sampling [citation needed]:** a Beta(1 + successes, 1 + failures) belief per arm over the last W = 10 windows only; the normalised reward in [0, 1] becomes a Bernoulli trial when revealed; one sample per arm, play the argmax.
+* **Sliding-window Thompson sampling** (Trovò, Paladino, Restelli and Gatti, JAIR 2020, ref. 8; the analysis of the Beta-prior variant was corrected by Fiandri, Metelli and Trovò, ref. 9): a Beta(1 + successes, 1 + failures) belief per arm over the last W = 10 windows only; the normalised reward in [0, 1] becomes a Bernoulli trial when revealed; one sample per arm, play the argmax.
 
 Rewards are clipped at +-10 and mapped to [0, 1] for the policies. **All hyperparameters were fixed in `configs/bandit.yaml` before the first run.** Comparators and the oracle come from the existing `ascent.run_policies`, unchanged; 6 seeds, seed 0 is exactly the report's stream.
 
@@ -942,7 +942,7 @@ Ambiguous counted positive (prevalence 0.0513, 189 groups):
 *Source: `paper/numbers_pack.md` section 5.7.*
 
 
-*How to read it.* (i) D carries most of the signal: B+D beats B by a wide margin in every condition. (ii) B+D+T beats B+D by a paired CI above 0 in 7 of 12 condition-model cells (all three models with hard negatives off; only one cell with hard negatives on), but the gains are small because B+D is already high (B+D scores logistic regression 0.960-0.983, random forest 0.956-0.997, SVM 0.874-0.937 over the conditions). (iii) The gain is largest for isolated and chorded rings with SVM, and the T_local-only set usually does at least as well as the full T set. (iv) In the dense scenario the gain depends on the chord setting: with chords default it is not distinguishable from 0 for most models; with chords off it is positive for logistic regression and random forest. (v) The shortcut-filled negatives still rank high under B+D (their mean percentile is close to the wash rings'), and adding T lowers it (section 8.6 tables, shortcut_filled column): this is the intended topological effect, a ring-looking loop that is filled gets pushed down.
+*How to read it.* (i) D carries most of the signal: B+D minus B is positive with a CI above 0 in all four conditions for every model: logistic regression +0.414 to +0.542 (lowest CI lower bound +0.290), random forest +0.383 to +0.395 (lowest +0.244) and SVM +0.368 to +0.614 (lowest +0.184). (ii) B+D+T beats B+D by a paired CI above 0 in 7 of 12 condition-model cells (all three models with hard negatives off; only one cell with hard negatives on), but the gains are small because B+D is already high (B+D scores logistic regression 0.960-0.983, random forest 0.956-0.997, SVM 0.874-0.937 over the conditions). (iii) The gain is largest for isolated and chorded rings with SVM, and the T_local-only set usually does at least as well as the full T set. (iv) In the dense scenario the gain depends on the chord setting: with chords default it is not distinguishable from 0 for most models; with chords off it is positive for logistic regression and random forest. (v) The shortcut-filled negatives still rank high under B+D (their mean percentile is close to the wash rings'), and adding T lowers it (section 8.6 tables, shortcut_filled column): this is the intended topological effect, a ring-looking loop that is filled gets pushed down.
 
 *Conclusion.* **On the synthetic generator topology gives a small lift in most hard-negative-free cells, a smaller or null one when hard negatives are on, and the generator is nearly separable by D alone**, so this does not show that topology helps on real data.
 
@@ -1103,7 +1103,7 @@ Synthetic hn-off, chords default (prevalence 0.0203, 46 groups):
 *Source: `paper/numbers_pack.md` section 6C.*
 
 
-*How to read it.* Among `window_max`, `fixed_1.0` and `max_x1.1` the PR-AUC barely moves (largest absolute paired difference to `window_max` 0.024 on HI). `ring_local_max` changes several cells, mainly SVM on HI (+0.190 [+0.097, +0.240] for B+D+T), while the logistic regression cell goes the other way; because it was examined after seeing results, it is not adopted.
+*How to read it.* Among `window_max`, `fixed_1.0` and `max_x1.1` the PR-AUC barely moves (largest absolute paired difference to `window_max` 0.024, B+D+T with SVM under `fixed_1.0`, on HI). `ring_local_max`, a post hoc variant, changes several cells, mainly SVM on HI (+0.190 [+0.097, +0.240] for B+D+T), while the logistic regression cell goes the other way; because it was examined after seeing results, it is not adopted.
 
 *Conclusion.* The IBM conclusion (no detectable lift) does not hinge on the cap among the pre-set rules.
 
@@ -1410,7 +1410,7 @@ Harder exits (a wider spread of the planted exit times; the candidates and group
 
 ![Figure 8.11. Synthetic pump-and-dump (no topology): PR-AUC of M and B_pd features by model in the default and harder-exit conditions; prevalence 0.390 (dashed line), 47 positive groups. Error bars: 95% grouped-bootstrap CI.](numbers_pack/figures/pump_dump_pr_auc.png)
 
-*How to read it.* M beats B_pd for all three models in both conditions (paired differences with CIs above 0), and widening the exit spread lowers M's PR-AUC (the last table is a difference of two separate point estimates, with no CI). **One feature, `-M_exit_spread_h` alone, reaches 0.906 [0.860, 0.945] in the default condition and 0.643 [0.513, 0.752] with wider exits**: the generator is nearly separable by exit timing. B_pd is weak by construction, because every group is drawn from the same size and volume distributions, so the gain is large by design.
+*How to read it.* M beats B_pd in both conditions: the paired M minus B_pd difference is +0.382 to +0.502 for logistic regression (lowest CI lower bound +0.260), +0.547 to +0.602 for random forest (lowest +0.437) and +0.413 to +0.514 for SVM (lowest +0.299), and widening the exit spread lowers M's PR-AUC (the last table is a difference of two separate point estimates, with no CI). **One feature, `-M_exit_spread_h` alone, reaches 0.906 [0.860, 0.945] in the default condition and 0.643 [0.513, 0.752] with wider exits**: the generator is nearly separable by exit timing. B_pd is weak by construction, because every group is drawn from the same size and volume distributions, so the gain is large by design.
 
 *Conclusion.* The harness runs unchanged on a second pattern type and timing features separate the planted groups; this says nothing about real pump-and-dump data or about topology.
 
@@ -1531,6 +1531,7 @@ It cannot claim: that topology improves real-world wash-trading detection, that 
 Two more limits belong in every discussion of the results.
 
 * **Single generator.** Synthetic results come from one generator whose designer chose the scenarios (generator circularity); the IBM data come from one simulator.
+* **Bounded cycle enumeration.** Our candidates use networkx `simple_cycles` with a length bound, which per its documentation applies a version of the Gupta and Suzumura algorithm (ref. 10). A 2025 preprint (ref. 11) reports a counterexample in which that algorithm misses valid cycles; we did not test our enumeration against it, so candidate recall could be slightly optimistic or pessimistic for reasons unrelated to tau and `max_len`.
 * **Six seeds.** Synthetic statistics use 6 seeds (the v3 requirement is at least 5); the bandit benchmark uses 6 stream seeds.
 
 ### 11.2 Deviations from the v3 proposal
@@ -1742,7 +1743,7 @@ Git dates are from the repository history; almost all commits are dated 2026-10-
 12. **Why are the intervals wide?** The effective sample size is the number of positive groups, 14 and 10 (section 7).
 13. **Why grouped cross-validation?** Near-duplicate rings recur and would leak across a random split (section 7).
 14. **What failed?** Time-ordered split (unusable), the ring-birth detector on LI, the bandits, any topological lift on IBM, clustering by type, severity as forecasting (sections 8, 12).
-15. **Did topology help anywhere?** Slightly on the synthetic generator (7 of 12 cells), which is nearly separable by D (section 8.6).
+15. **Did topology help anywhere?** Slightly, only on the synthetic generator: B+D+T minus B+D ranges over the four conditions from +0.005 to +0.030 (logistic regression), -0.003 to +0.043 (random forest) and +0.038 to +0.096 (SVM); the CI is above 0 in 7 of 12 model-condition cells (lowest lower bound among them +0.001) and includes 0 in the other 5, all with hard negatives on. The generator is nearly separable by D (section 8.6).
 16. **Is the severity result forecasting?** No: ring size alone does as well; synthetic, generator decides persistence (section 8.10).
 17. **Why did the bandits lose?** One exploratory play of the flag-everything arm costs about as much as the whole oracle total and is hidden by reward clipping; one stream, fixed hyperparameters (section 8.9).
 18. **What did you not do and why?** NFT (Dune free tier blocks running queries), real-data pump-and-dump (a synthetic, no-topology track was run), undirected and persistence-image ablations, window and label-threshold sweeps (section 11.4).
@@ -1758,5 +1759,15 @@ Verified by web search (URL given):
 3. Garivier, Moulines. *On Upper-Confidence Bound Policies for Switching Bandit Problems.* ALT 2011 (discounted and sliding-window UCB). https://www.arxiv.org/abs/0805.3415
 4. Ofori-Boateng, Segovia Dominguez, Kantarcioglu, Akcora, Gel. *Topological Anomaly Detection in Dynamic Multilayer Blockchain Networks.* ECML PKDD 2021. https://arxiv.org/abs/2106.01806
 5. Bubenik. *Statistical Topological Data Analysis using Persistence Landscapes.* JMLR 16, 2015. https://www.jmlr.org/papers/v16/bubenik15a.html
+6. Hooi et al. *Graph-Based Fraud Detection in the Face of Camouflage* (Fraudar; KDD 2016, ACM TKDD 2017). https://alexbeutel.com/papers/tkdd_fraud_detection_with_camo.pdf
+7. Weber et al. *Anti-Money Laundering in Bitcoin: Experimenting with Graph Convolutional Networks for Financial Forensics.* KDD 2019 workshop. https://arxiv.org/pdf/1908.02591
+8. Trovò, Paladino, Restelli, Gatti. *Sliding-Window Thompson Sampling for Non-Stationary Settings.* JAIR 68, 2020. https://jair.org/index.php/jair/article/view/11407
+9. Fiandri, Metelli, Trovò. *Sliding-Window Thompson Sampling for Non-Stationary Settings* (corrected analysis of the Beta-prior variant). arXiv 2409.05181. https://arxiv.org/html/2409.05181v3
+10. Gupta, Suzumura. *Finding All Bounded-Length Simple Cycles in a Directed Graph.* arXiv 2105.10094 (2021). https://arxiv.org/abs/2105.10094
+11. Bauernöppel, Sack. *Finding All Bounded-Length Simple Cycles in a Directed Graphs - Revisited* (reports a counterexample to ref. 10). arXiv 2512.08392. https://arxiv.org/abs/2512.08392v1
+12. Johnson. *Finding all the elementary circuits of a directed graph.* SIAM J. Comput. 4(1), 77-84, 1975, DOI 10.1137/0204007 (the paper itself was not opened; the networkx documentation, ref. 13, names it).
+13. networkx documentation, `simple_cycles`. https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.cycles.simple_cycles.html
+14. networkx documentation, `betweenness_centrality` (parameter `k`, sampling after Brandes and Pich 2007). https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.centrality.betweenness_centrality.html
+15. Bader, Kintali, Madduri, Mihail. *Approximating betweenness centrality* (2007). https://pure.psu.edu/en/publications/approximating-betweenness-centrality/
 
-Claims left as **[citation needed]** in the text: community and density methods (3.1), centrality scores (3.2), the specific cycle-enumeration algorithms (3.4), sliding-window Thompson sampling (6.11).
+**Still `[citation needed]`:** community detection methods (3.1) and centrality scores (3.2). Brandes and Pich (2007) is named in the networkx documentation but the paper itself was not found, so it is not listed as verified.

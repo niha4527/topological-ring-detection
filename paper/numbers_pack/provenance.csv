@@ -2937,6 +2937,7 @@ hn-on_chords-off,"+0.610 [+0.456, +0.700]",results/phase3_features/classify/synt
 7-9,8,results/phase3_features/classify/candidate_recall/ibm.csv,"{""source"": ""HI"", ""scope"": ""days0-5"", ""max_len"": 6, ""tau_quantile"": 0.05}",n_recovered
 7-9,11,results/phase3_features/classify/candidate_recall/ibm.csv,"{""source"": ""HI"", ""scope"": ""days0-5"", ""max_len"": 6, ""tau_quantile"": 0.05}",n_complete_le_maxlen
 7-9,15,results/phase3_features/classify/candidate_recall/ibm.csv,"{""source"": ""HI"", ""scope"": ""days0-5"", ""max_len"": 6, ""tau_quantile"": 0.05}",n_complete
+8,"+0.190 [+0.097, +0.240]",results/phase3_features/cap_sensitivity/ibm/paired_differences.csv,"{""variant"": ""ring_local_max"", ""feature_set"": ""B+D+T"", ""model"": ""svm"", ""comparison"": ""B+D+T under this cap minus B+D+T under window_max""}","diff,ci_low,ci_high"
 7-9,-1.245,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",diff_share_mean
 7-9,-0.771,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 2, ""bandit"": ""swts"", ""comparator"": ""retune_M5""}",diff_share_mean
 7-9,+0.258,results/phase6_bandit/bandit_vs_comparators.csv,"{""lambda"": 1.0, ""lag"": 5, ""bandit"": ""ducb"", ""comparator"": ""retune_M5""}",diff_share_mean

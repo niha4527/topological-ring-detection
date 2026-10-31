@@ -103,6 +103,8 @@ def strip_prose(t):
     t = re.sub(r"!\[[^\]]*\]\([^)]*\)", " ", t)
     t = re.sub(r"https?://\S+", " ", t)
     t = re.sub(r"arXiv[: ]\s*\d{4}\.\d{4,5}", " ", t)
+    t = re.sub(r"DOI\s*10\.\d+/\d+", " ", t)
+    t = re.sub(r"\b\d+\(\d+\),? \d+-\d+\b|\b\d+, 20\d\d\b", " ", t)  # volume(issue), pages in references
     t = re.sub(r"`[^`\n]*`", " ", t)
     t = re.sub(r"\*Source:[^\n]*", " ", t)
     t = re.sub(r"(?i)\b(?:sections?|figures?|fig\.|tables?|§)\s*\d+(?:\.\d+)*(?:\s*(?:to|and|,)\s*\d+(?:\.\d+)*)*", " ", t)

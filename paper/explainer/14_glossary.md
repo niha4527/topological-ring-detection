@@ -98,7 +98,7 @@
 12. **Why are the intervals wide?** The effective sample size is the number of positive groups, 14 and 10 (section 7).
 13. **Why grouped cross-validation?** Near-duplicate rings recur and would leak across a random split (section 7).
 14. **What failed?** Time-ordered split (unusable), the ring-birth detector on LI, the bandits, any topological lift on IBM, clustering by type, severity as forecasting (sections 8, 12).
-15. **Did topology help anywhere?** Slightly on the synthetic generator (7 of 12 cells), which is nearly separable by D (section 8.6).
+15. **Did topology help anywhere?** Slightly, only on the synthetic generator: B+D+T minus B+D ranges over the four conditions from +0.005 to +0.030 (logistic regression), -0.003 to +0.043 (random forest) and +0.038 to +0.096 (SVM); the CI is above 0 in 7 of 12 model-condition cells (lowest lower bound among them +0.001) and includes 0 in the other 5, all with hard negatives on. The generator is nearly separable by D (section 8.6).
 16. **Is the severity result forecasting?** No: ring size alone does as well; synthetic, generator decides persistence (section 8.10).
 17. **Why did the bandits lose?** One exploratory play of the flag-everything arm costs about as much as the whole oracle total and is hidden by reward clipping; one stream, fixed hyperparameters (section 8.9).
 18. **What did you not do and why?** NFT (Dune free tier blocks running queries), real-data pump-and-dump (a synthetic, no-topology track was run), undirected and persistence-image ablations, window and label-threshold sweeps (section 11.4).
@@ -114,5 +114,15 @@ Verified by web search (URL given):
 3. Garivier, Moulines. *On Upper-Confidence Bound Policies for Switching Bandit Problems.* ALT 2011 (discounted and sliding-window UCB). https://www.arxiv.org/abs/0805.3415
 4. Ofori-Boateng, Segovia Dominguez, Kantarcioglu, Akcora, Gel. *Topological Anomaly Detection in Dynamic Multilayer Blockchain Networks.* ECML PKDD 2021. https://arxiv.org/abs/2106.01806
 5. Bubenik. *Statistical Topological Data Analysis using Persistence Landscapes.* JMLR 16, 2015. https://www.jmlr.org/papers/v16/bubenik15a.html
+6. Hooi et al. *Graph-Based Fraud Detection in the Face of Camouflage* (Fraudar; KDD 2016, ACM TKDD 2017). https://alexbeutel.com/papers/tkdd_fraud_detection_with_camo.pdf
+7. Weber et al. *Anti-Money Laundering in Bitcoin: Experimenting with Graph Convolutional Networks for Financial Forensics.* KDD 2019 workshop. https://arxiv.org/pdf/1908.02591
+8. Trovò, Paladino, Restelli, Gatti. *Sliding-Window Thompson Sampling for Non-Stationary Settings.* JAIR 68, 2020. https://jair.org/index.php/jair/article/view/11407
+9. Fiandri, Metelli, Trovò. *Sliding-Window Thompson Sampling for Non-Stationary Settings* (corrected analysis of the Beta-prior variant). arXiv 2409.05181. https://arxiv.org/html/2409.05181v3
+10. Gupta, Suzumura. *Finding All Bounded-Length Simple Cycles in a Directed Graph.* arXiv 2105.10094 (2021). https://arxiv.org/abs/2105.10094
+11. Bauernöppel, Sack. *Finding All Bounded-Length Simple Cycles in a Directed Graphs - Revisited* (reports a counterexample to ref. 10). arXiv 2512.08392. https://arxiv.org/abs/2512.08392v1
+12. Johnson. *Finding all the elementary circuits of a directed graph.* SIAM J. Comput. 4(1), 77-84, 1975, DOI 10.1137/0204007 (the paper itself was not opened; the networkx documentation, ref. 13, names it).
+13. networkx documentation, `simple_cycles`. https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.cycles.simple_cycles.html
+14. networkx documentation, `betweenness_centrality` (parameter `k`, sampling after Brandes and Pich 2007). https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.centrality.betweenness_centrality.html
+15. Bader, Kintali, Madduri, Mihail. *Approximating betweenness centrality* (2007). https://pure.psu.edu/en/publications/approximating-betweenness-centrality/
 
-Claims left as **[citation needed]** in the text: community and density methods (3.1), centrality scores (3.2), the specific cycle-enumeration algorithms (3.4), sliding-window Thompson sampling (6.11).
+**Still `[citation needed]`:** community detection methods (3.1) and centrality scores (3.2). Brandes and Pich (2007) is named in the networkx documentation but the paper itself was not found, so it is not listed as verified.

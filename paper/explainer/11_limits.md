@@ -8,6 +8,7 @@
 Two more limits belong in every discussion of the results.
 
 * **Single generator.** Synthetic results come from one generator whose designer chose the scenarios (generator circularity); the IBM data come from one simulator.
+* **Bounded cycle enumeration.** Our candidates use networkx `simple_cycles` with a length bound, which per its documentation applies a version of the Gupta and Suzumura algorithm (ref. 10). A 2025 preprint (ref. 11) reports a counterexample in which that algorithm misses valid cycles; we did not test our enumeration against it, so candidate recall could be slightly optimistic or pessimistic for reasons unrelated to tau and `max_len`.
 * **Six seeds.** Synthetic statistics use 6 seeds (the v3 requirement is at least 5); the bandit benchmark uses 6 stream seeds.
 
 ### 11.2 Deviations from the v3 proposal

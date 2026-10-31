@@ -1500,7 +1500,7 @@ Paired M minus B_pd (same resamples):
 - On synthetic data B+D+T improves on B+D by a paired CI above 0 in 7 of 12 condition-model cells (hn-off_chords-default: 3/3; hn-off_chords-off: 3/3; hn-on_chords-default: 0/3; hn-on_chords-off: 1/3); B+D itself scores logreg 0.960-0.983; rf 0.956-0.997; svm 0.874-0.937 over the four conditions (range per model).
 - Exploratory: the local topology columns alone (B+D+T_local) add to B+D on HI for logreg only (CI excludes 0 in 1 of 3 models: logreg +0.141, rf +0.041, svm +0.037); this is one of the exploratory comparisons and is not corrected for multiplicity.
 - Candidate recall is partial and tau-dependent (section 6): HI days 0-5, tau 0.05, max_len 6 recovers 8 of 11 reachable complete CYCLE attempts (15 complete); synthetic recall is 1.00 with hard negatives off at every tau tested.
-- T_local / T_win cap choice among window_max, fixed 1.0 and 1.1 x window max barely changes HI B+D+T PR-AUC: largest absolute paired difference to window_max 0.024 (all models, both sets); `ring_local_max` is a post hoc variant (svm cell single-model, uncorrected).
+- T_local / T_win cap choice among window_max, fixed 1.0 and 1.1 x window max barely changes HI B+D+T PR-AUC: largest absolute paired difference to window_max 0.024 (all models, both sets; among these three rules only); `ring_local_max` is a post hoc variant (single model, uncorrected) that differs for svm by +0.190 [+0.097, +0.240] (B+D+T).
 
 **Supported (synthetic, exploratory, no topology):**
 

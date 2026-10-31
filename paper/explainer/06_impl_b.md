@@ -42,7 +42,7 @@ This is the earlier, self-contained part of the project: three small optimizatio
 Reuses the report's drift stream and reward. Arms are K = 10 evenly spaced thresholds on the score (0.05 to 0.95). **Bandit feedback:** only the played arm's reward is observed, and it becomes usable `max(d, 1)` windows after its window. **Warm start:** the first 5 windows are observed for all arms (the same windows that tune the fixed comparator).
 
 * **Discounted UCB** (Garivier and Moulines, ALT 2011): an observation from window s counts with weight gamma^(t - s); index = mean + c * sqrt(ln(1 + n) / N), with gamma = 0.9, c = 0.5.
-* **Sliding-window Thompson sampling [citation needed]:** a Beta(1 + successes, 1 + failures) belief per arm over the last W = 10 windows only; the normalised reward in [0, 1] becomes a Bernoulli trial when revealed; one sample per arm, play the argmax.
+* **Sliding-window Thompson sampling** (Trovò, Paladino, Restelli and Gatti, JAIR 2020, ref. 8; the analysis of the Beta-prior variant was corrected by Fiandri, Metelli and Trovò, ref. 9): a Beta(1 + successes, 1 + failures) belief per arm over the last W = 10 windows only; the normalised reward in [0, 1] becomes a Bernoulli trial when revealed; one sample per arm, play the argmax.
 
 Rewards are clipped at +-10 and mapped to [0, 1] for the policies. **All hyperparameters were fixed in `configs/bandit.yaml` before the first run.** Comparators and the oracle come from the existing `ascent.run_policies`, unchanged; 6 seeds, seed 0 is exactly the report's stream.
 
