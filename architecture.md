@@ -1,0 +1,166 @@
+# Architecture
+
+Technical architecture of `ringtda`, the topological ring detector for market manipulation. The design source is `Topological_Ring_Detection_for_Market_Manipulation_v3.md` (section numbers such as §3.1 refer to it). This file describes what the code does today and where the remaining stages plug in.
+
+Status legend: **[done]** implemented and tested, **[partial]** some of it exists, **[todo]** not started.
+
+## 1. System overview
+
+One windowed, directed transaction graph feeds a seven-stage pipeline. Each stage is a separate package under `src/ringtda/` and can be tested alone.
+
+```
+ transactions (t, sender, receiver, amount)
+        |
+ [1 data]      synthetic.py [done]   ibm_aml.py [todo]   nft_trades.py [todo]
+        |
+ [2 graph]     windows.py -> weights.py -> baseline features (B) [todo]
+        |         sliding windows    s_rec, s_bal, s_reg -> rank-normalize -> w = 1 - mean
+        |
+ [3 topology]  candidates.py          persistence.py            vectorize.py [done]
+        |       sparsify -> SCC ->     directed flag complex,    landscapes, infinite-bar
+        |       bounded cycles          flagser | reference      cap, undirected ablation
+        |
+ [features]    features.py [partial]: labels + D features + scalar T features per candidate
+        |
+ [5 models]    models/gd.py [done: logistic GD, simplex alpha learner]
+        |       classify.py cluster.py regress.py [todo]
+        |
+ [6 threshold] threshold/ascent.py [done: online gradient ascent + comparators]
+        |       bandit_sim.py (discounted UCB, sliding-window Thompson) [todo]
+        |
+ [7 eval]      eval/labels.py [done]   splits.py metrics.py ablations.py [todo]
+
+ [4 motif]     pump-and-dump track, optional stretch [todo]
+```
+
+Rules that shape the design (from `CLAUDE.md`):
+- Pipeline logic lives in `src/ringtda/`. Notebooks import and plot only.
+- Lower edge weight means more suspicious (sublevel-set filtration).
+- Classical ML only (scikit-learn). No deep learning.
+- Engineering gates are hard tests. Model performance is reported with confidence intervals and is never a test that must pass.
+
+## 2. Data flow
+
+1. **Ingest** a transaction table with columns time, sender, receiver, amount. The synthetic generator also returns a list of `Planted` structures as ground truth.
+2. **Window.** `iter_windows` slices the table with window length `L` and stride `S`. `aggregate_pairs` collapses each window to one row per ordered account pair: volume `V_ab`, count `n_ab`, and the CV of inter-transaction gaps.
+3. **Score and weight.** `compute_scores` gives `s_rec`, `s_bal`, `s_reg`. `rank_normalize` maps each to its empirical rank in the window (ties take the lowest rank). `edge_weights` combines them (equal weights by default, or a learned `alpha`). `to_digraph` returns a `networkx.DiGraph` with a `weight` attribute.
+4. **Localize.** `candidate_rings` sparsifies at cutoff `tau_s`, finds SCCs, enumerates simple directed cycles up to `max_len`, and de-duplicates. Output is `CandidateResult` holding `Candidate` objects (nodes, edges, length, birth).
+5. **Persist.** `neighborhood` extracts the ring plus its 1-hop neighbourhood. `directed_flag_persistence` returns `{dim: array of (birth, death)}` for H0 and H1.
+6. **Featurize.** `features.window_candidates` returns one table row per candidate plus the per-edge score arrays `Z`.
+7. **Model.** Feature rows go to the classifier, clusterer, regressor. Ring birth or the classifier score goes to the threshold policy.
+8. **Evaluate.** Temporal split with a gap, bootstrap CIs, per-scenario and per-feature-set reports.
+
+## 3. Module reference
+
+### 3.1 `data/`
+| File | Role | Status |
+|---|---|---|
+| `synthetic.py` | `SyntheticConfig` and `generate(cfg)`. Heavy-tailed background plus planted structures. Positives: isolated, dense-neighbourhood and chorded wash rings. Topology-sensitive negatives: transitive decoys, shortcut-filled pseudo-rings. Hard negatives: arbitrage loops, market makers, hot wallets. Knobs: `hard_negatives`, `wash_decoy_frac`, `mm_regularity`, jitter. | done |
+| `toy.py` | Hand-built graphs for gate tests: cyclic triangle, transitive triangle, reciprocal pair, shortcut-filled triangle, square. | done |
+| `ibm_aml.py` | AMLworld loader, patterns-file parser. | todo |
+| `nft_trades.py` | Dune / BigQuery export loader. | todo |
+
+### 3.2 `graph/`
+| File | Role | Status |
+|---|---|---|
+| `windows.py` | `iter_windows`, `aggregate_pairs`, `_gap_cv`. | done |
+| `weights.py` | `compute_scores`, `rank_normalize`, `edge_weights(pairs, scores)`, `to_digraph`. Per-score ablations via the `scores` argument. | done |
+| `baseline_features.py` | B set: member degree and betweenness, local clustering, edge-weight variance, neighbourhood density. | todo |
+
+Known property (Proposition 1): with equal weights, a multi-party ring has `z_rec = 0` on every edge, so its edge weight cannot fall below 1/3. This is why `alpha` is learned.
+
+### 3.3 `topology/`
+| File | Role | Status |
+|---|---|---|
+| `candidates.py` | `sparsify`, `candidate_rings(G, tau, max_len)`, `neighborhood(G, nodes, hops)`. Dedup is shortest-first then lowest birth (deviation from §3.3, see README). | done |
+| `persistence.py` | `directed_flag_persistence(G, weight, backend)`. Backends `flagser` (default, float32) and `reference` (pure-Python Z/2 boundary-matrix reduction). They must agree within tolerance. Complex capped at dimension 2. | done |
+| `vectorize.py` | T features. Local persistence of ring + 1-hop neighbourhood (`local_diagrams`), window-level persistence of the sparsified graph (`window_topology_features`, once per window), infinite-bar cap (rule in `configs/topology.yaml`, default window max), `gudhi` landscapes (3 x 50, range [0, 1.1]), scalar summaries, `T_local_ring_inf`. | done |
+| undirected ablation | `gudhi` clique complex for RQ4. | todo |
+
+### 3.4 `features.py` [partial]
+- `window_graphs(tx, tau_quantile)` gives the pairs, full graph, sparsified graph and `tau_s`.
+- `t_feature_table(windows, tau_quantile=None, max_len=6, ...)` is the Phase 3 T table: one row per candidate keyed by `(window_id, candidate_id)`, 311 T columns (`T_local_*` from `vectorize.py`, `T_win_*` computed once per window), fixed width, no NaNs, T only. `T_local_inf_h1` counts all infinite H1 bars in the neighbourhood; `T_local_ring_inf` is exact: 1 if the ring's cycle (Z/2 vector over the directed edges of its local graph) is NOT in the column space of the Z/2 boundary matrix of the directed 2-simplices, i.e. the loop is never filled. Ring membership only picks the cycle; ring birth is not used. It ignores filtration values, is backend-independent, and falls back to a birth-match proxy (logged) if a neighbourhood exceeds `local.ring_inf_limits`.
+- `window_candidates(tx, planted, tau_quantile=0.25, max_len=5, topo=True, label_x=0.8)` is the **report path**. Its D-like columns are `length`, `birth_eq`, mean and min scores. Its `topo_*` columns are **legacy: report-only, fixed cap 1.0, superseded by the window-max cap** in `vectorize.py`. They ignore `configs/topology.yaml`. New code must not use them.
+
+Missing: B and D feature code (D currently lives only in `window_candidates`).
+
+### 3.5 `eval/`
+| File | Role | Status |
+|---|---|---|
+| `labels.py` | §3.7 ring-labeling rule. `edge_backing`, `label_ring`, `label_candidates`. A ring is positive if at least X% (default 80) of its edges are backed by one planted structure, background if none, else ambiguous (`y = NaN`). Same rule is meant for IBM AML attempts. | done |
+| `splits.py` | Temporal split with a one-window gap; grouped CV by ring identity. | todo |
+| `metrics.py` | Precision, recall, F1, PR-AUC, ARI, purity, RMSE, MAE, Spearman, bootstrap CIs. | todo |
+| `ablations.py` | Feature-set, filtration, complex, vectorization and sensitivity runners. | todo |
+
+### 3.6 `models/`
+| File | Role | Status |
+|---|---|---|
+| `gd.py` | Problem A: class-weighted L2 logistic regression by gradient descent (`logistic_loss_grad`, `smoothness_constant`, `gradient_descent`). Problem B: `project_simplex` and `AlphaLearner`, which learns `alpha` on the simplex with log-sum-exp smooth ring birth. | done |
+| `classify.py` | scikit-learn logistic regression, random forest, RBF-SVM over feature sets B, B+D, B+D+T, T. | todo |
+| `cluster.py` | Ward hierarchical clustering on standardized landscape plus behaviour vectors. | todo |
+| `regress.py` | Ridge, random forest, gradient boosting for next-window wash volume. | todo |
+
+### 3.7 `threshold/`
+`ascent.py`: `reward`, `smoothed_reward_grad`, `best_tau`, `run_policies`. Runs online gradient ascent with label delay `d`, plus the fixed, periodically re-tuned (same lag) and hindsight-oracle comparators. A bandit variant (discounted UCB, sliding-window Thompson) is in the proposal only. [done for ascent, todo for bandit]
+
+### 3.8 `motif/` [todo, optional]
+Pump-and-dump features: accumulation concentration, exit synchrony, price trajectory. No topology.
+
+### 3.9 Support
+`viz.py` has `draw_digraph` and `plot_diagram` for notebooks. `experiments/gd_report.py` regenerates the optimization report numbers. `sanity_check.py` checks the TDA library.
+
+## 4. Key design decisions
+
+| Decision | Reason |
+|---|---|
+| Directed flag complex, not undirected clique complex | An undirected complex fills every 3-cycle at once, so the canonical three-party ring has zero persistence. Undirected is kept as an ablation. |
+| Localize by SCC plus cycle enumeration, not by homology | `pyflagser` returns no representative cycles. Persistence supplies features. |
+| Ring birth belongs to feature set D, not T | It is a function of the ring's own edge weights. Counting it in T would overstate topology. |
+| Primary test is B+D+T vs B+D | Isolates the topological contribution. A null result is reportable. |
+| Candidates built once on a loose equal-weight cutoff | The candidate set must not depend on the `alpha` being learned. |
+| Temporal split with a gap | Overlapping windows leak rings across random splits. |
+| Persistence on candidate neighbourhoods, dimension 2 | Keeps compute bounded. |
+| Two backends that must agree | `flagser` is fast; `reference` is auditable. |
+
+## 5. Verified behaviours (engineering gates)
+
+95 tests pass (`pytest`, about 1.4 s). They cover:
+- cyclic triangle gives one infinite H1 bar; transitive triangle gives none; shortcut-filled triangle dies at the fill weight; reciprocal pair gives an H1 class; `flagser` and `reference` agree (`test_directed_triangles.py`);
+- score and weight formulas and edge cases (`test_weights.py`);
+- candidate enumeration and dedup (`test_candidates.py`);
+- planted wash-ring edges land in the lowest-weight decile and every planted ring is a candidate (`test_planted_rings.py`);
+- generator scenarios (`test_synthetic_scenarios.py`);
+- ring-labeling rule (`test_labels.py`);
+- gradient correctness, simplex projection, GD vs SciPy (`test_gd.py`).
+
+## 6. Results provenance
+
+`results/report/` plus `results/gd_metrics.json` and `results/figures/` hold the numbers quoted in `report/Optimization_Report`. They come from `python experiments/gd_report.py --config report`, which pins the generator to dense, chorded, shortcut-filled and hot-wallet counts of 0 and treats ambiguous candidates as negatives. Never overwrite them. The script refuses without `--force`. New experiments go to `--config full` (`results/full/<ambiguous>/`) or a new folder. Any change to generator defaults, labels, candidates or weights must keep the `report` config reproducing the same numbers; check by re-running into a scratch copy and diffing.
+
+Headline report numbers (synthetic only): learned weights raise test average precision of the ring-birth detector from 0.568 to 0.9997 and drop reciprocity; a curvature-matched step converges in 322 iterations; online gradient ascent keeps 97% of oracle reward vs 24% for a fixed threshold.
+
+## 7. Gaps between design and code
+
+| Item | Design (v3) | Code now |
+|---|---|---|
+| Max cycle length | 6 | 6 in `t_feature_table` and `configs/topology.yaml`; 5 in `window_candidates` (report path, frozen) |
+| Infinite-bar cap | window max filtration value | window max in the T table (configurable); fixed 1.0 in the legacy `topo_*` columns (report only) |
+| Sparsification | swept `tau_s` | quantile, default 0.25, a parameter of `t_feature_table` and the config; sweep not run yet |
+| Landscapes, window features | primary vectorization | done (`vectorize.py`) |
+| B features | required | not implemented |
+| Dedup rule | lowest birth | shortest first, then birth (documented) |
+| Dedup overlap | 80% edge overlap | removes nothing for `max_len` <= 9; first removals at 10 (verified on dense windows, tests in `test_candidates.py`), so near-duplicate rings all stay; Phase 3 CV must group by ring identity |
+| Ring-specific infinite bar | n/a | `T_local_ring_inf`, exact Z/2 test (`ring_survives`); birth-match proxy only as an oversize fallback |
+| Threshold method | discounted UCB and Thompson | online gradient ascent only |
+| Repo layout | `configs/` YAML, per-phase notebooks | `configs/topology.yaml` only; one notebook |
+
+## 8. Remaining build order
+
+1. Phase 2 is done except the undirected ablation. Next: D and B feature code, then the IBM AML pattern-behaviour audit (Phase 3 start).
+2. `eval/splits.py`, `metrics.py`, bootstrap CIs; `models/classify.py`; run B / B+D / B+D+T / T on synthetic, per scenario, with and without hard negatives, on the `full` config.
+3. Phase 3: IBM AML loader, patterns-file inspection, pattern-behaviour audit, ring labels, same classifiers.
+4. Phase 4: `cluster.py` and `regress.py`.
+5. Phase 5: NFT loader and label-provenance audit.
+6. Phase 6: bandit policies and drift benchmark in `threshold/`.
+7. Phase 7: pump-and-dump track if time allows; write-up (`paper/paper_content.md` is the content pack).
+8. Sensitivity sweeps: window length, stride, `tau_s`, `max_len`, infinite-bar cap, X.
