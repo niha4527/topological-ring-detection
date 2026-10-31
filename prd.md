@@ -69,7 +69,7 @@ Build a classical-ML pipeline that finds, scores, types and tracks coordinated m
 | FR15 | Bandit threshold policies (discounted UCB, sliding-window Thompson) in the drift benchmark; compare with fixed, re-tuned (same lag), hindsight oracle | 6 | done (discounted UCB and sliding-window Thompson run on the report's drift stream against fixed, re-tuned, online ascent and oracle; they do not beat the re-tuned comparator at the primary setting, see `results/phase6_bandit/summary.md`) |
 | FR16 | Sensitivity sweeps: window length, stride, `tau_s`, `max_len`, infinite-bar cap, label threshold X | 3–7 | partial (candidate-recall sweep over `tau_quantile`, `max_len`; infinite-bar cap sensitivity on HI-Small and synthetic (`results/phase3_features/cap_sensitivity/`); classification at IBM tau 0.05 only; window length, stride and label threshold X sweeps not done) |
 | FR17 | Candidate-recall vs `tau_s` curve reported separately from end-to-end precision/recall | 3 | done (`experiments/candidate_recall.py`) |
-| FR18 | Pump-and-dump temporal-motif track | 7 | optional |
+| FR18 | Pump-and-dump temporal-motif track | 7 | done as a SYNTHETIC-ONLY exploratory run, no topology (own generator; `results/phase7_pump_dump/summary.md`) |
 
 ## 7. Non-functional requirements
 
@@ -136,7 +136,7 @@ Assumes a roughly 12-week semester; the project is already past the Phase 2 star
 
 ## 12. Success criteria
 
-- All engineering gates pass (`pytest` green; currently 204 tests).
+- All engineering gates pass (`pytest` green; currently 210 tests).
 - Every reporting checkpoint above has numbers with CIs, including null or negative results.
 - The report and paper state limitations from the design (length ≤ 6, synthetic IBM data, heuristic NFT labels, offline-only adaptation, hard negatives modelled).
 - Another person can reproduce the headline numbers from the documented commands.

@@ -92,6 +92,8 @@ results/       figures and metrics (git-ignored). results/report/ (+ the origina
 - [x] Phase 4 severity regression on SYNTHETIC data only (`models/regress.py`, `configs/regress.yaml`,
       `experiments/synth_severity.py`; IBM has no next-window wash volume) and infinite-bar cap sensitivity
       (`experiments/cap_sensitivity.py`, `configs/cap_sensitivity.yaml`; results git-ignored)
+- [x] Phase 7 optional: synthetic pump-and-dump track (`data/pump_dump.py`, `motif/pump_dump.py`, `configs/pump_dump.yaml`,
+      `experiments/pump_dump_run.py`); SYNTHETIC ONLY, NO TOPOLOGY
 - [ ] Write-up (paper). Phase 5 (NFT loader and label-provenance audit) is cut: running Dune queries is blocked on
       the free Dune tier
 

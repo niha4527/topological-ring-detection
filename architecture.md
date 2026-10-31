@@ -107,8 +107,8 @@ Known property (Proposition 1): with equal weights, a multi-party ring has `z_re
 ### 3.7 `threshold/`
 `ascent.py`: `reward`, `smoothed_reward_grad`, `best_tau`, `run_policies`. Runs online gradient ascent with label delay `d`, plus the fixed, periodically re-tuned (same lag) and hindsight-oracle comparators. `bandit_sim.py` (Phase 6, additive; `ascent.py` is unchanged): `DiscountedUCB`, `SlidingWindowTS` (Beta-Bernoulli on the normalised reward), `arm_grid`, `reward_matrix`, `run_bandit` (bandit feedback: only the played arm's reward is observed, usable `max(d, 1)` windows later; a full-information warm start on the first windows). Configuration `configs/bandit.yaml`; benchmark `experiments/bandit_report.py` on the optimization report's drift stream, results in `results/phase6_bandit/`. [done for ascent, todo for bandit]
 
-### 3.8 `motif/` [todo, optional]
-Pump-and-dump features: accumulation concentration, exit synchrony, price trajectory. No topology.
+### 3.8 `motif/` [done, optional, synthetic only]
+Pump-and-dump track (v3 §3.6), **no topology**. `data/pump_dump.py` is its own generator (synthetic.py is untouched): one asset, a noisy price, planted pump-and-dump groups (accumulate in a band, exit together, price run-up and fall), organic momentum buyers and a news-spike hard negative, with `exit_spread_sd_h` as the hardness knob. `motif/pump_dump.py` finds coordinated-accumulation windows and computes M_ features (accumulation concentration, exit synchrony, position dispersion, run-up, drawdown, group size) and the baseline B_pd (group size, per-account volume); features read only the trade table and price series. `experiments/pump_dump_run.py` reuses the classification harness unchanged. The generator author decides separability.
 
 ### 3.9 Support
 `viz.py` has `draw_digraph` and `plot_diagram` for notebooks. `experiments/gd_report.py` regenerates the optimization report numbers. `sanity_check.py` checks the TDA library.
@@ -130,7 +130,7 @@ Phase 3 and 6 experiment scripts (`experiments/`): `ibm_split_report.py` (counts
 
 ## 5. Verified behaviours (engineering gates)
 
-204 tests pass (`pytest`, a few seconds). They cover:
+210 tests pass (`pytest`, a few seconds). They cover:
 - cyclic triangle gives one infinite H1 bar; transitive triangle gives none; shortcut-filled triangle dies at the fill weight; reciprocal pair gives an H1 class; `flagser` and `reference` agree (`test_directed_triangles.py`);
 - score and weight formulas and edge cases (`test_weights.py`);
 - candidate enumeration and dedup (`test_candidates.py`);
@@ -141,6 +141,7 @@ Phase 3 and 6 experiment scripts (`experiments/`): `ibm_split_report.py` (counts
 - IBM loader, window iterator and ring labels on toy fixtures (`test_ibm_aml.py`); groups, grouped CV, time-ordered and transfer splits (`test_splits.py`);
 - gradient correctness, simplex projection, GD vs SciPy (`test_gd.py`);
 - B and D features and the leakage guard (`test_baseline_features.py`, `test_direction_features.py`, `test_feature_leakage.py`); PR-AUC and grouped bootstrap (`test_metrics.py`); classifiers, group disjointness, transfer (`test_classify.py`); audit (`test_audit.py`); synthetic table and recall (`test_synthetic_table.py`);
+- pump-and-dump generator, candidates, features and leakage guard (`test_pump_dump.py`);
 - severity target alignment, leakage guard and metrics (`test_regress.py`);
 - ring clustering metrics, baselines and bootstrap (`test_cluster.py`);
 - bandit policies: convergence to a known best arm, no reward used before its lag, sliding-window forgetting, determinism (`test_bandit_sim.py`).
