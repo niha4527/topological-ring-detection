@@ -18,3 +18,6 @@ results/*
 .ruff_cache/
 build/
 dist/
+
+# reference PDFs (cite via refs.bib only)
+paper/Reference papers/
