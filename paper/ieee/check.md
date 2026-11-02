@@ -40,7 +40,7 @@ Pages are PDF page indices in `paper/Reference papers/`. URLs were opened in Sta
 No claim was removed. One was softened (Fiandri) and two were reworded (pyflagser).
 
 ## 3. Remaining placeholders
-- `[AUTHOR NAMES]`, `[AFFILIATION]`, `[EMAIL]` in the title block (requested).
+- Title block: four authors (RV University, Bengaluru) filled in; no author placeholder remains.
 - No `[VERIFY]` or `[citation needed]` remains in main.tex. In refs.bib: `weber2019aml` has no DOI (none printed in the PDF); `trovo2020swts` has no page range (not listed on the JAIR page); `johnson1975circuits` carries no DOI or pages (only what the NetworkX page states); `fiandri2024swts` and `bauernoppel2025bounded` are preprints.
 - Community-detection and centrality sentences were dropped, so the explainer's [citation needed] items do not appear.
 
