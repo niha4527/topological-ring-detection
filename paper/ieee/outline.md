@@ -6,7 +6,7 @@
 1. A behaviour-weighted filtration and a directed-flag-complex pipeline for candidate rings (exact cycle localisation, two agreeing persistence backends, exact ring-survival test). We apply a directed flag complex to ring candidates; no priority is claimed.
 2. A pre-specified comparison B+D+T versus B+D under group-aware CV: on IBM AML data (itself synthetic) no detectable topological lift (CIs cannot rule out a small effect either way; HI 14 and LI 10 positive groups), while direction and behaviour features (D, incl. ring birth) carry the detection signal.
 3. On a near-separable synthetic generator a small lift appears in 7 of 12 cells, not concentrated where the design predicted, and it does not carry to IBM; the ring-birth signal does not transfer HI to LI.
-4. Documented negative and exploratory results: bandits lose to periodic re-tuning (online gradient ascent 0.981 of oracle), severity recovers generator structure, clustering weak, cap choice immaterial.
+4. Documented negative and exploratory results: bandits lose to periodic re-tuning (online gradient ascent 0.981 of oracle), severity recovers generator structure, clustering weak, small sensitivity to the cap among the pre-set rules (at most 0.024 in PR-AUC).
 
 ## Section plan
 | Section | Content | Sources | Pack / explainer results |

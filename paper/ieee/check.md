@@ -81,8 +81,11 @@ Tables (5; limit 5): T1 data (Table I), T2 PR-AUC HI and LI, T3 paired differenc
 2. Related Work, Ofori-Boateng: "it describes the network as a whole, not individual rings" is my reading of the abstract ("track evolution of the network shape"), not a sentence of theirs.
 3. Related Work, Fraudar "dense-subgraph detection under camouflage on bipartite review graphs" is accurate for the cited paper; it is a fraud detector, not a wash-trade one.
 4. Method, Proposition 1 is stated without proof (explainer 6.2 gives the one-line argument).
-5. Results, "the largest upper bound is +0.171": taken over the primary rows of HI and LI only; transfer upper bounds are +0.092 and +0.046 or smaller.
+5. Discussion, "the largest upper bound is +0.171": taken over the within-dataset primary rows (HI-Small and LI-Small). The text now scopes "every interval contains 0" to those rows and names the two transfer cells with intervals that exclude 0 (HI to LI RF, LI to HI LR); the largest transfer upper bound is +0.092.
 6. Results, Limitation 4 wording on ambiguity shares comes from the explainer (11.1 item 10).
 7. Appendix B severity sentence ("fair persistence fit") is explained only in the explainer (6.12, 8.10), not in the paper body.
 8. Garivier and Moulines, see section 2.
 9. The "Practical reading" paragraph is interpretation, not a result.
+
+## 9. Revision after review (edits applied to main.tex, not committed)
+Scope of "no detectable lift" is now within-dataset (HI-Small, LI-Small); the two negative transfer cells are stated in the abstract, contribution 2, V-C, VI and the conclusion. Ring-birth wording changed from "does not transfer" to "does not replicate on LI-Small" (two separate no-model scores; LI interval 0.006 [0.002, 0.025] contains the prevalence 0.0039). Audit AUCs: raw balance 0.795 and timing 0.601, rank-normalised 0.804 and 0.589, weight 0.794 (pooled windows 0 and 2). The sentence "other pattern types closer to chance" was wrong for RANDOM (weight AUC 0.785) and was corrected. "Practical reading" was cut to one sentence; the 82 s and 11.5 s figures were removed.
