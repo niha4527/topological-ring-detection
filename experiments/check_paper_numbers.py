@@ -24,7 +24,6 @@ def numbers(text: str) -> list[str]:
 def main(tex_path: Path) -> None:
     tex = tex_path.read_text()
     body = re.sub(r"(?<!\\)%.*", "", tex)
-    body = body.split("\\bibliographystyle")[0] + body.split("\\appendices")[-1] if "\\appendices" in body else body
     body = re.sub(r"\\(?:label|ref|cite\w*|includegraphics(?:\[[^\]]*\])?|bibliography|bibliographystyle|documentclass(?:\[[^\]]*\])?|usepackage(?:\[[^\]]*\])?)\{[^}]*\}", " ", body)
     body = re.sub(r"\\(?:section|subsection)\*?\{[^}]*\}", " ", body)
     body = body.replace("\\mi", "-")

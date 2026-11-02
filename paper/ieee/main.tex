@@ -7,7 +7,7 @@
 \usepackage{xcolor}
 \usepackage{url}
 
-\newcommand{\mi}{\textminus}
+\newcommand{\mi}{\ensuremath{-}}
 \newcommand{\BD}{B+D}
 \newcommand{\BDT}{B+D+T}
 
@@ -15,13 +15,31 @@
 
 \title{Does Topology Help Ring Detection? Directed Flag Persistence Against Direction and Behaviour Features on Transaction Graphs}
 
-\author{\IEEEauthorblockN{Niharika K P, Priyadarshini Prasad,\\
-Nidhi Santosh Nayak, Nischita M}
-\IEEEauthorblockA{\textit{School of Computer Science and Engineering}\\
-\textit{RV University}\\
+\author{\parbox[t]{\textwidth}{\centering
+\parbox[t]{0.48\textwidth}{\centering
+Niharika K P\\
+School of Computer Science and Engineering\\
+RV University\\
 Bengaluru, India\\
-niharikakpbtech25@rvu.edu.in, priyadarshiniprasadbtech25@rvu.edu.in,\\
-nidhisantoshnayakbtech25@rvu.edu.in, nischitambtech25@rvu.edu.in}}
+niharikakpbtech25@rvu.edu.in}\hfill
+\parbox[t]{0.48\textwidth}{\centering
+Priyadarshini Prasad\\
+School of Computer Science and Engineering\\
+RV University\\
+Bengaluru, India\\
+priyadarshiniprasadbtech25@rvu.edu.in}\\[2ex]
+\parbox[t]{0.48\textwidth}{\centering
+Nidhi Santosh Nayak\\
+School of Computer Science and Engineering\\
+RV University\\
+Bengaluru, India\\
+nidhisantoshnayakbtech25@rvu.edu.in}\hfill
+\parbox[t]{0.48\textwidth}{\centering
+Nischita M\\
+School of Computer Science and Engineering\\
+RV University\\
+Bengaluru, India\\
+nischitambtech25@rvu.edu.in}}}
 
 \maketitle
 
@@ -326,10 +344,6 @@ Three further studies are exploratory and summarized in Appendix~\ref{app:expl}.
 We built and tested a pipeline that localizes candidate rings exactly and describes each by direction and behaviour features, graph baseline features and persistent homology of a directed flag complex, and we compared B+D+T with B+D under a protocol fixed in advance. Direction and behaviour features carry the signal. On IBM AML data (itself synthetic) topology adds no detectable lift within either dataset, with intervals that cannot exclude a small effect of either sign given 14 and 10 positive groups, and two of six transfer cells are negative with intervals that exclude 0; on a nearly separable synthetic generator it adds a small lift that does not carry over; the ring-birth signal seen on HI-Small does not replicate on LI-Small; and bandit thresholds lose to periodic re-tuning in our simulation. Future work includes the NFT experiment on the cycle-free subset of proxy labels, an undirected clique-complex ablation, persistence-image and learned-vectorization ablations, sweeps over the parameters listed above, more positive groups through larger IBM variants, and a test of whether the window-level features act as a time proxy.
 
 %--------------------------------------------------------------------
-\bibliographystyle{IEEEtran}
-\bibliography{refs}
-
-%--------------------------------------------------------------------
 \appendices
 
 \section{Optimization-report results (pinned generator)}
@@ -338,7 +352,9 @@ These numbers come from the optimization report on its pinned synthetic generato
 
 \section{Exploratory results}
 \label{app:expl}
-\begin{table}[h]
+Table~\ref{tab:expl} lists the exploratory side studies, with values taken from the stored result files; severity and pump-and-dump are synthetic only, and none of the rows is corrected for multiplicity.
+
+\begin{table}[!t]
 \caption{Exploratory side studies. Severity and pump-and-dump are synthetic only. Clustering uses IBM HI-Small positive rings (131 rings in 14 groups; $k=4$, $D$ plus $T_{\mathrm{local}}$ landscape). Percentile CIs of the clustering bootstrap are biased and not used. No multiplicity correction.}
 \label{tab:expl}
 \centering
@@ -359,5 +375,9 @@ Cap, HI SVM B+D+T & window maximum 0.329; fixed 1.0 0.305; $1.1\times$ maximum 0
 
 \section{Reproduction}
 Every number in this paper was read from stored result files by a script that records its source; the stored seeds are cross-validation seed 0, bootstrap seed 12345, model seed 0 and synthetic seeds 0 to 5. The pre-existing optimization-report outputs are never overwritten. The test suite collects 210 tests; model performance is never a test.
+
+%--------------------------------------------------------------------
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
 
 \end{document}
