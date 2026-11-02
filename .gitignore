@@ -21,3 +21,6 @@ dist/
 
 # reference PDFs (cite via refs.bib only)
 paper/Reference papers/
+
+# demo: trained simulator models
+demo/.cache/

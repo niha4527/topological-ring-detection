@@ -23,6 +23,7 @@ dependencies = [
 # gudhi is needed from Phase 2 onwards (persistence landscapes, undirected ablation)
 tda = ["gudhi>=3.9"]
 dev = ["pytest>=7", "jupyterlab", "ipykernel", "pyvis"]
+demo = ["fastapi>=0.110", "uvicorn>=0.29"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

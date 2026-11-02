@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ring Detection Demo</title>
+<style>
+:root{--bg:#fafaf8;--panel:#fff;--ink:#1c1c1a;--mute:#6b6b66;--line:#dcdcd5;--acc:#c2410c;--ok:#15803d;--blue:#1d4ed8}
+@media (prefers-color-scheme:dark){:root{--bg:#161614;--panel:#1f1f1c;--ink:#ecece6;--mute:#9a9a92;--line:#3a3a35;--acc:#fb923c;--ok:#4ade80;--blue:#7aa2ff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+header{padding:16px;border-bottom:1px solid var(--line)}
+h1{font-size:18px;margin:0}header p{margin:2px 0 0;color:var(--mute);font-size:13px}
+nav{display:flex;gap:4px;padding:8px 16px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+nav button{background:none;border:0;border-bottom:2px solid transparent;padding:8px 12px;color:var(--mute);font:inherit;cursor:pointer}
+nav button.on{color:var(--ink);border-color:var(--acc)}
+main{max-width:1100px;margin:0 auto;padding:16px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:14px}
+.row{display:flex;gap:14px;flex-wrap:wrap}.row>*{flex:1 1 320px}
+h2{font-size:15px;margin:0 0 6px}.mute{color:var(--mute);font-size:13px}
+svg{width:100%;height:auto;background:var(--bg);border:1px solid var(--line);border-radius:6px;display:block}
+button.b,select,input{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:5px 9px}
+button.b{cursor:pointer}button.b:hover{border-color:var(--acc)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.chip{padding:3px 9px;border:1px solid var(--line);border-radius:99px;font-size:13px;cursor:pointer;background:var(--panel)}
+.chip.on{border-color:var(--acc);color:var(--acc)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:4px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--mute);font-weight:500}
+tr.sel td{background:color-mix(in srgb,var(--acc) 12%,transparent)}tbody tr{cursor:pointer}
+.k-wash_ring{color:var(--acc);font-weight:600}
+.scroll{max-height:340px;overflow:auto}
+.stat{display:inline-block;margin-right:16px}.stat b{display:block;font-size:20px}
+.fig{width:100%;border:1px solid var(--line);border-radius:6px;background:#fff}
+.note{border-left:3px solid var(--acc);padding:4px 10px;color:var(--mute);font-size:13px;margin:8px 0}
+label{font-size:13px;color:var(--mute);margin-right:10px}
+.hide{display:none}
+.verdict{border-radius:8px;padding:12px 14px;margin:10px 0;font-size:16px;border:1px solid var(--line)}
+.verdict.bad{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,transparent)}
+.verdict.good{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}
+details{border:1px solid var(--line);border-radius:8px;margin-bottom:10px;background:var(--panel)}
+summary{cursor:pointer;padding:10px 14px;font-weight:600}
+details>div{padding:0 14px 12px}
+.eq{font:13px/1.6 ui-monospace,monospace;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin:6px 0;overflow-x:auto;white-space:pre}
+.bar{height:10px;background:var(--acc);border-radius:2px;display:inline-block;vertical-align:middle}
+.bar.neg{background:var(--blue)}
+.warn{border-left:3px solid var(--blue);padding:4px 10px;color:var(--mute);font-size:13px;margin:8px 0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<header><h1>Topological ring detection for market manipulation</h1>
+<p>Directed flag complex persistence on a transaction graph. Lower edge weight = more suspicious.</p></header>
+<nav id="tabs">
+  <button data-t="t1" class="on">1. Loop vs flow</button>
+  <button data-t="t4">2. Simulator</button>
+  <button data-t="t2">3. Pipeline</button>
+  <button data-t="t3">4. Results</button>
+</nav>
+<main>
+
+<section id="t1">
+  <div class="panel">
+    <h2>Why directed? A loop stays open, one-way flow gets filled.</h2>
+    <div class="chips" id="toyChips"></div>
+    <div class="row">
+      <div><svg id="toySvg" viewBox="0 0 360 300"></svg></div>
+      <div><p id="toyText"></p><h2>Persistence bars</h2><div id="toyBars"></div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>Try your own graph</h2>
+    <p class="mute">Enter directed edges as <code>from to weight</code>, one per line. Weight in [0,1], lower = more suspicious.</p>
+    <div class="row">
+      <div><textarea id="custom" rows="8" style="width:100%;font:13px monospace;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px">A B 0.1
+B C 0.1
+C A 0.1
+D A 0.6
+D B 0.6
+D C 0.6</textarea><br><button class="b" id="customGo">Compute persistence</button></div>
+      <div><svg id="customSvg" viewBox="0 0 360 300"></svg><div id="customBars"></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="t4" class="hide">
+  <div class="panel">
+    <h2>Simulator: enter transactions, get a verdict and the working</h2>
+    <div class="warn">Your transactions are added to a background-only synthetic week (the same generator the model was trained on), so rank normalisation and thresholds mean what they did in training. The model is a logistic regression trained on synthetic wash rings, hard negatives and decoys. It is a demonstration of the pipeline, not a real-world detector.</div>
+    <div class="chips" id="presetChips"></div>
+    <p class="mute" style="margin:4px 0">One transaction per line: <code>hour from to amount</code>. Hour is 0 to 168 (one week). <code>#</code> starts a comment. Up to 500 lines.</p>
+    <textarea id="simText" rows="10" style="width:100%;font:13px monospace;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px"></textarea>
+    <div style="margin-top:8px">
+      <label>model <select id="simFs"></select></label>
+      <label>background seed <input id="simSeed" type="number" value="0" style="width:70px"></label>
+      <button class="b" id="simGo">Score</button> <span id="simMsg" class="mute"></span>
+    </div>
+  </div>
+  <div id="simOut" class="hide"></div>
+</section>
+
+<section id="t2" class="hide">
+  <div class="panel">
+    <h2>Run the pipeline on a synthetic week</h2>
+    <p class="mute">Generator plants wash rings, decoys and hard negatives. Pipeline builds the window graph, weights edges, enumerates candidate cycles, and labels them with the §3.7 rule.</p>
+    <label>seed <input id="seed" type="number" value="0" style="width:70px"></label>
+    <label>tau quantile <input id="tau" type="number" step="0.05" min="0.05" max="1" value="0.25" style="width:70px"></label>
+    <label>max ring length <select id="maxlen"><option>3</option><option>4</option><option selected>5</option><option>6</option></select></label>
+    <label><input id="hn" type="checkbox" checked> hard negatives</label>
+    <button class="b" id="runGo">Run</button> <span id="runMsg" class="mute"></span>
+  </div>
+  <div id="runOut" class="hide">
+    <div class="panel" id="stats"></div>
+    <div class="row">
+      <div class="panel"><h2>Candidates, most suspicious first</h2>
+        <p class="mute">Sorted by ring birth (max edge weight). Click a row. "ambiguous" = partial overlap with a planted structure.</p>
+        <div class="scroll"><table id="candTbl"><thead><tr><th>#</th><th>len</th><th>birth</th><th>label</th><th>scenario</th></tr></thead><tbody></tbody></table></div></div>
+      <div class="panel"><h2>Precision / recall by rank</h2>
+        <p class="mute">Walk down the list ranked by birth alone. Blue: precision of wash rings. Orange: recall.</p>
+        <svg id="curve" viewBox="0 0 360 240"></svg></div>
+    </div>
+    <div class="panel hide" id="detail">
+      <h2>Ring and its 1-hop neighbourhood</h2>
+      <div class="row"><div><svg id="candSvg" viewBox="0 0 360 300"></svg></div>
+      <div><div id="candInfo"></div><h2>Local H1 bars</h2><div id="candBars"></div>
+      <p class="mute">Ring edges thick orange. Neighbour edges thin. Edge labels are weights.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="t3" class="hide">
+  <div class="panel">
+    <h2>Headline finding</h2>
+    <div class="note">Direction and behaviour features (D) clearly help. Topology (T) shows no detectable lift on IBM AML (14 and 10 positive groups, so CIs are wide). On synthetic data the lift is small because B+D is already near-separable. A null topological lift is a reportable result.</div>
+    <div class="chips" id="dsChips"></div>
+    <div class="scroll"><table id="clsTbl"><thead><tr><th>features</th><th>model</th><th>PR-AUC</th><th>95% CI (grouped bootstrap)</th><th>prevalence</th><th>+ groups</th></tr></thead><tbody></tbody></table></div>
+    <p class="mute">Source: <code>paper/numbers_pack/csv/phase3_features__classify__*_tau0.05__results.csv</code>, primary variant (ambiguous excluded). Compare PR-AUC to prevalence, not to 0.5.</p>
+  </div>
+  <div class="panel"><h2>Figures</h2><div id="figs"></div></div>
+</section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const NS = 'http://www.w3.org/2000/svg';
+const fmt = x => x == null ? '∞' : (+x).toFixed(3);
+const el = (tag, attrs, parent, text) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; parent && parent.appendChild(e); return e; };
+const post = (u, b) => fetch(u, {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(b)}).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+
+// ---- graph drawing: ring nodes on an inner circle, others on an outer circle
+function drawGraph(svg, g, ringNodes = [], ringEdges = []) {
+  svg.innerHTML = '';
+  const W = 360, H = 300, cx = W/2, cy = H/2;
+  const ring = g.nodes.filter(n => ringNodes.includes(n));
+  const rest = g.nodes.filter(n => !ringNodes.includes(n));
+  const pos = {};
+  const place = (arr, r, off) => arr.forEach((n, i) => { const a = off + 2*Math.PI*i/arr.length; pos[n] = [cx + r*Math.cos(a), cy + r*Math.sin(a)]; });
+  if (ringNodes.length) { place(ring, ring.length === 1 ? 0 : 60, -Math.PI/2); place(rest, 125, 0); } else place(g.nodes, 100, -Math.PI/2);
+  const defs = el('defs', {}, svg);
+  const mid = 'ar' + svg.id + '_'; // marker ids must be unique per svg: a duplicate resolves to the first svg, which may be hidden
+  for (const [id, col] of [['a', css('--mute')], ['r', css('--acc')]]) {
+    const m = el('marker', {id: mid + id, viewBox:'0 0 10 10', refX:9, refY:5, markerWidth:6, markerHeight:6, orient:'auto-start-reverse'}, defs);
+    el('path', {d:'M0 0L10 5L0 10z', fill: col}, m);
+  }
+  const isRing = (u, v) => ringEdges.some(e => e[0] === u && e[1] === v);
+  const pair = new Set(g.edges.map(e => e.src + '>' + e.dst));
+  for (const e of g.edges) {
+    const [x1, y1] = pos[e.src], [x2, y2] = pos[e.dst];
+    const dx = x2-x1, dy = y2-y1, L = Math.hypot(dx, dy) || 1;
+    const bend = pair.has(e.dst + '>' + e.src) ? 14 : 0; // curve reciprocal pairs apart
+    const nx_ = -dy/L, ny_ = dx/L, mx = (x1+x2)/2 + nx_*bend, my = (y1+y2)/2 + ny_*bend;
+    const sx = x1 + dx/L*13, sy = y1 + dy/L*13, ex = x2 - dx/L*14, ey = y2 - dy/L*14;
+    const r = isRing(e.src, e.dst);
+    el('path', {d:`M${sx} ${sy} Q${mx} ${my} ${ex} ${ey}`, fill:'none', stroke: r ? css('--acc') : css('--mute'), 'stroke-width': r ? 2.6 : 1, opacity: r ? 1 : .6, 'marker-end': `url(#${mid}${r?'r':'a'})`}, svg);
+    if (g.edges.length <= 14 || r) el('text', {x: mx, y: my-3, 'font-size':9, fill: css('--mute'), 'text-anchor':'middle'}, svg, e.w);
+  }
+  for (const n of g.nodes) {
+    const [x, y] = pos[n], inRing = ringNodes.includes(n);
+    el('circle', {cx:x, cy:y, r:11, fill: css('--panel'), stroke: inRing ? css('--acc') : css('--mute'), 'stroke-width': inRing ? 2 : 1}, svg);
+    el('text', {x, y: y+3.5, 'font-size':10, 'text-anchor':'middle', fill: css('--ink')}, svg, n);
+  }
+}
+
+function barsHtml(b) {
+  const row = (name, arr) => `<p style="margin:4px 0"><b>${name}</b>: ${arr.length ? arr.map(x => `[${fmt(x[0])}, ${fmt(x[1])}]`).join(' ') : '<span class="mute">none</span>'}</p>`;
+  return row('H1 (loops)', b.h1) + row('H0 (components)', b.h0);
+}
+
+// ---- tabs
+document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x === b));
+  ['t1','t4','t2','t3'].forEach(t => $('#'+t).classList.toggle('hide', t !== b.dataset.t));
+});
+
+// ---- tab 1
+let toys = [];
+function showToy(i) {
+  const t = toys[i];
+  document.querySelectorAll('#toyChips .chip').forEach((c, j) => c.classList.toggle('on', i === j));
+  drawGraph($('#toySvg'), t); $('#toyText').textContent = t.text; $('#toyBars').innerHTML = barsHtml(t.bars);
+}
+fetch('/api/toys').then(r => r.json()).then(d => {
+  toys = d;
+  d.forEach((t, i) => { const c = document.createElement('span'); c.className = 'chip'; c.textContent = t.title; c.onclick = () => showToy(i); $('#toyChips').appendChild(c); });
+  showToy(0);
+});
+$('#customGo').onclick = async () => {
+  const edges = $('#custom').value.split('\n').map(l => l.trim().split(/\s+/)).filter(p => p.length >= 2 && p[0]).map(p => ({src:p[0], dst:p[1], w: p[2] === undefined ? 0.1 : +p[2]}));
+  try {
+    const r = await post('/api/persistence', {edges});
+    const nodes = [...new Set(edges.flatMap(e => [e.src, e.dst]))];
+    drawGraph($('#customSvg'), {nodes, edges: edges.map(e => ({...e}))}); $('#customBars').innerHTML = barsHtml(r.bars);
+  } catch (e) { $('#customBars').textContent = 'Invalid input (weights must be in [0,1], at most 60 edges).'; }
+};
+$('#customGo').click();
+
+// ---- tab 2
+let runId = null;
+function drawCurve(c) {
+  const svg = $('#curve'); svg.innerHTML = '';
+  const L = 38, R = 350, T = 10, B = 210, n = c[c.length-1][0];
+  const X = r => L + (R-L) * Math.log10(r) / Math.log10(Math.max(n, 10)), Y = v => B - (B-T)*v;
+  el('line', {x1:L, y1:B, x2:R, y2:B, stroke: css('--line')}, svg); el('line', {x1:L, y1:T, x2:L, y2:B, stroke: css('--line')}, svg);
+  [0, .5, 1].forEach(v => el('text', {x:L-5, y:Y(v)+3, 'font-size':9, 'text-anchor':'end', fill: css('--mute')}, svg, v));
+  for (let p = 0; Math.pow(10, p) <= n; p++) el('text', {x:X(Math.pow(10,p)), y:B+13, 'font-size':9, 'text-anchor':'middle', fill: css('--mute')}, svg, Math.pow(10,p));
+  el('text', {x:(L+R)/2, y:B+27, 'font-size':9, 'text-anchor':'middle', fill: css('--mute')}, svg, 'rank (log scale)');
+  for (const [idx, col] of [[1, css('--blue')], [2, css('--acc')]])
+    el('polyline', {points: c.map(p => `${X(p[0])},${Y(p[idx])}`).join(' '), fill:'none', stroke: col, 'stroke-width':2}, svg);
+}
+async function showCand(cid, tr) {
+  document.querySelectorAll('#candTbl tr').forEach(r => r.classList.remove('sel')); tr.classList.add('sel');
+  const d = await (await fetch(`/api/pipeline/${runId}/candidate/${cid}`)).json();
+  $('#detail').classList.remove('hide');
+  drawGraph($('#candSvg'), d.graph, d.ring, d.ring_edges);
+  $('#candInfo').innerHTML = `<p>Ring ${d.ring.join(' → ')} → ${d.ring[0]}<br>Birth <b>${d.birth}</b> · neighbourhood ${d.graph.nodes.length} accounts, ${d.graph.edges.length} edges</p>
+    <p>Loop still open in the neighbourhood: <b style="color:${d.open_loop ? 'var(--ok)' : 'var(--acc)'}">${d.open_loop === null ? 'not checked (too large)' : d.open_loop ? 'yes (infinite bar)' : 'no, filled by neighbours'}</b></p>`;
+  $('#candBars').innerHTML = barsHtml(d.bars);
+}
+$('#runGo').onclick = async () => {
+  $('#runMsg').textContent = 'running…';
+  try {
+    const r = await post('/api/pipeline', {seed:+$('#seed').value, tau_quantile:+$('#tau').value, max_len:+$('#maxlen').value, hard_negatives:$('#hn').checked});
+    runId = r.run_id; const s = r.summary;
+    $('#runMsg').textContent = '';
+    $('#runOut').classList.remove('hide');
+    const st = (v, l) => `<span class="stat"><b>${v}</b><span class="mute">${l}</span></span>`;
+    const kinds = Object.entries(s.by_kind).map(([k, v]) => `${k} ${v}`).join(' · ');
+    $('#stats').innerHTML = st(s.transactions, 'transactions') + st(s.edges, 'weighted edges') + st(s.planted_wash_rings, 'planted wash rings') + st(s.tau, 'sparsify cutoff') + st(s.candidates, 'candidate rings') +
+      `<p class="mute" style="margin:8px 0 0">Candidate labels: ${kinds}. The list is capped at the 300 lowest-birth candidates.</p>`;
+    const tb = $('#candTbl tbody'); tb.innerHTML = '';
+    r.candidates.forEach((c, i) => { const tr = document.createElement('tr'); tr.innerHTML = `<td>${i+1}</td><td>${c.length}</td><td>${c.birth}</td><td class="k-${c.kind}">${c.kind}</td><td>${c.scenario ?? ''}</td>`; tr.onclick = () => showCand(c.id, tr); tb.appendChild(tr); });
+    drawCurve(r.curve); $('#detail').classList.add('hide');
+  } catch (e) { $('#runMsg').textContent = 'failed: ' + e.message; }
+};
+
+// ---- tab 3
+fetch('/api/results').then(r => r.json()).then(d => {
+  const show = ds => {
+    document.querySelectorAll('#dsChips .chip').forEach(c => c.classList.toggle('on', c.textContent === ds));
+    $('#clsTbl tbody').innerHTML = d.classify[ds].map(r => `<tr><td>${r.feature_set}</td><td>${r.model}</td><td>${r.pr_auc.toFixed(3)}</td><td>[${r.ci_low.toFixed(3)}, ${r.ci_high.toFixed(3)}]</td><td>${r.prevalence.toFixed(4)}</td><td>${r.n_pos_groups}</td></tr>`).join('');
+  };
+  Object.keys(d.classify).forEach(ds => { const c = document.createElement('span'); c.className = 'chip'; c.textContent = ds; c.onclick = () => show(ds); $('#dsChips').appendChild(c); });
+  if (d.classify.HI) show('HI');
+  $('#figs').innerHTML = d.figures.map(f => `<h2 style="margin-top:14px">${f.caption}</h2><img class="fig" loading="lazy" src="/figures/${f.file}" alt="${f.caption}">`).join('');
+});
+// ---- tab 4: simulator
+const esc = t => String(t).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const n4 = x => x == null ? '–' : (+x).toFixed(4).replace(/0+$/,'').replace(/\.$/,'.0');
+let presets = [];
+fetch('/api/sim/presets').then(r => r.json()).then(d => {
+  presets = d.presets;
+  d.feature_sets.forEach(f => { const o = document.createElement('option'); o.textContent = f; $('#simFs').appendChild(o); });
+  d.presets.forEach((p, i) => { const c = document.createElement('span'); c.className = 'chip'; c.textContent = p.title; c.onclick = () => { $('#simText').value = p.text; document.querySelectorAll('#presetChips .chip').forEach((x, j) => x.classList.toggle('on', i === j)); }; $('#presetChips').appendChild(c); });
+  $('#simText').value = presets[0].text;
+});
+function tbl(head, rows, nums = []) {
+  return `<div class="scroll"><table><thead><tr>${head.map((h, i) => `<th class="${nums.includes(i) ? 'num' : ''}">${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map((c, i) => `<td class="${nums.includes(i) ? 'num' : ''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+const step = (n, title, body, open = true) => `<details ${open ? 'open' : ''}><summary>Step ${n}. ${title}</summary><div>${body}</div></details>`;
+
+function renderSim(r) {
+  const st = r.steps, m = r.model, W = st.window;
+  let h = '';
+  const v = r.verdict;
+  if (v.top_ring) h += `<div class="verdict ${v.flagged ? 'bad' : 'good'}"><b>${v.flagged ? 'FLAGGED as suspicious' : 'NOT flagged'}</b> — top ring ${v.top_ring.join(' → ')} → ${v.top_ring[0]}, score ${n4(v.top_score)} vs threshold ${n4(v.threshold)}.</div>`;
+  else h += `<div class="verdict good"><b>NOT flagged</b> — ${esc(v.reason)}. A ring that is not a candidate cannot be flagged: detection is two-stage (candidate generation, then classification).</div>`;
+
+  if (r.compare && r.compare.length) {
+    const fss = Object.keys(r.compare[0].scores);
+    const cell = c => c ? `${n4(c.score)} (thr ${n4(c.threshold)}) <b style="color:${c.flagged ? 'var(--acc)' : 'var(--ok)'}">${c.flagged ? 'FLAGGED' : 'not flagged'}</b>` : '–';
+    const agree = r.compare.every(x => new Set(fss.map(f => x.scores[f] && x.scores[f].flagged)).size === 1);
+    h += `<details open><summary>Does topology change the answer? Same input, every model</summary><div>
+      <p class="mute">Both models are the same logistic regression trained on the same synthetic data. The only difference: ${fss[1]} also gets the local topology features (persistence landscapes of the ring's neighbourhood). Detailed steps below are for the model chosen above.</p>` +
+      tbl(['ring', ...fss], r.compare.map(x => [x.ring.map(esc).join(' → ') + ' → ' + esc(x.ring[0]), ...fss.map(f => cell(x.scores[f]))])) +
+      `<p>${agree ? 'Both models give the same verdict on this input.' : '<b>The models disagree on this input.</b>'}</p>
+      <div class="warn">Project finding: on IBM AML, adding topology to B+D gave no detectable lift (95% CIs include 0, only 10 to 14 positive groups). On synthetic data the lift is small (B+D is already near-separable). A single input proves nothing about lift; the Results tab has the paired CIs.</div></div></details>`;
+  }
+
+  h += step(1, 'Parse and merge into a window',
+    `<p>${W.user_tx} of your transactions among ${W.user_accounts.length} accounts (${W.user_accounts.map(esc).join(', ')}) were added to ${W.background_tx} background transactions (seed ${W.seed}). Window = the whole week.</p>
+     <p>Result: ${W.accounts} accounts and ${W.pairs} ordered account pairs. Your accounts get new ids, so they are separate from the background accounts.</p>`);
+
+  const pr = st.pairs;
+  h += step(2, 'Aggregate to one edge per ordered pair, compute raw scores',
+    `<p class="mute">All transactions from a to b form one edge (§3.1). Raw scores are in [0,1], higher = more suspicious.</p>
+     <div class="eq">s_rec(a,b) = 1 − |V_ab − V_ba| / (V_ab + V_ba)      pair reciprocity
+s_bal(a,b) = min(β(a), β(b)),  β(x) = 1 − |in_x − out_x| / (in_x + out_x)      node flow balance
+s_reg(a,b) = 1 / (1 + CV of the gaps between the pair's transactions)      timing regularity
+(pairs with fewer than 3 transactions get the window median s_reg = ${n4(st.scores_note.median_s_reg)})</div>` +
+    tbl(['from', 'to', 'V_ab', 'V_ba', 'n', 'gap CV', 's_rec', 's_bal', 's_reg'], pr.map(p => [esc(p.from), esc(p.to), p.volume, p.rev_volume, p.count, p.gap_cv == null ? 'n/a' : n4(p.gap_cv), n4(p.s_rec), n4(p.s_bal), n4(p.s_reg)]), [2,3,4,5,6,7,8]));
+
+  const ex = pr[0];
+  h += step(3, 'Rank-normalise inside the window and combine into the edge weight',
+    `<p class="mute">Each score becomes its empirical rank among all ${st.scores_note.n_pairs_in_window} pairs of the window (ties take the lowest rank), so no score dominates by scale. Then weight = 1 − mean. <b>Lower weight = more suspicious.</b></p>` +
+    (ex ? `<div class="eq">worked example, edge ${esc(ex.from)} → ${esc(ex.to)}:
+  rank-normalised: n_rec = ${n4(ex.n_s_rec)}, n_bal = ${n4(ex.n_s_bal)}, n_reg = ${n4(ex.n_s_reg)}
+  weight = 1 − (${n4(ex.n_s_rec)} + ${n4(ex.n_s_bal)} + ${n4(ex.n_s_reg)}) / 3 = ${n4(ex.weight)}</div>` : '') +
+    tbl(['from', 'to', 'n_rec', 'n_bal', 'n_reg', 'weight'], pr.map(p => [esc(p.from), esc(p.to), n4(p.n_s_rec), n4(p.n_s_bal), n4(p.n_s_reg), `<b>${n4(p.weight)}</b>`]), [2,3,4,5]) +
+    `<p class="mute">With equal weights, a multi-party ring has no reciprocal pair, so n_rec is 0 and its weight cannot go below 1/3. That is why a ring's weight is compared with other edges, not with zero.</p>`);
+
+  const sp = st.sparsify;
+  h += step(4, 'Sparsify: keep only the suspicious edges',
+    `<div class="eq">tau_s = ${sp.quantile} quantile of all edge weights = ${n4(sp.tau)}
+keep an edge if weight ≤ tau_s</div>
+     <p>${sp.edges_kept} of ${sp.edges_total} window edges are kept. Of your ${sp.user_edges} edges, <b>${sp.user_edges_kept}</b> are kept: ` +
+    pr.map(p => `${esc(p.from)}→${esc(p.to)} (${n4(p.weight)}) ${p.kept ? '<b style="color:var(--ok)">kept</b>' : '<span style="color:var(--acc)">dropped</span>'}`).join(', ') + `.</p>`);
+
+  const c = st.candidates;
+  h += step(5, 'Find candidate rings',
+    `<p>Strongly connected components of the kept graph: ${c.sccs}. Directed simple cycles of length 2 to ${c.max_len} inside them: ${c.all_candidates} in the whole window, <b>${c.user_candidates}</b> touching your accounts.</p>
+     <p class="mute">Ring birth = the largest edge weight on the ring: the filtration value at which the loop first exists.</p>` +
+    (r.rings.length ? tbl(['ring', 'len', 'birth', 'only your accounts'], r.rings.map(x => [x.nodes.map(esc).join(' → ') + ' → ' + esc(x.nodes[0]), x.length, n4(x.birth), x.is_pure_user ? 'yes' : 'no']), [1,2]) : '<p>No cycle exists among the kept edges, so nothing reaches the classifier.</p>'));
+
+  r.rings.forEach((x, i) => {
+    const tag = `${x.nodes.map(esc).join('→')}→${esc(x.nodes[0])}`;
+    const hasT = x.open_loop !== null;
+    h += step(`6.${i+1}`, `Topology of ring ${tag}`,
+      `<div class="row"><div><svg id="ringSvg${i}" viewBox="0 0 360 300"></svg></div><div>
+       <p>Persistent homology of the directed flag complex on the ring plus its 1-hop neighbourhood (${x.neighbourhood.accounts} accounts, ${x.neighbourhood.edges} edges).</p>
+       ${barsHtml({h0: x.h0, h1: x.h1})}
+       ${hasT ? `<p>Exact test: the ring's own loop survives in homology (not filled by neighbours): <b style="color:${x.open_loop ? 'var(--ok)' : 'var(--acc)'}">${x.open_loop ? 'yes' : 'no'}</b></p>` : ''}
+       <p class="mute">An H1 bar [birth, ∞] is a loop that is never filled: circulating value. A finite bar means other accounts' one-way flow fills the loop. The bar's birth equals the ring's birth.</p></div></div>`);
+
+    const f = x.features;
+    const D = Object.entries(f).filter(([k]) => k.startsWith('D_')), B = Object.entries(f).filter(([k]) => k.startsWith('B_'));
+    h += step(`7.${i+1}`, `Features of ring ${tag}`,
+      `<div class="row"><div><b>D: direction and behaviour</b>${tbl(['feature', 'value'], D.map(([k, v]) => [k, n4(v)]), [1])}</div><div><b>B: graph baseline</b>${tbl(['feature', 'value'], B.map(([k, v]) => [k, n4(v)]), [1])}</div></div>` +
+      (hasT ? `<p class="mute">The model also receives ${m.n_features - 29} local topology features (persistence landscapes and scalar summaries of the H1 diagram above).</p>` : ''), false);
+
+    const mx = Math.max(...x.contrib_top.map(t => Math.abs(t.contribution)), 1e-9);
+    const parts = Object.entries(x.contrib_groups);
+    h += step(`8.${i+1}`, `Model score for ring ${tag}`,
+      `<p class="mute">Logistic regression on standardised features: score = intercept + Σ coefficient × (value − mean) / scale. Each term below is one feature's contribution; positive pushes toward "wash ring".</p>
+       <div class="eq">score = intercept ${n4(x.intercept)}
+${parts.map(([k, v]) => `       + ${k} features ${n4(v)}`).join('\n')}
+      = <b>${n4(x.score)}</b></div>
+       <b>Largest single contributions</b>` +
+      tbl(['feature', 'value', 'train mean', 'train scale', 'z', 'contribution', ''], x.contrib_top.map(t => [t.feature, n4(t.value), n4(t.mean), n4(t.scale), n4((t.value - t.mean) / t.scale), `<b>${n4(t.contribution)}</b>`, `<span class="bar ${t.contribution < 0 ? 'neg' : ''}" style="width:${Math.round(80 * Math.abs(t.contribution) / mx)}px"></span>`]), [1,2,3,4,5]), false);
+
+    h += step(`9.${i+1}`, `Decision for ring ${tag}`,
+      `<div class="eq">score ${n4(x.score)}  ${x.flagged ? '≥' : '<'}  threshold ${n4(x.threshold)}   →   ${x.flagged ? 'FLAGGED' : 'not flagged'}</div>
+       <p>This score is higher than ${x.percentile}% of the training candidates' out-of-fold scores.</p>
+       <p class="mute">Threshold = the F1-optimal score on grouped out-of-fold training scores. At that threshold the model's out-of-fold precision is ${n4(m.flag_precision_oof)} and recall ${n4(m.flag_recall_oof)} on the synthetic training set (${m.n_pos} positive candidates in ${m.n_pos_groups} groups, ${m.n_train} candidates, ${m.feature_set}). The score is a decision value, not a probability.</p>`);
+  });
+
+  $('#simOut').innerHTML = h;
+  $('#simOut').classList.remove('hide');
+  r.rings.forEach((x, i) => {
+    const nodes = [...new Set(x.edges.flatMap(e => [e.from, e.to]))];
+    drawGraph($(`#ringSvg${i}`), {nodes, edges: x.edges.map(e => ({src: e.from, dst: e.to, w: e.weight}))}, nodes, x.edges.map(e => [e.from, e.to]));
+  });
+}
+$('#simGo').onclick = async () => {
+  $('#simMsg').textContent = 'running…';
+  try {
+    const res = await fetch('/api/sim', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({text: $('#simText').value, feature_set: $('#simFs').value, seed: +$('#simSeed').value})});
+    const d = await res.json();
+    if (!res.ok) { $('#simMsg').textContent = 'input error: ' + (d.detail || res.status); return; }
+    $('#simMsg').textContent = ''; renderSim(d);
+  } catch (e) { $('#simMsg').textContent = 'failed: ' + e.message; }
+};
+</script>
+</body>
+</html>
