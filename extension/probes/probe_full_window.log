@@ -1,0 +1,4 @@
+[   81.4s rss=6.39GB] loaded {'n_rows': 31898238, 'n_self_loops': 2561860, 'n_attempts': 2756, 't_max_day': 27.665277777777778, 'n_laundering': 35230}
+[   84.0s rss=7.23GB] windows: 23 tx per window min/median/max: 268 7305746 10533166
+[  113.4s rss=7.23GB] w0 days 0-5: 8919362 tx, 1621499 nodes, 2224592 edges; graph+weights 29.4s
+[  116.4s rss=7.23GB] w0: 4232 candidates, sccs 3722, truncated []; enumeration 3.0s

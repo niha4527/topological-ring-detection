@@ -1,0 +1,7 @@
+[   96.3s rss=9.45GB] w0: 1621499 nodes 2224592 edges, sparsified 111230 edges, 4232 candidates
+[  111.3s rss=9.45GB] T_win (whole sparsified window): 14.3s
+[  114.4s rss=9.45GB] T_local: 21 ms/candidate -> x4232 = 89s
+[  115.7s rss=9.45GB] D: 8.7 ms/candidate -> x4232 = 37s
+[  281.0s rss=9.45GB] B betweenness (k=100 sampled, once per window): 165.3s
+[  310.3s rss=9.45GB] B per-candidate: 195 ms/candidate -> x4232 = 826s
+[  310.3s rss=9.45GB] done
