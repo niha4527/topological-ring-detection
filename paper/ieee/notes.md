@@ -70,3 +70,5 @@ Dedup order shortest-first then birth; max_len 5 in report vs 6; window-max cap 
 - Cap, HI SVM B+D+T under fixed_1.0 minus under window_max: -0.024 [-0.037, -0.004] (EX 8.8; PK 6C).
 - Severity RF RMSE: D_length alone 0.132 [0.125, 0.139]; B+D 0.141 [0.134, 0.149] (EX 8.10; PK 6B).
 - SVM B+D+T minus B+D, synthetic hn on, chords off: +0.052 [+0.001, +0.109] (PK 5.4).
+- 220 tests (Appendix C): `pytest -q` collects 220 since the demo simulator was added (210 earlier plus 10 in tests/test_simulate.py, 2 Nov 2026).
+- 0.95 (Results V-C): derived bound, not a result: the lowest B+D synthetic PR-AUC for LR (0.960) and RF (0.956) over the four conditions is above it (Table of EX 8.6 / PK 5).
