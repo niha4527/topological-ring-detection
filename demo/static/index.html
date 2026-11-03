@@ -46,6 +46,19 @@ details>div{padding:0 14px 12px}
 .bar.neg{background:var(--blue)}
 .warn{border-left:3px solid var(--blue);padding:4px 10px;color:var(--mute);font-size:13px;margin:8px 0}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.pcard{display:flex;gap:14px;flex-wrap:wrap}.pcard>.pleft{flex:2 1 520px;min-width:0}.pcard>.pright{flex:1 1 280px;min-width:0}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.steps button{padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font:inherit;cursor:pointer}
+.steps button.on{border-color:var(--acc);color:var(--acc);font-weight:600}
+.ctl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0}.ctl input[type=range]{flex:1 1 220px}
+.legend span{display:inline-flex;align-items:center;gap:5px;margin-right:12px;font-size:12px;color:var(--mute)}
+.legend i{display:inline-block;width:18px;height:4px;border-radius:2px}
+.kv{font-size:13px;margin:6px 0}.kv b{font-variant-numeric:tabular-nums}
+.ringrow{padding:3px 6px;border-radius:4px;font-size:12.5px;cursor:pointer;border:1px solid transparent}.ringrow:hover,.ringrow.sel{border-color:var(--acc)}
+.vz path.ve{transition:stroke .8s,stroke-width .8s,opacity .8s}.vz path.vr{transition:opacity .9s}.vz text.vl{transition:opacity .7s}.vz circle.vn{transition:fill .8s,stroke .8s,stroke-width .8s}
+.vnav{display:flex;gap:8px;align-items:center;margin:10px 0}.vnav button{padding:6px 14px}.vnav .mute{margin-left:auto}
+.steps button .n{display:inline-block;min-width:18px;height:18px;line-height:18px;text-align:center;border-radius:9px;background:var(--line);font-size:11px;margin-right:5px}
+.steps button.on .n{background:var(--acc);color:#fff}
 </style>
 </head>
 <body>
@@ -86,7 +99,7 @@ D C 0.6</textarea><br><button class="b" id="customGo">Compute persistence</butto
 <section id="t4" class="hide">
   <div class="panel">
     <h2>Simulator: enter transactions, get a verdict and the working</h2>
-    <div class="warn">Your transactions are added to a background-only synthetic week (the same generator the model was trained on), so rank normalisation and thresholds mean what they did in training. The model is a logistic regression trained on synthetic wash rings, hard negatives and decoys. It is a demonstration of the pipeline, not a real-world detector.</div>
+    <div class="warn">Your transactions are added to a background-only synthetic week (the same generator the model was trained on), so rank normalisation and thresholds mean what they did in training. The model is a logistic regression trained on synthetic wash rings, hard negatives and decoys. It is a demonstration of the pipeline, not a real-world detector. After you press Score, click through the walkthrough to see your graph form, how each edge is scored, the cutoff, and which rings are found.</div>
     <div class="chips" id="presetChips"></div>
     <p class="mute" style="margin:4px 0">One transaction per line: <code>hour from to amount</code>. Hour is 0 to 168 (one week). <code>#</code> starts a comment. Up to 500 lines.</p>
     <textarea id="simText" rows="10" style="width:100%;font:13px monospace;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px"></textarea>
@@ -297,6 +310,8 @@ function renderSim(r) {
       <div class="warn">Project finding: on IBM AML, adding topology to B+D gave no detectable lift (95% CIs include 0, only 10 to 14 positive groups). On synthetic data the lift is small (B+D is already near-separable). A single input proves nothing about lift; the Results tab has the paired CIs.</div></div></details>`;
   }
 
+  h += `<details open><summary>Walk through it: click the steps</summary><div><div id="vizBox"></div></div></details>`;
+
   h += step(1, 'Parse and merge into a window',
     `<p>${W.user_tx} of your transactions among ${W.user_accounts.length} accounts (${W.user_accounts.map(esc).join(', ')}) were added to ${W.background_tx} background transactions (seed ${W.seed}). Window = the whole week.</p>
      <p>Result: ${W.accounts} accounts and ${W.pairs} ordered account pairs. Your accounts get new ids, so they are separate from the background accounts.</p>`);
@@ -366,6 +381,7 @@ ${parts.map(([k, v]) => `       + ${k} features ${n4(v)}`).join('\n')}
 
   $('#simOut').innerHTML = h;
   $('#simOut').classList.remove('hide');
+  initViz(r.viz, r.steps.input);
   r.rings.forEach((x, i) => {
     const nodes = [...new Set(x.edges.flatMap(e => [e.from, e.to]))];
     drawGraph($(`#ringSvg${i}`), {nodes, edges: x.edges.map(e => ({src: e.from, dst: e.to, w: e.weight}))}, nodes, x.edges.map(e => [e.from, e.to]));
@@ -380,6 +396,119 @@ $('#simGo').onclick = async () => {
     $('#simMsg').textContent = ''; renderSim(d);
   } catch (e) { $('#simMsg').textContent = 'failed: ' + e.message; }
 };
+
+// ---- simulator walkthrough: click through the steps (no sliders, nothing moves unless you click)
+const VSTEPS = [['dots', 'Accounts'], ['arrows', 'Arrows'], ['rec', 'Reciprocity'], ['bal', 'Balance'], ['timing', 'Timing'], ['weight', 'Weight'], ['cutoff', 'Cutoff'], ['rings', 'Rings'], ['verdict', 'Verdict']];
+const VS = {step: 0, selEdge: null};
+let VD = null, VR = [], VE = {}, VN = {}, VG = {};
+const lerp = (a, b, t) => a + (b - a) * t;
+const vnorm = (v, lo, hi) => hi - lo < 1e-6 ? 0.5 : (v - lo) / (hi - lo);
+const mixc = t => { t = Math.min(1, Math.max(0, t)); return `rgb(${Math.round(lerp(150, 220, t))},${Math.round(lerp(150, 70, t))},${Math.round(lerp(145, 20, t))})`; }; // 0 = grey, 1 = orange
+const vpx = n => 80 + vnorm(n.x, VD.xr[0], VD.xr[1]) * 600;
+const vpy = n => 60 + vnorm(n.y, VD.yr[0], VD.yr[1]) * 300;
+function vsccs(keptEdges) { // Tarjan: groups of accounts where you can get from any one to any other
+  const adj = new Map(); keptEdges.forEach(e => { (adj.get(e.src) || adj.set(e.src, []).get(e.src)).push(e.dst); });
+  let idx = 0; const I = new Map(), L = new Map(), on = new Set(), st = [], out = [];
+  const go = v => { I.set(v, idx); L.set(v, idx); idx++; st.push(v); on.add(v);
+    for (const w of (adj.get(v) || [])) { if (!I.has(w)) { go(w); L.set(v, Math.min(L.get(v), L.get(w))); } else if (on.has(w)) L.set(v, Math.min(L.get(v), I.get(w))); }
+    if (L.get(v) === I.get(v)) { const c = []; let w; do { w = st.pop(); on.delete(w); c.push(w); } while (w !== v); if (c.length > 1) out.push(c); } };
+  for (const v of adj.keys()) if (!I.has(v)) go(v);
+  return out;
+}
+function initViz(viz, rows) {
+  VD = viz; VD.rows = rows; VD.edgeMap = {}; viz.edges.forEach(e => VD.edgeMap[e.src + '>' + e.dst] = e);
+  VD.xr = [Math.min(...viz.nodes.map(n => n.x)), Math.max(...viz.nodes.map(n => n.x))]; VD.yr = [Math.min(...viz.nodes.map(n => n.y)), Math.max(...viz.nodes.map(n => n.y))];
+  VS.step = 0; VS.selEdge = null;
+  $('#vizBox').innerHTML = `<div class="steps" id="vSteps">${VSTEPS.map((s, i) => `<button data-s="${i}" title="${s[1]}"><span class="n">${i + 1}</span>${s[1]}</button>`).join('')}</div>
+    <div class="pcard vz"><div class="pleft"><svg id="vSvg" viewBox="0 0 760 420" style="background:var(--bg)"></svg>
+      <div class="vnav"><button class="b" id="vBack">◀ Back</button><button class="b" id="vNext">Next ▶</button><span class="mute" id="vPos"></span></div><div class="legend" id="vLegend"></div></div>
+      <div class="pright"><div id="vInfo"></div></div></div>`;
+  document.querySelectorAll('#vSteps button').forEach(b => b.onclick = () => setVizStep(+b.dataset.s));
+  $('#vBack').onclick = () => setVizStep(VS.step - 1); $('#vNext').onclick = () => setVizStep(VS.step + 1);
+  buildViz();
+  const m = location.hash.match(/^#sim-[a-z0-9]+-(\d)$/);
+  setVizStep(m ? Math.min(8, Math.max(0, +m[1] - 1)) : 0, true);
+}
+function buildViz() {
+  const svg = $('#vSvg'); svg.innerHTML = ''; VE = {}; VN = {};
+  const defs = el('defs', {}, svg);
+  for (const [id, col] of [['g', css('--mute')], ['o', '#c2410c'], ['b', '#2563eb'], ['x', '#6b7280']]) { const m = el('marker', {id: 'vm' + id, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 13, markerHeight: 13, markerUnits: 'userSpaceOnUse', orient: 'auto-start-reverse'}, defs); el('path', {d: 'M0 0L10 5L0 10z', fill: col}, m); }
+  const byId = new Map(VD.nodes.map(n => [n.id, n])), pair = new Set(VD.edges.map(e => e.src + '>' + e.dst));
+  VD.geo = e => { const a = byId.get(e.src), b = byId.get(e.dst), x1 = vpx(a), y1 = vpy(a), x2 = vpx(b), y2 = vpy(b), dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
+    const bend = pair.has(e.dst + '>' + e.src) ? 18 : 0, mx = (x1 + x2) / 2 - dy / L * bend, my = (y1 + y2) / 2 + dx / L * bend;
+    return {d: `M${x1 + dx / L * 17} ${y1 + dy / L * 17} Q${mx} ${my} ${x2 - dx / L * 23} ${y2 - dy / L * 23}`, lx: (x1 + x2) / 2 - dy / L * (bend * 0.55 + 19), ly: (y1 + y2) / 2 + dx / L * (bend * 0.55 + 19) + 4}; };
+  VG = {e: el('g', {}, svg), r: el('g', {}, svg), l: el('g', {}, svg), n: el('g', {}, svg)};
+  VD.edges.forEach(e => { const g = VD.geo(e), key = e.src + '>' + e.dst;
+    const p = el('path', {d: g.d, fill: 'none', class: 've', 'marker-end': 'url(#vmg)'}, VG.e);
+    const h = el('path', {d: g.d, fill: 'none', stroke: 'transparent', 'stroke-width': 16, style: 'cursor:pointer'}, VG.e); h.onclick = () => { if (VS.step >= 2 && VS.step <= 6) { VS.selEdge = e; renderVizInfo(); applyVizStep(); } };
+    const t = el('text', {x: g.lx, y: g.ly, 'font-size': 12, 'text-anchor': 'middle', class: 'vl', fill: css('--ink'), stroke: css('--bg'), 'stroke-width': 3.5, 'paint-order': 'stroke', 'pointer-events': 'none'}, VG.l, '');
+    VE[key] = {p, h, t}; });
+  VD.nodes.forEach(n => { const x = vpx(n), y = vpy(n); const c = el('circle', {cx: x, cy: y, r: 17, class: 'vn'}, VG.n); const t = el('text', {x, y: y + 5, 'font-size': 13, 'text-anchor': 'middle', fill: css('--ink'), 'font-weight': 600, 'pointer-events': 'none'}, VG.n, n.id); VN[n.id] = {c, t}; });
+}
+function setVizStep(n, instant) {
+  VS.step = Math.min(VSTEPS.length - 1, Math.max(0, n)); VS.selEdge = null;
+  document.querySelectorAll('#vSteps button').forEach(b => b.classList.toggle('on', +b.dataset.s === VS.step));
+  $('#vBack').disabled = VS.step === 0; $('#vNext').disabled = VS.step === VSTEPS.length - 1; $('#vPos').textContent = `step ${VS.step + 1} of ${VSTEPS.length}`;
+  renderVizInfo(); applyVizStep();
+}
+function applyVizStep() {
+  const k = VSTEPS[VS.step][0], tau = VD.window.tau, W = VD.window;
+  const kept = e => e.weight <= tau;
+  VD.edges.forEach(e => { const r = VE[e.src + '>' + e.dst], sel = VS.selEdge && VS.selEdge.src === e.src && VS.selEdge.dst === e.dst; let stroke = '#8a8a82', w = 2, op = 0, lab = '', lop = 0, dash = 'none';
+    if (k === 'arrows') { op = 0.85; w = 1.5 + 0.5 * Math.sqrt(e.count); lab = `${e.count} payments`; lop = 1; }
+    else if (k === 'rec' || k === 'bal' || k === 'timing') { const v = k === 'rec' ? e.s_rec : (k === 'bal' ? e.s_bal : e.s_reg); stroke = mixc(v); w = 2 + 4 * v; op = 0.95; lab = `${k === 'rec' ? 's_rec' : (k === 'bal' ? 's_bal' : 's_reg')} = ${n4(v)}`; lop = 1; }
+    else if (k !== 'dots') { const t = 1 - vnorm(e.weight, W.wmin, W.wmax), on = k === 'weight' || kept(e); stroke = on ? mixc(0.35 + 0.65 * t) : '#8a8a82'; w = on ? 2.5 + 3 * t : 1.2; op = on ? 0.95 : 0.22; dash = on ? 'none' : '5 4'; lab = `weight ${n4(e.weight)}`; lop = on ? 1 : 0.35; if (k === 'verdict' || k === 'rings') { op = on ? 0.55 : 0.18; } }
+    r.p.style.stroke = sel ? css('--ink') : stroke; r.p.style.strokeWidth = sel ? w + 2 : w; r.p.style.opacity = op; r.p.style.strokeDasharray = dash; r.t.textContent = lab; r.t.style.opacity = lop; });
+  // rings layer
+  VG.r.innerHTML = '';
+  const ringsOn = k === 'rings' || k === 'verdict', found = VD.rings.filter(r => r.in_pipeline), groups = ringsOn ? vsccs(VD.edges.filter(kept)) : [], inScc = new Set(groups.flat()), inRing = new Map();
+  if (ringsOn) VD.rings.forEach(r => { const flagged = k === 'verdict' && r.in_pipeline && r.flagged, col = !r.in_pipeline ? '#6b7280' : (flagged ? '#c2410c' : '#2563eb'), mk = !r.in_pipeline ? 'x' : (flagged ? 'o' : 'b');
+    if (r.in_pipeline) r.nodes.forEach(n => inRing.set(n, col));
+    r.edges.forEach(([u, v]) => { const e = VD.edgeMap[u + '>' + v], p = el('path', {d: VD.geo(e).d, fill: 'none', class: 'vr', stroke: col, 'stroke-width': 5, 'stroke-dasharray': r.in_pipeline ? null : '7 5', 'marker-end': `url(#vm${mk})`, opacity: 0}, VG.r); requestAnimationFrame(() => requestAnimationFrame(() => { p.style.opacity = 0.95; })); }); });
+  VD.nodes.forEach(n => { const o = VN[n.id], c = inRing.get(n.id), tint = inScc.has(n.id); o.c.style.fill = c ? `color-mix(in srgb, ${c} 28%, transparent)` : (tint ? 'color-mix(in srgb,#2563eb 14%,transparent)' : css('--panel')); o.c.style.stroke = c || css('--mute'); o.c.style.strokeWidth = c ? 3 : 1.4; });
+  // legend
+  const lg = $('#vLegend'); lg.innerHTML = {
+    rec: '<span><i style="background:rgb(220,70,20)"></i>high score: suspicious</span><span><i style="background:rgb(150,150,145)"></i>low score: ordinary</span>',
+    bal: '<span><i style="background:rgb(220,70,20)"></i>high score: suspicious</span><span><i style="background:rgb(150,150,145)"></i>low score: ordinary</span>',
+    timing: '<span><i style="background:rgb(220,70,20)"></i>high score: suspicious</span><span><i style="background:rgb(150,150,145)"></i>low score: ordinary</span>',
+    weight: '<span><i style="background:rgb(220,70,20)"></i>low weight: suspicious</span><span><i style="background:rgb(150,150,145)"></i>high weight: ordinary</span><span class="mute">relative to every edge in the window</span>',
+    cutoff: '<span><i style="background:rgb(220,70,20)"></i>kept (weight ≤ τ)</span><span><i style="background:#8a8a82"></i>dropped (faded, dashed)</span>',
+    rings: '<span><i style="background:#2563eb"></i>candidate ring</span><span><i style="background:#6b7280"></i>ring above the cutoff (dashed): never a candidate</span>',
+    verdict: '<span><i style="background:#c2410c"></i>flagged</span><span><i style="background:#2563eb"></i>candidate, not flagged</span><span><i style="background:#6b7280"></i>above the cutoff</span>'}[k] || '';
+}
+function vEdgeCalc(e) { return `<div class="eq" style="white-space:normal">${esc(e.src)} → ${esc(e.dst)}: ${e.count} payments, total ${e.volume}; reverse volume ${e.rev_volume}
+reciprocity s_rec = ${n4(e.s_rec)}   →  rank ${n4(e.n_s_rec)}
+flow balance s_bal = ${n4(e.s_bal)}   →  rank ${n4(e.n_s_bal)}
+timing regularity s_reg = ${n4(e.s_reg)}   →  rank ${n4(e.n_s_reg)}
+weight = 1 − (${n4(e.n_s_rec)} + ${n4(e.n_s_bal)} + ${n4(e.n_s_reg)}) / 3 = <b>${n4(e.weight)}</b></div>`; }
+function ringLine(r, k) { const col = !r.in_pipeline ? '#6b7280' : ((k === 'verdict' && r.flagged) ? '#c2410c' : '#2563eb');
+  const st = !r.in_pipeline ? 'born above the cutoff, so never a candidate' : (k === 'verdict' ? (r.score === undefined ? 'candidate' : `model score ${n4(r.score)}: ${r.flagged ? '<b style="color:var(--acc)">flagged</b>' : 'not flagged'}`) : 'candidate');
+  return `<div class="kv"><span style="color:${col}">●</span> ${r.nodes.map(esc).join('→')}→${esc(r.nodes[0])} <span class="mute">birth ${n4(r.birth)}: ${st}</span></div>`; }
+function renderVizInfo() {
+  const box = $('#vInfo'), k = VSTEPS[VS.step][0], W = VD.window, E = VD.edges, tot = E.reduce((a, e) => a + e.count, 0), calc = VS.selEdge ? vEdgeCalc(VS.selEdge) : '<p class="mute">Click an arrow to see its numbers.</p>';
+  const kept = E.filter(e => e.weight <= W.tau), found = VD.rings.filter(r => r.in_pipeline), above = VD.rings.filter(r => !r.in_pipeline); let h = '';
+  if (k === 'dots') h = `<h2>1. Your accounts</h2><p>These are the ${VD.nodes.length} accounts in your ${VD.rows.length} transactions. Each transaction is a payment from one account to another. Nothing is connected yet.</p>
+    <div class="scroll" style="max-height:200px"><table><thead><tr><th>hour</th><th>from</th><th>to</th><th class="num">amount</th></tr></thead><tbody>${VD.rows.slice(0, 12).map(r => `<tr><td>${r.hour}</td><td>${esc(r.from)}</td><td>${esc(r.to)}</td><td class="num">${r.amount}</td></tr>`).join('')}</tbody></table></div>${VD.rows.length > 12 ? `<p class="mute">First 12 of ${VD.rows.length} transactions.</p>` : ''}`;
+  else if (k === 'arrows') h = `<h2>2. Payments become arrows</h2><p>All payments from account a to account b are merged into <b>one arrow</b>. The label shows how many payments it carries, and a thicker arrow means more payments.</p>
+    <div class="kv">${tot} transactions became <b>${E.length}</b> arrows.</div><p class="mute">An arrow is the unit that gets scored next. A pair that pays in both directions (a⇄b) gets two arrows.</p>`;
+  else if (k === 'rec') h = `<h2>3. Score: reciprocity</h2><p>Do the two accounts pay each other back equally? <code>s_rec = 1 − |V_ab − V_ba| / (V_ab + V_ba)</code>, where V is the total amount paid each way.</p>
+    <p>It is 1 for equal ping-pong and 0 when money only goes one way. In a ring of three or more accounts nobody pays back directly, so this score is 0 on every ring arrow. Balance catches those instead.</p>${calc}`;
+  else if (k === 'bal') h = `<h2>4. Score: flow balance</h2><p>Does each account send out about as much as it receives? For an account x, <code>β(x) = 1 − |in − out| / (in + out)</code>, and an arrow takes the smaller β of its two accounts.</p>
+    <p>Every member of a ring passes the money on, so each nets to about zero and scores close to 1. This is the score that makes a multi-account ring visible.</p>${calc}`;
+  else if (k === 'timing') h = `<h2>5. Score: timing regularity</h2><p>Is the pace clockwork? <code>s_reg = 1 / (1 + CV)</code>, where CV measures how much the gaps between the pair's payments vary.</p>
+    <p>A bot paying every 4 hours has CV near 0 and scores near 1. A pair with fewer than 3 payments has no gap to measure and gets the window's median.</p>${calc}`;
+  else if (k === 'weight') h = `<h2>6. Combine into one weight</h2><p>Each score is turned into its <b>rank</b> among all ${W.n_pairs} arrows in the window (yours plus the background week), so no score dominates by scale. Then <code>weight = 1 − the average of the three ranks</code>.</p>
+    <p><b>Low weight means suspicious</b>, drawn orange and thick.</p>${calc}`;
+  else if (k === 'cutoff') h = `<h2>7. The cutoff</h2><p>The pipeline keeps only the ${Math.round(W.tau_quantile * 100)}% most suspicious arrows of the whole window: those with weight ≤ τ = <b>${W.tau}</b>. The rest fade out.</p>
+    <div class="kv">Your arrows kept: <b>${kept.length}</b> of ${E.length}</div><p class="mute">A ring can only be found if all of its arrows survive. Its <b>birth</b> is its largest weight, so a ring appears exactly when τ reaches that value.</p>${calc}`;
+  else if (k === 'rings') h = `<h2>8. Find the rings</h2><p>Among the kept arrows, find the groups where you can get from any account to any other, then list every loop of 2 to 6 accounts inside them. Each loop is a <b>candidate ring</b>.</p>
+    <div class="kv">Candidate rings: <b>${found.length}</b>${above.length ? ` · above the cutoff: <b>${above.length}</b>` : ''}</div>${VD.rings.length ? VD.rings.map(r => ringLine(r, k)).join('') : '<p>Your accounts form no directed loop at all, so there is nothing to find. Money only flows one way.</p>'}${VD.rings_truncated ? '<p class="mute">Ring listing was capped.</p>' : ''}`;
+  else h = `<h2>9. The model's verdict</h2><p>Each candidate ring is described by its features and scored by the model. Flagged means its score reached the threshold.</p>${VD.rings.length ? VD.rings.map(r => ringLine(r, k)).join('') : '<p>No ring means nothing to score, so nothing is flagged.</p>'}
+    <p class="mute">The detailed numbers behind these scores are in the steps below this panel.</p>`;
+  box.innerHTML = h;
+}
+// shortcut for screenshots: #sim-<preset key>-<step number> runs the preset in the Simulator and opens that step
+{ const m = location.hash.match(/^#sim-([a-z0-9]+)/); if (m) { const go = () => { const p = presets.find(x => x.key === m[1]); if (!p) { setTimeout(go, 200); return; } document.querySelector('#tabs button[data-t="t4"]').click(); $('#simText').value = p.text; $('#simGo').click(); }; setTimeout(go, 300); } }
 </script>
 </body>
 </html>

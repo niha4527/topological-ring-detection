@@ -250,6 +250,7 @@ def simulate(text: str, models: dict[str, SimModel], feature_set: str = "B+D", s
         "truncated_sccs": res.truncated_sccs,
     }
     out = {"model": _model_info(model), "steps": steps, "rings": []}
+    out["viz"] = _viz(user, pairs, G, tau, ids, max_len, seed)
     if not mine:
         out["verdict"] = {
             "flagged": False,
@@ -309,6 +310,11 @@ def simulate(text: str, models: dict[str, SimModel], feature_set: str = "B+D", s
             }
         )
     out["rings"].sort(key=lambda r: -r["score"])
+    by_nodes = {tuple(r["nodes"]): r for r in out["rings"]}
+    for vr in out["viz"]["rings"]:  # attach the model's score to the rings it scored (same account cycle)
+        m = by_nodes.get(tuple(vr["nodes"]))
+        if m is not None:
+            vr["score"], vr["flagged"] = m["score"], m["flagged"]
     top = out["rings"][0]
     out["verdict"] = {"flagged": any(r["flagged"] for r in out["rings"]), "top_ring": top["nodes"], "top_score": top["score"], "threshold": top["threshold"]}
     return out
@@ -324,3 +330,35 @@ def _model_info(m: SimModel) -> dict:
         "flag_recall_oof": _r(float((m.train_scores[tr] >= m.threshold).mean())),
     }
 
+
+def _viz(user: pd.DataFrame, pairs: pd.DataFrame, G, tau: float, ids: dict[str, int], max_len: int, seed: int) -> dict:
+    """What the page draws for the user's own accounts: the graph, every edge's scores and weight, and every ring among the user's
+    accounts. A ring exists at threshold t exactly when its birth (largest edge weight) is <= t, so the page filters these rings by birth.
+    Weights are ranks inside the WHOLE window (user plus background), so the window range and the pipeline cutoff `tau` are included."""
+    import networkx as nx
+
+    inv = {v: k for k, v in ids.items()}
+    mine = set(ids.values())
+    up = pairs[pairs.src.isin(mine) & pairs.dst.isin(mine)]
+    Gu = G.subgraph(mine).copy()
+    names = lambda a: inv[a]  # noqa: E731
+    times = {(a, b): (g["hour"].to_numpy()).round(2).tolist() for (a, b), g in user.assign(a=user["from"].map(ids), b=user["to"].map(ids)).groupby(["a", "b"])}
+    und = Gu.to_undirected()
+    pos = nx.spring_layout(und, seed=seed, k=1.6 / max(1, und.number_of_nodes()) ** 0.5, iterations=200) if und.number_of_nodes() > 2 else {n: (i * 2.0 - 1.0, 0.0) for i, n in enumerate(sorted(und.nodes))}
+    res = candidate_rings(Gu, tau=1.0, max_len=max_len, max_cycles_per_scc=2000)
+    rings = [
+        {"nodes": [names(n) for n in c.nodes], "edges": [[names(u), names(v)] for u, v in c.edges], "birth": _r(c.birth), "in_pipeline": bool(c.birth <= tau)}
+        for c in res.candidates
+    ]
+    return {
+        "window": {"wmin": _r(float(pairs["weight"].min())), "wmax": _r(float(pairs["weight"].max())), "n_pairs": int(len(pairs)), "tau": _r(tau), "tau_quantile": load_topology_config()["candidates"]["tau_quantile"]},
+        "max_hour": float(user["hour"].max()),
+        "nodes": [{"id": names(n), "x": round(float(pos[n][0]), 4), "y": round(float(pos[n][1]), 4)} for n in Gu.nodes],
+        "edges": [
+            {"src": names(r.src), "dst": names(r.dst), "times": times[(r.src, r.dst)], "volume": _r(r.volume, 2), "count": int(r.count), "rev_volume": _r(r.rev_volume, 2),
+             "gap_cv": _r(r.gap_cv), "s_rec": _r(r.s_rec), "s_bal": _r(r.s_bal), "s_reg": _r(r.s_reg), "n_s_rec": _r(r.n_s_rec), "n_s_bal": _r(r.n_s_bal),
+             "n_s_reg": _r(r.n_s_reg), "weight": _r(r.weight)}
+            for r in up.itertuples()
+        ],
+        "rings": sorted(rings, key=lambda r: r["birth"]), "rings_truncated": bool(res.truncated_sccs),
+    }  # fmt: skip

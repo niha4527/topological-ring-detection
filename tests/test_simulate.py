@@ -47,3 +47,18 @@ def test_ring_is_a_candidate_with_open_loop_and_steps(models):
 def test_one_way_chain_forms_no_candidate(models):
     out = simulate(CHAIN, models, "B+D")
     assert out["rings"] == [] and out["verdict"]["flagged"] is False and "no candidate ring" in out["verdict"]["reason"]
+
+
+def test_viz_ring_birth_is_largest_edge_weight(models):
+    out = simulate(RING, models, "B+D")
+    v = out["viz"]
+    w = {(e["src"], e["dst"]): e["weight"] for e in v["edges"]}
+    assert len(v["edges"]) == 3 and v["window"]["wmin"] <= min(w.values()) and max(w.values()) <= v["window"]["wmax"]
+    r = next(r for r in v["rings"] if r["nodes"] == ["A", "B", "C"])
+    assert abs(max(w[tuple(e)] for e in r["edges"]) - r["birth"]) < 1e-3
+    assert r["in_pipeline"] == (r["birth"] <= v["window"]["tau"]) and "score" in r  # scored rings carry the model's score
+
+
+def test_viz_without_a_ring_still_draws_the_graph(models):
+    v = simulate(CHAIN, models, "B+D")["viz"]
+    assert v["rings"] == [] and len(v["edges"]) == 3 and len(v["nodes"]) == 4
