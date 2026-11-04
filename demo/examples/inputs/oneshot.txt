@@ -1,0 +1,4 @@
+# One-off triangle, 3 trades
+10 A B 500
+11 B C 500
+12 C A 500

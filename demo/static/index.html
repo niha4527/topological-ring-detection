@@ -67,8 +67,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 <nav id="tabs">
   <button data-t="t1" class="on">1. Loop vs flow</button>
   <button data-t="t4">2. Simulator</button>
-  <button data-t="t2">3. Pipeline</button>
-  <button data-t="t3">4. Results</button>
+  <button data-t="t3">3. Results</button>
 </nav>
 <main>
 
@@ -100,45 +99,16 @@ D C 0.6</textarea><br><button class="b" id="customGo">Compute persistence</butto
   <div class="panel">
     <h2>Simulator: enter transactions, get a verdict and the working</h2>
     <div class="warn">Your transactions are added to a background-only synthetic week (the same generator the model was trained on), so rank normalisation and thresholds mean what they did in training. The model is a logistic regression trained on synthetic wash rings, hard negatives and decoys. It is a demonstration of the pipeline, not a real-world detector. After you press Score, click through the walkthrough to see your graph form, how each edge is scored, the cutoff, and which rings are found.</div>
+    <p class="mute" style="margin:4px 0">Examples (click one to fill the box, or paste your own transactions):</p>
     <div class="chips" id="presetChips"></div>
     <p class="mute" style="margin:4px 0">One transaction per line: <code>hour from to amount</code>. Hour is 0 to 168 (one week). <code>#</code> starts a comment. Up to 500 lines.</p>
     <textarea id="simText" rows="10" style="width:100%;font:13px monospace;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px"></textarea>
     <div style="margin-top:8px">
       <label>model <select id="simFs"></select></label>
-      <label>background seed <input id="simSeed" type="number" value="0" style="width:70px"></label>
       <button class="b" id="simGo">Score</button> <span id="simMsg" class="mute"></span>
     </div>
   </div>
   <div id="simOut" class="hide"></div>
-</section>
-
-<section id="t2" class="hide">
-  <div class="panel">
-    <h2>Run the pipeline on a synthetic week</h2>
-    <p class="mute">Generator plants wash rings, decoys and hard negatives. Pipeline builds the window graph, weights edges, enumerates candidate cycles, and labels them with the §3.7 rule.</p>
-    <label>seed <input id="seed" type="number" value="0" style="width:70px"></label>
-    <label>tau quantile <input id="tau" type="number" step="0.05" min="0.05" max="1" value="0.25" style="width:70px"></label>
-    <label>max ring length <select id="maxlen"><option>3</option><option>4</option><option selected>5</option><option>6</option></select></label>
-    <label><input id="hn" type="checkbox" checked> hard negatives</label>
-    <button class="b" id="runGo">Run</button> <span id="runMsg" class="mute"></span>
-  </div>
-  <div id="runOut" class="hide">
-    <div class="panel" id="stats"></div>
-    <div class="row">
-      <div class="panel"><h2>Candidates, most suspicious first</h2>
-        <p class="mute">Sorted by ring birth (max edge weight). Click a row. "ambiguous" = partial overlap with a planted structure.</p>
-        <div class="scroll"><table id="candTbl"><thead><tr><th>#</th><th>len</th><th>birth</th><th>label</th><th>scenario</th></tr></thead><tbody></tbody></table></div></div>
-      <div class="panel"><h2>Precision / recall by rank</h2>
-        <p class="mute">Walk down the list ranked by birth alone. Blue: precision of wash rings. Orange: recall.</p>
-        <svg id="curve" viewBox="0 0 360 240"></svg></div>
-    </div>
-    <div class="panel hide" id="detail">
-      <h2>Ring and its 1-hop neighbourhood</h2>
-      <div class="row"><div><svg id="candSvg" viewBox="0 0 360 300"></svg></div>
-      <div><div id="candInfo"></div><h2>Local H1 bars</h2><div id="candBars"></div>
-      <p class="mute">Ring edges thick orange. Neighbour edges thin. Edge labels are weights.</p></div></div>
-    </div>
-  </div>
 </section>
 
 <section id="t3" class="hide">
@@ -203,7 +173,7 @@ function barsHtml(b) {
 // ---- tabs
 document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => {
   document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x === b));
-  ['t1','t4','t2','t3'].forEach(t => $('#'+t).classList.toggle('hide', t !== b.dataset.t));
+  ['t1','t4','t3'].forEach(t => $('#'+t).classList.toggle('hide', t !== b.dataset.t));
 });
 
 // ---- tab 1
@@ -227,45 +197,6 @@ $('#customGo').onclick = async () => {
   } catch (e) { $('#customBars').textContent = 'Invalid input (weights must be in [0,1], at most 60 edges).'; }
 };
 $('#customGo').click();
-
-// ---- tab 2
-let runId = null;
-function drawCurve(c) {
-  const svg = $('#curve'); svg.innerHTML = '';
-  const L = 38, R = 350, T = 10, B = 210, n = c[c.length-1][0];
-  const X = r => L + (R-L) * Math.log10(r) / Math.log10(Math.max(n, 10)), Y = v => B - (B-T)*v;
-  el('line', {x1:L, y1:B, x2:R, y2:B, stroke: css('--line')}, svg); el('line', {x1:L, y1:T, x2:L, y2:B, stroke: css('--line')}, svg);
-  [0, .5, 1].forEach(v => el('text', {x:L-5, y:Y(v)+3, 'font-size':9, 'text-anchor':'end', fill: css('--mute')}, svg, v));
-  for (let p = 0; Math.pow(10, p) <= n; p++) el('text', {x:X(Math.pow(10,p)), y:B+13, 'font-size':9, 'text-anchor':'middle', fill: css('--mute')}, svg, Math.pow(10,p));
-  el('text', {x:(L+R)/2, y:B+27, 'font-size':9, 'text-anchor':'middle', fill: css('--mute')}, svg, 'rank (log scale)');
-  for (const [idx, col] of [[1, css('--blue')], [2, css('--acc')]])
-    el('polyline', {points: c.map(p => `${X(p[0])},${Y(p[idx])}`).join(' '), fill:'none', stroke: col, 'stroke-width':2}, svg);
-}
-async function showCand(cid, tr) {
-  document.querySelectorAll('#candTbl tr').forEach(r => r.classList.remove('sel')); tr.classList.add('sel');
-  const d = await (await fetch(`/api/pipeline/${runId}/candidate/${cid}`)).json();
-  $('#detail').classList.remove('hide');
-  drawGraph($('#candSvg'), d.graph, d.ring, d.ring_edges);
-  $('#candInfo').innerHTML = `<p>Ring ${d.ring.join(' → ')} → ${d.ring[0]}<br>Birth <b>${d.birth}</b> · neighbourhood ${d.graph.nodes.length} accounts, ${d.graph.edges.length} edges</p>
-    <p>Loop still open in the neighbourhood: <b style="color:${d.open_loop ? 'var(--ok)' : 'var(--acc)'}">${d.open_loop === null ? 'not checked (too large)' : d.open_loop ? 'yes (infinite bar)' : 'no, filled by neighbours'}</b></p>`;
-  $('#candBars').innerHTML = barsHtml(d.bars);
-}
-$('#runGo').onclick = async () => {
-  $('#runMsg').textContent = 'running…';
-  try {
-    const r = await post('/api/pipeline', {seed:+$('#seed').value, tau_quantile:+$('#tau').value, max_len:+$('#maxlen').value, hard_negatives:$('#hn').checked});
-    runId = r.run_id; const s = r.summary;
-    $('#runMsg').textContent = '';
-    $('#runOut').classList.remove('hide');
-    const st = (v, l) => `<span class="stat"><b>${v}</b><span class="mute">${l}</span></span>`;
-    const kinds = Object.entries(s.by_kind).map(([k, v]) => `${k} ${v}`).join(' · ');
-    $('#stats').innerHTML = st(s.transactions, 'transactions') + st(s.edges, 'weighted edges') + st(s.planted_wash_rings, 'planted wash rings') + st(s.tau, 'sparsify cutoff') + st(s.candidates, 'candidate rings') +
-      `<p class="mute" style="margin:8px 0 0">Candidate labels: ${kinds}. The list is capped at the 300 lowest-birth candidates.</p>`;
-    const tb = $('#candTbl tbody'); tb.innerHTML = '';
-    r.candidates.forEach((c, i) => { const tr = document.createElement('tr'); tr.innerHTML = `<td>${i+1}</td><td>${c.length}</td><td>${c.birth}</td><td class="k-${c.kind}">${c.kind}</td><td>${c.scenario ?? ''}</td>`; tr.onclick = () => showCand(c.id, tr); tb.appendChild(tr); });
-    drawCurve(r.curve); $('#detail').classList.add('hide');
-  } catch (e) { $('#runMsg').textContent = 'failed: ' + e.message; }
-};
 
 // ---- tab 3
 fetch('/api/results').then(r => r.json()).then(d => {
@@ -298,6 +229,10 @@ function renderSim(r) {
   const v = r.verdict;
   if (v.top_ring) h += `<div class="verdict ${v.flagged ? 'bad' : 'good'}"><b>${v.flagged ? 'FLAGGED as suspicious' : 'NOT flagged'}</b> — top ring ${v.top_ring.join(' → ')} → ${v.top_ring[0]}, score ${n4(v.top_score)} vs threshold ${n4(v.threshold)}.</div>`;
   else h += `<div class="verdict good"><b>NOT flagged</b> — ${esc(v.reason)}. A ring that is not a candidate cannot be flagged: detection is two-stage (candidate generation, then classification).</div>`;
+  if (r.shape) h += `<p style="margin:6px 0"><b>What the input looks like:</b> ${esc(r.shape)}</p>`;
+  if (r.stability) { const s = r.stability; h += s.stable
+    ? `<p class="mute" style="margin:2px 0">Same verdict on all ${s.backgrounds} random background weeks it was tested against.</p>`
+    : `<div class="warn">Unstable: flagged on ${s.flagged} of ${s.backgrounds} background weeks. This input sits close to the model's cutoff, so treat the verdict as borderline. Detail below is for the first background.</div>`; }
 
   if (r.compare && r.compare.length) {
     const fss = Object.keys(r.compare[0].scores);
@@ -390,7 +325,7 @@ ${parts.map(([k, v]) => `       + ${k} features ${n4(v)}`).join('\n')}
 $('#simGo').onclick = async () => {
   $('#simMsg').textContent = 'running…';
   try {
-    const res = await fetch('/api/sim', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({text: $('#simText').value, feature_set: $('#simFs').value, seed: +$('#simSeed').value})});
+    const res = await fetch('/api/sim', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({text: $('#simText').value, feature_set: $('#simFs').value})});
     const d = await res.json();
     if (!res.ok) { $('#simMsg').textContent = 'input error: ' + (d.detail || res.status); return; }
     $('#simMsg').textContent = ''; renderSim(d);

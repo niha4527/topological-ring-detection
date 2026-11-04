@@ -127,3 +127,40 @@ gain for the random forest, which is the stronger model. So topology helps a lin
 | Logistic regression, 9 feature sets, 5x5 CV, 1,000 bootstraps | 4 min |
 | Random forest, 4 feature sets | 6 min |
 | SVM, 2 feature sets | 12 min |
+
+## 9. Time-aware features (exploratory, 3 Nov 2026)
+
+Script `medium/temporal.py`; raw outputs `medium/out/temporal/{lr_hgb,rf,tp_only,wid_control}/`. Idea: a ring recurs in consecutive overlapping windows, so add
+**causal** features built only from earlier windows (how many earlier windows it appeared in, its streak, its previous and lowest birth, the change in birth, volume,
+balance and regularity). History missing for a first appearance is filled with the current value (neutral). 65.1% of candidates and 743 of 852 positive rings have a
+history. No labels, no window index and no absolute time enter the features. Gradient boosting is scikit-learn's `HistGradientBoostingClassifier` with defaults and a fixed
+seed (no search). Same grouped CV and bootstrap as above. Not pre-specified, so treat every row as exploratory. No LSTM was run (the project is classical ML only).
+
+PR-AUC [95% CI]; prevalence 0.0163, 87 positive groups.
+
+| Features | Logistic regression | Random forest | Gradient boosting |
+|---|---|---|---|
+| B+D | 0.702 [0.608, 0.782] | 0.897 [0.843, 0.934] | 0.900 [0.849, 0.935] |
+| B+D+TP (history added) | 0.738 [0.647, 0.815] | 0.910 [0.860, 0.944] | 0.911 [0.863, 0.943] |
+| B+D+T | 0.810 [0.737, 0.864] | 0.882 [0.823, 0.924] | 0.903 [0.851, 0.938] |
+| B+D+T+TP | 0.824 [0.751, 0.880] | 0.900 [0.845, 0.938] | 0.917 [0.871, 0.949] |
+
+Paired differences (same resamples):
+
+| Comparison | Logistic regression | Random forest | Gradient boosting |
+|---|---|---|---|
+| B+D+TP minus B+D | +0.036 [+0.016, +0.058] | +0.013 [+0.005, +0.023] | +0.011 [+0.001, +0.024] |
+| B+D+T+TP minus B+D+T | +0.014 [+0.005, +0.026] | +0.017 [+0.010, +0.029] | +0.014 [+0.004, +0.027] |
+| B+D+T minus B+D (no history) | +0.108 [+0.049, +0.174] | -0.014 [-0.036, +0.001] | +0.003 [-0.006, +0.011] |
+
+Controls: the history features alone score 0.436 [0.320, 0.545] (LR) and 0.519 [0.400, 0.623] (gradient boosting), while the window index alone scores 0.068 and 0.062, so the
+history features are not just a clock.
+
+What it shows:
+1. History helps a little and consistently: every model gains, and every interval excludes 0. The gain is large for logistic regression (+0.036) and about +0.01 for
+   the tree ensembles. The best score overall is gradient boosting on B+D+T+TP, 0.917 [0.871, 0.949], against 0.897 for the earlier best (random forest on B+D). That
+   difference between two models was not tested with a paired interval, so it is not a claim.
+2. A second tree ensemble (gradient boosting) shows no topology gain either (+0.003 [-0.006, +0.011]), like the random forest and unlike logistic regression. That fits the
+   earlier reading that tree ensembles already capture what topology adds to a linear model, though it is still a hypothesis and not tested directly.
+3. Caveats: exploratory and uncorrected for multiplicity; the gains for tree models are small (about 0.01); consecutive windows share most of their transactions, so a ring's past
+   is strongly related to its present; synthetic data; no tuning of the gradient boosting.

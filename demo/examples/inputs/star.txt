@@ -1,0 +1,5 @@
+# Star: A pays four accounts, no returns
+1 A B 300
+11 A C 300
+21 A D 300
+31 A E 300

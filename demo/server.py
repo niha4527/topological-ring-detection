@@ -212,14 +212,32 @@ def sim_presets():
     return {"presets": presets(), "feature_sets": list(FEATURE_SETS)}
 
 
+STAB_SEEDS = (0, 1, 2, 3, 4)  # background weeks every input is scored against
+
+
+def _shape(out: dict) -> str:
+    """One plain-language line on what kind of structure the input has."""
+    rings = out["rings"]
+    if rings:
+        top = rings[0]
+        loop = " → ".join(top["nodes"]) + " → " + top["nodes"][0]
+        word = "pair trading back and forth" if top["length"] == 2 else f"directed loop of {top['length']} accounts"
+        return f"{word.capitalize()}: {loop}."
+    g = nx.DiGraph([(p["from"], p["to"]) for p in out["steps"]["pairs"]])
+    if nx.is_directed_acyclic_graph(g):
+        return "One-way flow only: money never returns to where it started, so there is no loop."
+    return "A loop exists, but its edges are not suspicious enough to pass the cutoff, so it is not a candidate ring."
+
+
 @app.post("/api/sim")
 def sim(body: SimIn):
     if body.feature_set not in FEATURE_SETS:
         raise HTTPException(400, f"feature_set must be one of {list(FEATURE_SETS)}")
     try:
-        runs = {fs: simulate(body.text, models(), fs, body.seed) for fs in FEATURE_SETS}
+        allruns = {s: {fs: simulate(body.text, models(), fs, s) for fs in FEATURE_SETS} for s in STAB_SEEDS}
     except ValueError as e:
         raise HTTPException(422, str(e)) from None
+    runs = allruns[STAB_SEEDS[0]]
     out = runs[body.feature_set]
     # same input scored by every model: rings matched by their account cycle
     out["compare"] = [
@@ -232,6 +250,10 @@ def sim(body: SimIn):
         }
         for ring in out["rings"]
     ]
+    out["shape"] = _shape(out)
+    n = len(STAB_SEEDS)
+    flagged = sum(allruns[s][body.feature_set]["verdict"]["flagged"] for s in STAB_SEEDS)
+    out["stability"] = {"backgrounds": n, "flagged": int(flagged), "stable": flagged in (0, n)}
     return out
 
 
